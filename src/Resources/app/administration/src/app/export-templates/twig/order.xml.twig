@@ -1,0 +1,29 @@
+<?xml version='1.0' ?>
+<orders totalOrdersCount='{{ ordersTotal }}'>
+    {% for order in orders %}
+        <order>
+            <id>{{ order.id }}</id>
+            <orderNumber>{{ order.orderNumber }}</orderNumber>
+            {% if order.lineItems %}
+                <orderProducts>
+                    {% for lineItem in order.lineItems.elements %}
+                        {% if lineItem.product and lineItem.payload.productNumber is defined %}
+                            <product>
+                                <id>{{ lineItem.productId }}</id>
+                                <url>{{ seoUrl('frontend.detail.page', {'productId': lineItem.productId}) }}</url>
+                                <productNumber>{{ lineItem.payload.productNumber }}</productNumber>
+                                <quantity>{{ lineItem.quantity }}</quantity>
+                                <price>{{ lineItem.unitPrice }}</price>
+                                <priceNoTax>{{ lineItem.unitPrice - lineItem.price.calculatedTaxes.first.tax  }}</priceNoTax>
+                            </product>
+                        {% endif %}
+                    {% endfor %}
+                </orderProducts>
+            {% endif %}
+            <shippingPrice>{{ order.shippingTotal }}</shippingPrice>
+            <createdDate>{{ order.orderDateTime|date('Y-m-d H:i:s') }}</createdDate>
+            <total>{{ order.amountTotal }}</total>
+            <email>{{ order.orderCustomer.email }}</email>
+        </order>
+    {% endfor %}
+</orders>

@@ -1,0 +1,47 @@
+{
+    "name": "wexo/hello-retail",
+    "description": "Hello Retail integration for Shopware 6",
+    "type": "shopware-platform-plugin",
+    "license": "proprietary",
+    "version": "0.0.1",
+    "authors": [
+        {
+            "name": "WEXO A/S",
+            "homepage": "https://www.wexo.dk/"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Wexo\\HelloRetail\\": "src/"
+        }
+    },
+    "require": {
+        "shopware/core": "*"
+    },
+    "extra": {
+        "shopware-plugin-class": "Wexo\\HelloRetail\\WexoHelloRetail",
+        "plugin-icon": "src/Resources/config/plugin.png",
+        "copyright": "(c) by WEXO A/S",
+        "label": {
+            "da-DK": "Hello Retail",
+            "en-GB": "Hello Retail",
+            "de-DE": "Hello Retail"
+        },
+        "description": {
+            "da-DK": "Hello Retail integration",
+            "en-GB": "Hello Retail integration",
+            "de-DE": "Hello Retail integration"
+        },
+        "manufacturerLink": {
+            "dk-DK": "https://www.wexo.dk",
+            "en-GB": "https://www.wexo.dk",
+            "de-DE": "https://www.wexo.dk"
+        },
+        "supportLink": {
+            "da-DK": "https://www.wexo.dk/shopware-support",
+            "en-GB": "https://www.wexo.dk/shopware-support",
+            "de-DE": "https://www.wexo.dk/shopware-support"
+        }
+    }
+}
+

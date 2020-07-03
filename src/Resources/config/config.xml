@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/master/src/Core/System/SystemConfig/Schema/config.xsd">
+    <card>
+        <title>Hello Retail Settings</title>
+        <title lang="de-DE">Hello Retail Einstellungen</title>
+        <title lang="da-DK">Hello Retail Indstillinger</title>
+
+        <input-field type="text">
+            <name>partnerId</name>
+            <label>Partner-ID</label>
+            <label lang="de-DE">Partner-ID</label>
+            <label lang="da-DK">Partner-ID</label>
+        </input-field>
+
+        <component name="sw-code-editor">
+            <name>trackingScript</name>
+            <label>Tracking Script</label>
+            <label lang="de-DE">Tracking-Skript</label>
+            <label lang="da-DK">Tracking Script</label>
+            <mode>twig</mode>
+            <completionMode>entity</completionMode>
+        </component>
+    </card>
+</config>
