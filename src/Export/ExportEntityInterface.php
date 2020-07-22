@@ -1,18 +1,40 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Wexo\HelloRetail\Export;
 
+/**
+ * Interface ExportEntityInterface
+ * @package Wexo\HelloRetail\Export
+ */
 interface ExportEntityInterface
 {
-    public function getStorefrontSalesChannelId();
+    /**
+     * @return string
+     */
+    public function getStorefrontSalesChannelId(): string;
 
-    public function getSalesChannelDomainId();
+    /**
+     * @return string
+     */
+    public function getSalesChannelDomainId(): string;
 
-    public function getFeeds();
+    /**
+     * @return array
+     */
+    public function getFeeds(): array;
 
-    public function setStoreFrontSalesChannelId($id);
+    /**
+     * @param string $id
+     */
+    public function setStoreFrontSalesChannelId(string $id): void;
 
-    public function setSalesChannelDomainId($id);
+    /**
+     * @param string $id
+     */
+    public function setSalesChannelDomainId(string $id): void;
 
-    public function setFeeds($feeds);
+    /**
+     * @param array $feeds
+     */
+    public function setFeeds(array $feeds): void;
 }

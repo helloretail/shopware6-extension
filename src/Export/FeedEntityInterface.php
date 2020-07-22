@@ -1,18 +1,82 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Wexo\HelloRetail\Export;
 
+use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
+
+/**
+ * Interface FeedEntityInterface
+ * @package Wexo\HelloRetail\Export
+ */
 interface FeedEntityInterface
 {
-    public function getFile();
+    /**
+     * @return string
+     */
+    public function getFeed(): string;
 
-    public function getAssociations();
+    /**
+     * @return string
+     */
+    public function getFile(): string;
 
-    public function getTemplate();
+    /**
+     * @return SalesChannelDomainEntity
+     */
+    public function getDomain(): SalesChannelDomainEntity;
 
-    public function setFile($file);
+    /**
+     * @return array
+     */
+    public function getAssociations(): array;
 
-    public function setAssociations($associations);
+    /**
+     * @return string|null
+     */
+    public function getHeaderTemplate(): ?string;
 
-    public function setTemplate($template);
+    /**
+     * @return string|null
+     */
+    public function getBodyTemplate(): ?string;
+
+    /**
+     * @return string|null
+     */
+    public function getFooterTemplate(): ?string;
+
+    /**
+     * @param string $feed
+     */
+    public function setFeed(string $feed): void;
+
+    /**
+     * @param string $file
+     */
+    public function setFile(string $file): void;
+
+    /**
+     * @param SalesChannelDomainEntity $salesChannelDomainEntity
+     */
+    public function setDomain(SalesChannelDomainEntity $salesChannelDomainEntity): void;
+
+    /**
+     * @param array $associations
+     */
+    public function setAssociations(array $associations): void;
+
+    /**
+     * @param string $template
+     */
+    public function setHeaderTemplate(string $template): void;
+
+    /**
+     * @param string $template
+     */
+    public function setBodyTemplate(string $template): void;
+
+    /**
+     * @param string $template
+     */
+    public function setFooterTemplate(string $template): void;
 }

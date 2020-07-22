@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Wexo\HelloRetail\Export\Profiles;
 
@@ -6,59 +6,39 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Serializer\SerializerInterface;
-use Wexo\HelloRetail\Component\MessageQueue\HelloRetailExport;
-use Wexo\HelloRetail\Component\MessageQueue\HelloRetailExportHandler;
 use Wexo\HelloRetail\Export\ExportEntity;
 use Wexo\HelloRetail\Export\ExportEntityInterface;
+use Wexo\HelloRetail\Service\HelloRetailService;
 
+/**
+ * Class ProfileExporter
+ * @package Wexo\HelloRetail\Export\Profiles
+ */
 class ProfileExporter implements ProfileExporterInterface
 {
-    /**
-     * @var LoggerInterface
-     */
     protected LoggerInterface $logger;
-    /**
-     * @var SerializerInterface
-     */
-    protected $serializer;
-
-    /**
-     * @var MessageBusInterface
-     */
-    protected $messageBus;
-
-    /**
-     * @var HelloRetailExportHandler
-     */
-    protected $exportHandler;
-
-    /**
-     * @var EntityRepositoryInterface
-     */
-    protected $salesChannelRepository;
+    protected SerializerInterface $serializer;
+    protected EntityRepositoryInterface $salesChannelRepository;
+    protected HelloRetailService $helloRetailService;
 
     /**
      * ProfileExporter constructor.
      * @param LoggerInterface $logger
      * @param SerializerInterface $serializer
-     * @param MessageBusInterface $messageBus
-     * @param HelloRetailExportHandler $exportHandler
      * @param EntityRepositoryInterface $salesChannelRepository
+     * @param HelloRetailService $helloRetailService
      */
     public function __construct(
         LoggerInterface $logger,
         SerializerInterface $serializer,
-        MessageBusInterface $messageBus,
-        HelloRetailExportHandler $exportHandler,
-        EntityRepositoryInterface $salesChannelRepository
+        EntityRepositoryInterface $salesChannelRepository,
+        HelloRetailService $helloRetailService
     ) {
         $this->logger = $logger;
         $this->serializer = $serializer;
-        $this->messageBus = $messageBus;
-        $this->exportHandler = $exportHandler;
         $this->salesChannelRepository = $salesChannelRepository;
+        $this->helloRetailService = $helloRetailService;
     }
 
     /**
@@ -69,27 +49,28 @@ class ProfileExporter implements ProfileExporterInterface
      */
     public function generate($salesChannelId, array $feeds = [], $now = false): array
     {
-        $salesChannelEntity = $this->salesChannelRepository->search(new Criteria([$salesChannelId]), Context::createDefaultContext())->first();
+        $salesChannelEntity = $this->salesChannelRepository->search(
+            new Criteria([$salesChannelId]),
+            Context::createDefaultContext()
+        )->first();
 
         /** @var ExportEntityInterface $exportEntity */
         $exportEntity = $this->serializer
             ->deserialize(json_encode($salesChannelEntity->getConfiguration()), ExportEntity::class, 'json');
 
         $notExported = [];
-
         foreach ($exportEntity->getFeeds() as $key => $feed) {
-            if ((!empty($feeds) && !in_array($key, $feeds)) || !$feed['file'] || !$feed['template']) {
+            if ((!empty($feeds) && !in_array($key, $feeds))
+                || !$feed['file']
+                || !$feed['headerTemplate']
+                || !$feed['bodyTemplate']
+                || !$feed['footerTemplate']
+            ) {
                 $notExported[] = $key;
                 continue;
             }
 
-            $message = new HelloRetailExport($exportEntity, $key);
-
-            if (!$now) {
-                $this->messageBus->dispatch($message);
-            } else {
-                $this->exportHandler->handle($message);
-            }
+            $this->helloRetailService->export($exportEntity, $key);
         }
 
         return $notExported;

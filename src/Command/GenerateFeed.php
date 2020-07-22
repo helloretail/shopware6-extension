@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Wexo\HelloRetail\Command;
 
@@ -7,15 +7,15 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Wexo\HelloRetail\Export\Profiles\ProfileExporterInterface;
 use Wexo\HelloRetail\WexoHelloRetail;
 
 class GenerateFeed extends Command
 {
-    protected static $defaultName = 'wexo:generate-feed';
+    protected static $defaultName = 'wexo:hello-retail:generate-feed';
 
     /**
      * @var ProfileExporterInterface
@@ -32,8 +32,10 @@ class GenerateFeed extends Command
      * @param ProfileExporterInterface $profileExporter
      * @param EntityRepositoryInterface $salesChannelRepository
      */
-    public function __construct(ProfileExporterInterface $profileExporter, EntityRepositoryInterface $salesChannelRepository)
-    {
+    public function __construct(
+        ProfileExporterInterface $profileExporter,
+        EntityRepositoryInterface $salesChannelRepository
+    ) {
         $this->profileExporter = $profileExporter;
         $this->salesChannelRepository = $salesChannelRepository;
 
@@ -42,8 +44,8 @@ class GenerateFeed extends Command
 
     protected function configure(): void
     {
-        parent::configure();
-        $this->addArgument('name', InputArgument::REQUIRED, 'Sales Channel Name');
+        $this->setDescription('Generates all configured Hello Retail feeds')
+            ->addOption('feed', 'f', InputOption::VALUE_REQUIRED, 'Specific feed to generate');
     }
 
     /**
@@ -53,21 +55,17 @@ class GenerateFeed extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $name = $input->getArgument('name');
-
-        if (!$name) {
-            $output->writeln('Argument name is missing');
-            return 0;
-        }
+        $feed = $input->getOption('feed');
 
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('typeId', WexoHelloRetail::SALES_CHANNEL_TYPE_HELLO_RETAIL));
-        $criteria->addFilter(new EqualsFilter('name', $name));
 
-        $salesChannelId = $this->salesChannelRepository->searchIds($criteria, Context::createDefaultContext())->firstId();
+        $salesChannelId = $this->salesChannelRepository->searchIds(
+            $criteria,
+            Context::createDefaultContext()
+        )->firstId();
 
-        $output->writeln('Starting generation');
-        $this->profileExporter->generate($salesChannelId);
+        $this->profileExporter->generate($salesChannelId, $feed ? [$feed] : []);
 
         return 0;
     }

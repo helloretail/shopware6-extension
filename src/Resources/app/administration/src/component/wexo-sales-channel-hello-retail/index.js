@@ -36,41 +36,11 @@ Component.register('wexo-sales-channel-hello-retail', {
             loading: true,
             storefrontSalesChannelId: null,
             feedValues: [],
-            feeds: {
-                'product':  {
-                    file: null,
-                    template: null,
-                    associations: [
-                        'categories',
-                        'seoUrls',
-                        'searchKeywords',
-                        'manufacturer',
-                        'media',
-                        'cover',
-                        'product.parent'
-                    ]
-                },
-                'customer': {
-                    file: null,
-                    template: null,
-                    associations: [
-
-                    ]
-                },
-                'order': {
-                    file: null,
-                    template: null,
-                    associations: [
-                        'lineItems.product'
-                    ]
-                }
-            }
         }
     },
 
     created() {
         this.initChannel();
-        this.setDefaults();
     },
 
     mounted() {
@@ -118,18 +88,8 @@ Component.register('wexo-sales-channel-hello-retail', {
             }
 
             if (!this.salesChannel.configuration.feeds) {
-                this.$set(this.salesChannel.configuration, 'feeds', this.feeds);
+                this.$set(this.salesChannel.configuration, 'feeds', this.helloRetailTemplateService.getExportTemplateRegistry());
             }
-        },
-
-        setDefaults() {
-            Object.keys(this.salesChannel.configuration.feeds).map((item) => {
-                const template = this.helloRetailTemplateService.getExportTemplateByName(item);
-
-                if (template) {
-                    this.salesChannel.configuration.feeds[item].template = template;
-                }
-            });
         },
 
         fillSalesChannel() {

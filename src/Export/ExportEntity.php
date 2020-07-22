@@ -1,39 +1,61 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Wexo\HelloRetail\Export;
 
+/**
+ * Class ExportEntity
+ * @package Wexo\HelloRetail\Export
+ */
 class ExportEntity implements ExportEntityInterface
 {
-    private $storeFrontSalesChannelId;
-    private $salesChannelDomainId;
-    private $feeds;
+    private string $storeFrontSalesChannelId;
+    private string $salesChannelDomainId;
+    private array $feeds;
 
-    public function getStorefrontSalesChannelId()
+    /**
+     * @return string
+     */
+    public function getStorefrontSalesChannelId(): string
     {
         return $this->storeFrontSalesChannelId;
     }
 
-    public function getSalesChannelDomainId()
+    /**
+     * @return string
+     */
+    public function getSalesChannelDomainId(): string
     {
         return $this->salesChannelDomainId;
     }
 
-    public function getFeeds()
+    /**
+     * @return array
+     */
+    public function getFeeds(): array
     {
         return $this->feeds;
     }
 
-    public function setStoreFrontSalesChannelId($id)
+    /**
+     * @param string $id
+     */
+    public function setStoreFrontSalesChannelId(string $id): void
     {
         $this->storeFrontSalesChannelId = $id;
     }
 
-    public function setSalesChannelDomainId($id)
+    /**
+     * @param string $id
+     */
+    public function setSalesChannelDomainId(string $id): void
     {
         $this->salesChannelDomainId = $id;
     }
 
-    public function setFeeds($feeds)
+    /**
+     * @param array $feeds
+     */
+    public function setFeeds(array $feeds): void
     {
         $this->feeds = $feeds;
     }

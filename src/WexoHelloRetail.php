@@ -13,7 +13,11 @@ use Shopware\Core\Framework\Plugin\Context\DeactivateContext;
  */
 class WexoHelloRetail extends Plugin
 {
+    public const LOG_CHANNEL = 'hello-retail';
+    public const EXPORT_ERROR = 'hello-retail.export.error';
+    public const EXPORT_SUCCESS = 'hello-retail.export.success';
     public const SALES_CHANNEL_TYPE_HELLO_RETAIL = '44f7e183909376bb5824abf830f4b879';
+    public const FILE_TYPE_INDICATOR_SEPARATOR = '_';
 
     public function deactivate(DeactivateContext $context): void
     {

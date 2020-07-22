@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Wexo\HelloRetail\Controller;
 
@@ -30,16 +30,19 @@ class ApiController extends AbstractController
         $this->profileExporter = $profileExporter;
     }
 
+    //phpcs:disable
     /**
      * @Route("/api/v{version}/wexo/hello-retail/getTypeId", name="api.action.wexo.hello-retail.getTypeId", methods={"GET"})
      * @param Context $context
      * @return Response
      */
+    //phpcs:enable
     public function getTypeId(Context $context): Response
     {
         return new Response(WexoHelloRetail::SALES_CHANNEL_TYPE_HELLO_RETAIL);
     }
 
+    //phpcs:disable
     /**
      * @Route("/api/v{version}/wexo/hello-retail/generateFeed/{salesChannelId}/{feed}", name="api.action.wexo.hello-retail.generateFeed", methods={"POST"})
      * @param Context $context
@@ -47,6 +50,7 @@ class ApiController extends AbstractController
      * @param $feed
      * @return JsonResponse
      */
+    //phpcs:enable
     public function generateFeed(Context $context, $salesChannelId, $feed): JsonResponse
     {
         try {

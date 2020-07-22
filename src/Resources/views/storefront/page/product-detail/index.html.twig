@@ -1,0 +1,38 @@
+{% sw_extends "@Storefront/storefront/page/product-detail/index.html.twig" %}
+
+{% block page_product_detail_hello_retail_variant %}
+    {% block page_product_hello_retail_top %}
+        <div class="col-5">
+            <div class="hello-retail-wrapper">
+                <div class="hello-retail-product-top"></div>
+            </div>
+        </div>
+    {% endblock %}
+{% endblock %}
+
+{% block page_product_details_ups %}
+    {% block page_product_detail_hello_retail_middle_top %}
+        <div class="hello-retail-wrapper">
+            <div class="hello-retail-product-middle-top"></div>
+        </div>
+    {% endblock %}
+    {{ parent() }}
+{% endblock %}
+
+{% block page_product_details_description %}
+    {{ parent() }}
+    {% block page_product_detail_hello_retail_middle_bottom %}
+        <div class="hello-retail-wrapper">
+            <div class="hello-retail-product-middle-bottom"></div>
+        </div>
+    {% endblock %}
+{% endblock %}
+
+{% block page_product_detail_cross_selling_elements %}
+    {% block page_product_detail_hello_retail_bottom %}
+        <div class="hello-retail-wrapper">
+            <div class="hello-retail-product-bottom"></div>
+        </div>
+    {% endblock %}
+    {{ parent() }}
+{% endblock %}

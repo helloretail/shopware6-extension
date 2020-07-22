@@ -1,252 +1,238 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Wexo\HelloRetail\Component\MessageQueue;
 
-use Doctrine\DBAL\Connection;
+use League\Flysystem\FileNotFoundException;
 use League\Flysystem\FilesystemInterface;
+use Monolog\Logger;
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Content\ProductExport\Exception\EmptyExportException;
-use Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface;
 use Shopware\Core\Framework\Adapter\Translation\Translator;
-use Shopware\Core\Framework\Adapter\Twig\Exception\StringTemplateRenderingException;
-use Shopware\Core\Framework\Adapter\Twig\Extension\SeoUrlFunctionExtension;
-use Shopware\Core\Framework\Adapter\Twig\StringTemplateRenderer;
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\MessageQueue\Handler\AbstractMessageHandler;
-use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Serializer\Exception\NotEncodableValueException;
-use Symfony\Component\Serializer\SerializerInterface;
-use Wexo\HelloRetail\Export\FeedEntity;
-use Wexo\HelloRetail\Export\FeedEntityInterface;
+use Wexo\HelloRetail\Export\ExportEntityElement;
+use Wexo\HelloRetail\Export\TemplateType;
+use Wexo\HelloRetail\Service\HelloRetailService;
+use Wexo\HelloRetail\WexoHelloRetail;
 
+/**
+ * Class HelloRetailExportHandler
+ * @package Wexo\HelloRetail\Component\MessageQueue
+ */
 class HelloRetailExportHandler extends AbstractMessageHandler
 {
-    /**
-     * @var LoggerInterface
-     */
+    // TODO: Should be settings
+    private const RETRIES = 20;
+    private const SLEEP_BETWEEN_RETRIES = 30; // Seconds
+
     protected LoggerInterface $logger;
-    /**
-     * @var StringTemplateRenderer
-     */
-    protected $templateRenderer;
-    /**
-     * @var ContainerInterface
-     */
-    protected $container;
-    /**
-     * @var SalesChannelContextService
-     */
-    protected $salesChannelContextService;
-    /**
-     * @var SeoUrlFunctionExtension
-     */
-    protected $seoUrlPlaceholderHandler;
+    protected ContainerInterface $container;
+    protected Translator $translator;
+    protected FilesystemInterface $filesystem;
+    protected HelloRetailService $helloRetailService;
 
     /**
-     * @var SerializerInterface
-     */
-    protected $serializer;
-
-    /**
-     * @var EntityRepositoryInterface
-     */
-    protected $salesChannelDomainRepository;
-
-    /**
-     * @var Translator
-     */
-    protected $translator;
-
-    /**
-     * @var Connection
-     */
-    protected $connection;
-
-    /**
-     * @var FilesystemInterface
-     */
-    protected $filesystem;
-
-    /**
-     * @var MessageBusInterface
-     */
-    protected $messageBus;
-
-    /**
-     * ProfileExporter constructor.
+     * HelloRetailExportHandler constructor.
      * @param LoggerInterface $logger
-     * @param StringTemplateRenderer $templateRenderer
      * @param ContainerInterface $container
-     * @param SalesChannelContextServiceInterface $salesChannelContextService
-     * @param SeoUrlPlaceholderHandlerInterface $seoUrlPlaceholderHandler
-     * @param SerializerInterface $serializer
-     * @param EntityRepositoryInterface $salesChannelDomainRepository
      * @param Translator $translator
-     * @param Connection $connection
      * @param FilesystemInterface $filesystem
-     * @param MessageBusInterface $messageBus
+     * @param HelloRetailService $helloRetailService
      */
     public function __construct(
         LoggerInterface $logger,
-        StringTemplateRenderer $templateRenderer,
         ContainerInterface $container,
-        SalesChannelContextServiceInterface $salesChannelContextService,
-        SeoUrlPlaceholderHandlerInterface $seoUrlPlaceholderHandler,
-        SerializerInterface $serializer,
-        EntityRepositoryInterface $salesChannelDomainRepository,
         Translator $translator,
-        Connection $connection,
         FilesystemInterface $filesystem,
-        MessageBusInterface $messageBus
+        HelloRetailService $helloRetailService
     ) {
         $this->logger = $logger;
-        $this->templateRenderer = $templateRenderer;
         $this->container = $container;
-        $this->salesChannelContextService = $salesChannelContextService;
-        $this->seoUrlPlaceholderHandler = $seoUrlPlaceholderHandler;
-        $this->serializer = $serializer;
-        $this->salesChannelDomainRepository = $salesChannelDomainRepository;
         $this->translator = $translator;
-        $this->connection = $connection;
         $this->filesystem = $filesystem;
-        $this->messageBus = $messageBus;
+        $this->helloRetailService = $helloRetailService;
     }
 
     public static function getHandledMessages(): iterable
     {
-        return [HelloRetailExport::class];
+        return [ExportEntityElement::class];
     }
 
     /**
-     * @param HelloRetailExport $message
+     * @param ExportEntityElement $message
      */
     public function handle($message): void
     {
-        if ($this->export($message)) {
-            $this->logger->info("Hello Retail {$message->getFeed()} feed succesfully exported");
-        } else {
-            $this->logger->info("Hello Retail {$message->getFeed()} feed was not exported (check error logs)");
+        if ($message->getTemplateType() === TemplateType::FOOTER) {
+            $this->collectFiles($message);
+            return;
         }
-    }
-
-    public function export($message): bool
-    {
-        $exportEntity = $message->getExportEntity();
-        $feed = $message->getFeed();
-
-        $contextToken = Uuid::randomHex();
-
-        $salesChannelDomainCriteria = new Criteria([$exportEntity->getSalesChannelDomainId()]);
-        $salesChannelDomainCriteria->addAssociation('language');
-
-        /** @var SalesChannelDomainEntity $salesChannelDomain */
-        $salesChannelDomain = $this->salesChannelDomainRepository
-            ->search($salesChannelDomainCriteria, Context::createDefaultContext())->first();
-
-        $context = $this->salesChannelContextService->get(
-            $exportEntity->getStorefrontSalesChannelId(),
-            $contextToken,
-            $salesChannelDomain->getLanguageId()
-        );
+        $feedEntity = $message->getFeedEntity();
+        $feed = $feedEntity->getFeed();
+        $salesChannelContext = $message->getSalesChannelContext();
 
         $this->translator->injectSettings(
-            $exportEntity->getStorefrontSalesChannelId(),
-            $salesChannelDomain->getLanguageId(),
-            $salesChannelDomain->getLanguage()->getLocaleId(),
-            $context->getContext()
+            $salesChannelContext->getSalesChannel()->getId(),
+            $feedEntity->getDomain()->getLanguageId(),
+            $feedEntity->getDomain()->getLanguage()->getLocaleId(),
+            $salesChannelContext->getContext()
         );
-
-        /** @var FeedEntityInterface $feedEntity */
-        try {
-            $feedEntity = $this->serializer
-                ->deserialize(json_encode($exportEntity->getFeeds()[$feed]), FeedEntity::class, 'json');
-        } catch (NotEncodableValueException $e) {
-            $this->logError($feed, $e);
-
-            return false;
-        }
-
-        $criteria = new Criteria();
-
-        $criteria->setLimit(100);
-
-        foreach ($feedEntity->getAssociations() as $association) {
-            $criteria->addAssociation($association);
-        }
 
         /** @var EntityRepositoryInterface $repository */
         $repository = $this->container->get("$feed.repository");
 
-        $iterator = new RepositoryIterator($repository, $context->getContext(), $criteria);
-
-        $total = $iterator->getTotal();
-        if ($total === 0) {
-            $this->translator->resetInjection();
-            $this->connection->delete('sales_channel_api_context', ['token' => $contextToken]);
-
-            throw new EmptyExportException();
+        $criteria = new Criteria([$message->getId()]);
+        foreach ($feedEntity->getAssociations() as $association) {
+            $criteria->addAssociation($association);
         }
 
-        $parsedEntities = [];
-
-        while ($result = $iterator->fetch()) {
-            /** @var EntityRepositoryInterface $entity */
-            foreach ($result->getEntities() as $entity) {
-                $parsedEntities[] = $entity;
-            }
-        }
+        $entity = $repository->search($criteria, $salesChannelContext->getContext())->first();
 
         try {
-            $content = $this->templateRenderer->render(
-                $feedEntity->getTemplate()['template'],
+            $output = $this->helloRetailService->renderBody(
+                $feedEntity,
+                $salesChannelContext,
                 [
-                    "{$feed}s" => $parsedEntities,
-                    "{$feed}sTotal" => count($parsedEntities)
-                ],
-                $context->getContext()
+                    "{$feed}" => $entity
+                ]
             );
-        } catch (StringTemplateRenderingException $e) {
-            $this->logError($feed, $e);
+            if (!$output) {
+                $this->translator->resetInjection();
+                $this->helloRetailService->exportLogger(
+                    WexoHelloRetail::EXPORT_ERROR,
+                    [
+                        'entityId' => $entity->getId(),
+                        'feed' => $feed,
+                        'entityType' => $message->getEntityType(),
+                        'templateType' => $message->getTemplateType()
+                    ]
+                );
+                return;
+            }
+            $this->filesystem->put($message->getDirectory() . DIRECTORY_SEPARATOR . $message->getId(), $output);
+            $this->translator->resetInjection();
+        } catch (\Error | \TypeError | \Exception $e) {
+            $this->helloRetailService->exportLogger(
+                WexoHelloRetail::EXPORT_ERROR,
+                [
+                    'entityId' => $entity->getId(),
+                    'feed' => $feed,
+                    'entityType' => $message->getEntityType(),
+                    'templateType' => $message->getTemplateType(),
+                    'error' => $e->getMessage(),
+                    'errorTrace' => $e->getTraceAsString(),
+                    'errorType' => get_class($e)
+                ]
+            );
+        }
+    }
 
-            return false;
+    private function collectFiles(ExportEntityElement $message, int $retryCount = 0)
+    {
+        $dir = $message->getDirectory();
+
+        $files = [];
+        foreach ($this->filesystem->listContents($dir) as $file) {
+            $filename = $file['filename'] ?? null;
+            if ($filename == TemplateType::HEADER) {
+                // Insert at the beginning of the array
+                array_unshift($files, $filename);
+                continue;
+            }
+            $files[] = $filename;
         }
 
-        $content = $this->replaceSeoUrlPlaceholder($content, $context);
+        $allIds = $message->getAllIds();
+        $successes = array_intersect($allIds, $files);
+        $failures = 0;
+        // TODO: Threshold should be a setting
+        $successThreshold = floor((count($allIds) * 0.90));
 
-        $this->translator->resetInjection();
-        $this->connection->delete('sales_channel_api_context', ['token' => $contextToken]);
+        if (count($successes) >= $successThreshold) {
+            $feedContent = "";
+            try {
+                $header = $dir . DIRECTORY_SEPARATOR . array_splice($files, 0, 1)[0];
+                $feedContent .= $this->filesystem->read($header);
+            } catch (\Error | \TypeError | FileNotFoundException | \Exception $e) {
+                $this->helloRetailService->exportLogger(
+                    WexoHelloRetail::EXPORT_ERROR,
+                    [
+                        'header' => $header ?? null,
+                        'feed' => $message->getFeedEntity()->getFeed(),
+                        'entityType' => $message->getEntityType(),
+                        'templateType' => $message->getTemplateType(),
+                        'error' => $e->getMessage(),
+                        'errorTrace' => $e->getTraceAsString(),
+                        'errorType' => get_class($e)
+                    ]
+                );
+                return;
+            }
+            foreach ($files as $file) {
+                try {
+                    $feedContent .= $this->filesystem->read($dir . DIRECTORY_SEPARATOR . $file);
+                } catch (FileNotFoundException $e) {
+                    $failures++;
+                    continue;
+                }
+            }
+            // Construct file
+            $feedContent .= $this->helloRetailService->renderFooter(
+                $message->getFeedEntity(),
+                $message->getSalesChannelContext()
+            );
 
-        $this->filesystem->put($feedEntity->getFile(), $content);
+            if ($failures > count($allIds) - $successThreshold) {
+                if ($retryCount < self::RETRIES) {
+                    sleep(self::SLEEP_BETWEEN_RETRIES);
+                    $this->collectFiles($message, ++$retryCount);
+                }
+                $this->helloRetailService->exportLogger(
+                    WexoHelloRetail::EXPORT_ERROR,
+                    [
+                        'retryCount' => $retryCount,
+                        'failures' => $failures,
+                        'allIdsCount' => count($allIds),
+                        'successThreshold' => $successThreshold,
+                        'feed' => $message->getFeedEntity()->getFeed(),
+                        'entityType' => $message->getEntityType(),
+                        'templateType' => $message->getTemplateType()
+                    ]
+                );
+                return;
+            } else {
+                $this->filesystem->put($message->getFeedEntity()->getFile(), $feedContent);
+            }
+        } else {
+            if ($retryCount < self::RETRIES) {
+                sleep(self::SLEEP_BETWEEN_RETRIES);
+                $this->collectFiles($message, ++$retryCount);
+            }
+            $this->helloRetailService->exportLogger(
+                WexoHelloRetail::EXPORT_ERROR,
+                [
+                    'retryCount' => $retryCount,
+                    'failures' => $failures,
+                    'allIdsCount' => count($allIds),
+                    'successThreshold' => $successThreshold,
+                    'feed' => $message->getFeedEntity()->getFeed(),
+                    'entityType' => $message->getEntityType(),
+                    'templateType' => $message->getTemplateType()
+                ]
+            );
+        }
 
-        return true;
-    }
-
-    private function logError($feed, $exception)
-    {
-        $this->logger->error("Error exporting Hello Retail $feed feed", [
+        $this->helloRetailService->exportLogger(
+            WexoHelloRetail::EXPORT_SUCCESS,
             [
-                'feed' => $feed,
-                'errorMsg' => $exception->getMessage(),
-                'errorTrace' => $exception->getTraceAsString()
-            ]
-        ]);
-    }
-
-    private function replaceSeoUrlPlaceholder(string $content, SalesChannelContext $salesChannelContext): string
-    {
-        return $this->seoUrlPlaceholderHandler->replace(
-            $content,
-            $salesChannelContext->getSalesChannel()->getDomains()->first()->getUrl(),
-            $salesChannelContext
+                'feed' => $message->getFeedEntity()->getFeed()
+            ],
+            Logger::INFO
         );
+
+        // TODO: Bug in normalizeRelativePath() which removes trailing slash, meaning the folder will not be deleted
+        // @see vendor/league/flysystem/src/Util.php
+        $this->filesystem->deleteDir($dir);
     }
 }

@@ -1,8 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Wexo\HelloRetail\Export\Profiles;
-
-use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 /**
  * Interface ProfileExporterInterface

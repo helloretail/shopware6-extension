@@ -2,7 +2,7 @@ import HelloRetailService from './service/api/hello.retail.api.service';
 import './service/hello-retail-templates.service';
 
 import './app/init/svg-icons.init';
-import './app/export-templates/export-templates';
+import './app/export-templates';
 
 import './extension/sw-sales-channel-detail-base';
 import './extension/sw-sales-channel-create-base';
