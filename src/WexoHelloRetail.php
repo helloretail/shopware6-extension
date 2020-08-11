@@ -2,6 +2,7 @@
 
 namespace Wexo\HelloRetail;
 
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Plugin;
@@ -30,7 +31,7 @@ class WexoHelloRetail extends Plugin
                 new EqualsFilter('active', true)
             );
 
-        $result = $salesChannelRepository->searchIds($criteria, $context);
+        $result = $salesChannelRepository->searchIds($criteria, Context::createDefaultContext());
 
         $data = [];
         foreach ($result->getIds() as $salesChannelId) {
@@ -38,7 +39,7 @@ class WexoHelloRetail extends Plugin
         }
 
         if (\count($data) > 0) {
-            $salesChannelRepository->update($data, $context);
+            $salesChannelRepository->update($data, Context::createDefaultContext());
         }
     }
 }

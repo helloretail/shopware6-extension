@@ -1,0 +1,6 @@
+{% block block_hello_retail %}
+    {% for slot in page.cmsPage.sections.blocks.slots %}
+        <div class="{{ slot.config.content.value }}"></div>
+    {% endfor %}
+{% endblock %}
+
