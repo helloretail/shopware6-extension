@@ -9,13 +9,15 @@ import './extension/sw-sales-channel-create-base';
 
 import './component/wexo-sales-channel-hello-retail';
 
+import './module/wexo-cms/blocks/commerce/helloretail';
+
 import enGb from '../../../translations/en_GB/messages.en-GB.json';
 
-const { Application } = Shopware;
+const { Application, Locale } = Shopware;
 
-Shopware.Locale.extend('en-GB', enGb);
-Shopware.Locale.extend('de-DE', enGb);
-Shopware.Locale.extend('da-DK', enGb);
+Locale.extend('en-GB', enGb);
+Locale.extend('de-DE', enGb);
+Locale.extend('da-DK', enGb);
 
 Application.addServiceProvider('helloRetailService', () => {
     const serviceContainer = Application.getContainer('service');
