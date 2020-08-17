@@ -137,10 +137,12 @@ class HelloRetailService
         if (EntityType::getMatchingEntityType($feed) == EntityType::PRODUCT) {
             $criteria->addFilter(
                 new MultiFilter(
-                    MultiFilter::CONNECTION_OR, [
+                    MultiFilter::CONNECTION_OR,
+                    [
                         new EqualsFilter('product.active', true),
                         new MultiFilter(
-                            MultiFilter::CONNECTION_AND, [
+                            MultiFilter::CONNECTION_AND,
+                            [
                                 new EqualsFilter('product.active', null),
                                 new EqualsFilter('parent.active', true)
                             ]
@@ -262,10 +264,10 @@ class HelloRetailService
         $this->logEntryRepository->create(
             [
                 [
-                    'message'   => $event,
-                    'context'   => $context,
-                    'level'     => $level,
-                    'channel'   => WexoHelloRetail::LOG_CHANNEL
+                    'message' => $event,
+                    'context' => $context,
+                    'level' => $level,
+                    'channel' => WexoHelloRetail::LOG_CHANNEL
                 ]
             ],
             Context::createDefaultContext()
