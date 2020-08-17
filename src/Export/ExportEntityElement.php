@@ -18,6 +18,7 @@ class ExportEntityElement
     protected string $entityType;
     protected string $templateType;
     protected ?array $allIds;
+    protected int $retryCount = 0;
 
     /**
      * ExportEntityElement constructor.
@@ -106,5 +107,21 @@ class ExportEntityElement
     public function setAllIds(array $allIds)
     {
         $this->allIds = $allIds;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRetryCount(): int
+    {
+        return $this->retryCount;
+    }
+
+    /**
+     * @param int $retryCount
+     */
+    public function setRetryCount(int $retryCount)
+    {
+        $this->retryCount = $retryCount;
     }
 }

@@ -36,6 +36,7 @@
             <argument type="service" id="Shopware\Core\Framework\Adapter\Translation\Translator"/>
             <argument type="service" id="shopware.filesystem.public"/>
             <argument type="service" id="Wexo\HelloRetail\Service\HelloRetailService" />
+            <argument type="service" id="messenger.bus.shopware" />
             <tag name="messenger.message_handler"/>
         </service>
 

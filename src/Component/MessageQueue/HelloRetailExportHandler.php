@@ -11,6 +11,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\MessageQueue\Handler\AbstractMessageHandler;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Wexo\HelloRetail\Export\ExportEntityElement;
 use Wexo\HelloRetail\Export\TemplateType;
 use Wexo\HelloRetail\Service\HelloRetailService;
@@ -24,13 +26,14 @@ class HelloRetailExportHandler extends AbstractMessageHandler
 {
     // TODO: Should be settings
     private const RETRIES = 20;
-    private const SLEEP_BETWEEN_RETRIES = 30; // Seconds
+    private const SLEEP_BETWEEN_RETRIES = 20; // Seconds
 
     protected LoggerInterface $logger;
     protected ContainerInterface $container;
     protected Translator $translator;
     protected FilesystemInterface $filesystem;
     protected HelloRetailService $helloRetailService;
+    protected MessageBusInterface $bus;
 
     /**
      * HelloRetailExportHandler constructor.
@@ -39,19 +42,22 @@ class HelloRetailExportHandler extends AbstractMessageHandler
      * @param Translator $translator
      * @param FilesystemInterface $filesystem
      * @param HelloRetailService $helloRetailService
+     * @param MessageBusInterface $bus
      */
     public function __construct(
         LoggerInterface $logger,
         ContainerInterface $container,
         Translator $translator,
         FilesystemInterface $filesystem,
-        HelloRetailService $helloRetailService
+        HelloRetailService $helloRetailService,
+        MessageBusInterface $bus
     ) {
         $this->logger = $logger;
         $this->container = $container;
         $this->translator = $translator;
         $this->filesystem = $filesystem;
         $this->helloRetailService = $helloRetailService;
+        $this->bus = $bus;
     }
 
     public static function getHandledMessages(): iterable
@@ -128,7 +134,7 @@ class HelloRetailExportHandler extends AbstractMessageHandler
         }
     }
 
-    private function collectFiles(ExportEntityElement $message, int $retryCount = 0)
+    private function collectFiles(ExportEntityElement $message)
     {
         $dir = $message->getDirectory();
 
@@ -183,44 +189,29 @@ class HelloRetailExportHandler extends AbstractMessageHandler
                 $message->getSalesChannelContext()
             );
 
-            if ($failures > count($allIds) - $successThreshold) {
-                if ($retryCount < self::RETRIES) {
-                    sleep(self::SLEEP_BETWEEN_RETRIES);
-                    $this->collectFiles($message, ++$retryCount);
-                }
-                $this->helloRetailService->exportLogger(
-                    WexoHelloRetail::EXPORT_ERROR,
-                    [
-                        'retryCount' => $retryCount,
-                        'failures' => $failures,
-                        'allIdsCount' => count($allIds),
-                        'successThreshold' => $successThreshold,
-                        'feed' => $message->getFeedEntity()->getFeed(),
-                        'entityType' => $message->getEntityType(),
-                        'templateType' => $message->getTemplateType()
-                    ]
+            if ($failures > (count($allIds) - $successThreshold)) {
+                $this->handleRetry(
+                    $message,
+                    $failures,
+                    $successThreshold ?? null,
+                    $allIds,
+                    $dir
                 );
+
                 return;
             } else {
                 $this->filesystem->put($message->getFeedEntity()->getFile(), $feedContent);
             }
         } else {
-            if ($retryCount < self::RETRIES) {
-                sleep(self::SLEEP_BETWEEN_RETRIES);
-                $this->collectFiles($message, ++$retryCount);
-            }
-            $this->helloRetailService->exportLogger(
-                WexoHelloRetail::EXPORT_ERROR,
-                [
-                    'retryCount' => $retryCount,
-                    'failures' => $failures,
-                    'allIdsCount' => count($allIds),
-                    'successThreshold' => $successThreshold,
-                    'feed' => $message->getFeedEntity()->getFeed(),
-                    'entityType' => $message->getEntityType(),
-                    'templateType' => $message->getTemplateType()
-                ]
+            $this->handleRetry(
+                $message,
+                $failures,
+                $successThreshold  ?? null,
+                $allIds,
+                $dir
             );
+
+            return;
         }
 
         $this->helloRetailService->exportLogger(
@@ -234,5 +225,42 @@ class HelloRetailExportHandler extends AbstractMessageHandler
         // TODO: Bug in normalizeRelativePath() which removes trailing slash, meaning the folder will not be deleted
         // @see vendor/league/flysystem/src/Util.php
         $this->filesystem->deleteDir($dir);
+    }
+
+    /**
+     * @param ExportEntityElement $message
+     * @param int $failures
+     * @param float|null $successThreshold
+     * @param array|null $allIds
+     * @param string $dir
+     */
+    private function handleRetry(
+        ExportEntityElement $message,
+        int $failures,
+        ?float $successThreshold,
+        ?array $allIds,
+        string $dir
+    ) {
+        $retryCount = $message->getRetryCount();
+        if ($retryCount < self::RETRIES) {
+            sleep(self::SLEEP_BETWEEN_RETRIES);
+            $message->setRetryCount($retryCount + 1);
+            $this->bus->dispatch(new Envelope($message));
+        } else {
+            $this->helloRetailService->exportLogger(
+                WexoHelloRetail::EXPORT_ERROR,
+                [
+                    'retryCount' => $retryCount,
+                    'failures' => $failures,
+                    'allIdsCount' => count($allIds),
+                    'successThreshold' => $successThreshold,
+                    'feed' => $message->getFeedEntity()->getFeed(),
+                    'entityType' => $message->getEntityType(),
+                    'templateType' => $message->getTemplateType()
+                ]
+            );
+
+            $this->filesystem->deleteDir($dir);
+        }
     }
 }

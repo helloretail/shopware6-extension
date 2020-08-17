@@ -11,6 +11,8 @@ use Shopware\Core\Framework\Adapter\Twig\StringTemplateRenderer;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
@@ -131,7 +133,24 @@ class HelloRetailService
         /** @var EntityRepositoryInterface $repository */
         $repository = $this->container->get("$feed.repository");
 
-        $entityIdsResult = $repository->searchIds(new Criteria(), $salesChannelContext->getContext());
+        $criteria = new Criteria();
+        if (EntityType::getMatchingEntityType($feed) == EntityType::PRODUCT) {
+            $criteria->addFilter(
+                new MultiFilter(
+                    MultiFilter::CONNECTION_OR, [
+                        new EqualsFilter('product.active', true),
+                        new MultiFilter(
+                            MultiFilter::CONNECTION_AND, [
+                                new EqualsFilter('product.active', null),
+                                new EqualsFilter('parent.active', true)
+                            ]
+                        )
+                    ]
+                )
+            );
+        }
+
+        $entityIdsResult = $repository->searchIds($criteria, $salesChannelContext->getContext());
         $entityIds = $entityIdsResult->getIds();
 
         $content = $this->renderHeader($feedEntity, $salesChannelContext, [

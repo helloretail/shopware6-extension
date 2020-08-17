@@ -4,4 +4,6 @@
     {{ parent() }}
 
     {{ include(template_from_string(shopware.config.WexoHelloRetail.config.trackingScript)) }}
+
+    {% sw_include "@storefront/storefront/component/hello-retail-tracking.html.twig" %}
 {% endblock %}

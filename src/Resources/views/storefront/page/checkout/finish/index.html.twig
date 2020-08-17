@@ -1,0 +1,19 @@
+{% sw_extends '@Storefront/storefront/page/checkout/finish/index.html.twig' %}
+
+{% block page_checkout_main_content %}
+    {{ parent() }}
+
+    <span class="addwish-conversion" style="display:none;"
+          data-ordernumber="{{ page.order.orderNumber }}"
+          data-total="{{ page.order.amountTotal }}"
+          data-email="{{ page.order.orderCustomer.email }}"
+    >
+        {% for orderItem in page.order.lineItems.elements %}
+            <span class="addwish-product"
+                  data-unit-price="{{ orderItem.unitPrice }}"
+                  data-url="{# TODO: Set product url when 6.1 comes out #}"
+                  data-productnumber="{{ orderItem.payload.productNumber }}"
+            ></span>
+        {% endfor %}
+    </span>
+{% endblock %}
