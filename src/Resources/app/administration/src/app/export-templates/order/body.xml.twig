@@ -34,6 +34,7 @@
     {% endif %}
     <shippingPrice>{{ order.shippingTotal }}</shippingPrice>
     <createdDate>{{ order.orderDateTime|date('Y-m-d H:i:s') }}</createdDate>
+    <CreatedDateWithoutTime>{{ order.orderDateTime|date('Y-m-d') }}</CreatedDateWithoutTime>
     <total>{{ order.amountTotal }}</total>
     <email>{{ order.orderCustomer.email }}</email>
     <paymentMethod>

@@ -20,8 +20,13 @@ class WexoHelloRetail extends Plugin
     public const SALES_CHANNEL_TYPE_HELLO_RETAIL = '44f7e183909376bb5824abf830f4b879';
     public const FILE_TYPE_INDICATOR_SEPARATOR = '_';
 
+    /**
+     * @param DeactivateContext $context
+     */
     public function deactivate(DeactivateContext $context): void
     {
+        $defaultContext = Context::createDefaultContext();
+
         $salesChannelRepository = $this->container->get('sales_channel.repository');
 
         $criteria = new Criteria();
@@ -31,7 +36,7 @@ class WexoHelloRetail extends Plugin
                 new EqualsFilter('active', true)
             );
 
-        $result = $salesChannelRepository->searchIds($criteria, Context::createDefaultContext());
+        $result = $salesChannelRepository->searchIds($criteria, $defaultContext);
 
         $data = [];
         foreach ($result->getIds() as $salesChannelId) {
@@ -39,7 +44,7 @@ class WexoHelloRetail extends Plugin
         }
 
         if (\count($data) > 0) {
-            $salesChannelRepository->update($data, Context::createDefaultContext());
+            $salesChannelRepository->update($data, $defaultContext);
         }
     }
 }
