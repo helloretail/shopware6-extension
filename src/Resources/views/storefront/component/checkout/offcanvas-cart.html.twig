@@ -1,7 +1,7 @@
 {% sw_extends '@Storefront/storefront/component/checkout/offcanvas-cart.html.twig' %}
 
 {% block component_offcanvas_cart_hidden_line_items_information %}
-    {{ parent }}
+    {{ parent() }}
     <span class="addwish-cart" style="display:none" data-total="{{ page.cart.price.totalPrice }}">
         {% for lineItem in page.cart.lineItems %}
             <span class="addwish-product" data-productnumber="{{ lineItem.payload.productNumber }}"></span>
