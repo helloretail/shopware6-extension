@@ -10,8 +10,14 @@ use Wexo\HelloRetail\Export\ExportEntityInterface;
  */
 class HelloRetailExport
 {
-    protected ExportEntityInterface $exportEntity;
-    protected string $feed;
+    /**
+     * @var ExportEntityInterface
+     */
+    protected $exportEntity;
+    /**
+     * @var string
+     */
+    protected $feed;
 
     /**
      * HelloRetailExport constructor.

@@ -2,9 +2,16 @@
 
 namespace Wexo\HelloRetail\Service;
 
+use Error;
+use Exception;
+use TypeError;
+use Shopware\Production\Kernel;
+use League\Flysystem\Filesystem;
+use League\Flysystem\Adapter\Local;
 use League\Flysystem\FilesystemInterface;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface;
 use Shopware\Core\Framework\Adapter\Twig\Exception\StringTemplateRenderingException;
 use Shopware\Core\Framework\Adapter\Twig\StringTemplateRenderer;
@@ -36,19 +43,50 @@ use Wexo\HelloRetail\WexoHelloRetail;
  */
 class HelloRetailService
 {
-    protected EntityRepositoryInterface $logEntryRepository;
-    protected LoggerInterface $logger;
-    protected MessageBusInterface $bus;
-    protected StringTemplateRenderer $templateRenderer;
-    protected ContainerInterface $container;
-    protected SalesChannelContextServiceInterface $salesChannelContextService;
-    protected SeoUrlPlaceholderHandlerInterface $seoUrlPlaceholderHandler;
-    protected SerializerInterface $serializer;
-    protected EntityRepositoryInterface $salesChannelDomainRepository;
-    protected FilesystemInterface $filesystem;
+    /**
+     * @var EntityRepositoryInterface
+     */
+    protected $logEntryRepository;
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+    /**
+     * @var MessageBusInterface
+     */
+    protected $bus;
+    /**
+     * @var StringTemplateRenderer
+     */
+    protected $templateRenderer;
+    /**
+     * @var ContainerInterface
+     */
+    protected $container;
+    /**
+     * @var SalesChannelContextServiceInterface
+     */
+    protected $salesChannelContextService;
+    /**
+     * @var SeoUrlPlaceholderHandlerInterface
+     */
+    protected $seoUrlPlaceholderHandler;
+    /**
+     * @var SerializerInterface
+     */
+    protected $serializer;
+    /**
+     * @var EntityRepositoryInterface
+     */
+    protected $salesChannelDomainRepository;
+    /**
+     * @var Filesystem
+     */
+    protected $filesystem;
 
     /**
      * HelloRetailService constructor.
+     *
      * @param EntityRepositoryInterface $logEntryRepository
      * @param LoggerInterface $logger
      * @param MessageBusInterface $bus
@@ -58,7 +96,8 @@ class HelloRetailService
      * @param SeoUrlPlaceholderHandlerInterface $seoUrlPlaceholderHandler
      * @param SerializerInterface $serializer
      * @param EntityRepositoryInterface $salesChannelDomainRepository
-     * @param FilesystemInterface $filesystem
+     * @param SystemConfigService $configService
+     * @param Kernel $kernel
      */
     public function __construct(
         EntityRepositoryInterface $logEntryRepository,
@@ -70,7 +109,8 @@ class HelloRetailService
         SeoUrlPlaceholderHandlerInterface $seoUrlPlaceholderHandler,
         SerializerInterface $serializer,
         EntityRepositoryInterface $salesChannelDomainRepository,
-        FilesystemInterface $filesystem
+        SystemConfigService $configService,
+        Kernel $kernel
     ) {
         $this->logEntryRepository = $logEntryRepository;
         $this->logger = $logger;
@@ -81,7 +121,13 @@ class HelloRetailService
         $this->seoUrlPlaceholderHandler = $seoUrlPlaceholderHandler;
         $this->serializer = $serializer;
         $this->salesChannelDomainRepository = $salesChannelDomainRepository;
-        $this->filesystem = $filesystem;
+
+        $storagePath = $configService->get('WexoHelloRetail.config.storagepath') ?? 'helloretail';
+        $projectDir = $kernel->getProjectDir();
+        $publicDir = $projectDir . '/public';
+        $fullPath = $publicDir . '/' . $storagePath;
+        $localFilesystemAdapter = new Local($fullPath);
+        $this->filesystem = new Filesystem($localFilesystemAdapter);
     }
 
     /**
@@ -116,7 +162,7 @@ class HelloRetailService
                 ->deserialize(json_encode($exportEntity->getFeeds()[$feed]), FeedEntity::class, 'json');
             $feedEntity->setFeed($feed);
             $feedEntity->setDomain($salesChannelDomain);
-        } catch (\Error | \TypeError | NotEncodableValueException | \Exception $e) {
+        } catch (Error | TypeError | NotEncodableValueException | Exception $e) {
             $this->exportLogger(
                 WexoHelloRetail::EXPORT_ERROR,
                 [
@@ -284,11 +330,11 @@ class HelloRetailService
     {
         try {
             return $this->templateRenderer->render(
-                $template,
-                $data,
-                $context->getContext()
-            ) . PHP_EOL;
-        } catch (\Error | \TypeError | \Exception | StringTemplateRenderingException $e) {
+                    $template,
+                    $data,
+                    $context->getContext()
+                ) . PHP_EOL;
+        } catch (Error | TypeError | Exception | StringTemplateRenderingException $e) {
             $this->exportLogger(
                 WexoHelloRetail::EXPORT_ERROR,
                 [

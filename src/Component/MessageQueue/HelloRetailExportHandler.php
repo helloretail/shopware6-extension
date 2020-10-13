@@ -2,10 +2,14 @@
 
 namespace Wexo\HelloRetail\Component\MessageQueue;
 
+use Shopware\Production\Kernel;
+use League\Flysystem\Filesystem;
+use League\Flysystem\Adapter\Local;
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\FilesystemInterface;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Framework\Adapter\Translation\Translator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -28,36 +32,64 @@ class HelloRetailExportHandler extends AbstractMessageHandler
     private const RETRIES = 20;
     private const SLEEP_BETWEEN_RETRIES = 20; // Seconds
 
-    protected LoggerInterface $logger;
-    protected ContainerInterface $container;
-    protected Translator $translator;
-    protected FilesystemInterface $filesystem;
-    protected HelloRetailService $helloRetailService;
-    protected MessageBusInterface $bus;
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+    /**
+     * @var ContainerInterface
+     */
+    protected $container;
+    /**
+     * @var Translator
+     */
+    protected $translator;
+    /**
+     * @var Filesystem|FilesystemInterface
+     */
+    protected $filesystem;
+    /**
+     * @var HelloRetailService
+     */
+    protected $helloRetailService;
+    /**
+     * @var MessageBusInterface
+     */
+    protected $bus;
 
     /**
      * HelloRetailExportHandler constructor.
-     * @param LoggerInterface $logger
-     * @param ContainerInterface $container
-     * @param Translator $translator
-     * @param FilesystemInterface $filesystem
-     * @param HelloRetailService $helloRetailService
-     * @param MessageBusInterface $bus
+     *
+     * @param LoggerInterface                                        $logger
+     * @param ContainerInterface                                     $container
+     * @param Translator                                             $translator
+     * @param HelloRetailService                                     $helloRetailService
+     * @param MessageBusInterface                                    $bus
+     * @param SystemConfigService $configService
+     * @param Kernel $kernel
      */
     public function __construct(
         LoggerInterface $logger,
         ContainerInterface $container,
         Translator $translator,
-        FilesystemInterface $filesystem,
         HelloRetailService $helloRetailService,
-        MessageBusInterface $bus
+        MessageBusInterface $bus,
+        SystemConfigService $configService,
+        Kernel $kernel
     ) {
         $this->logger = $logger;
         $this->container = $container;
         $this->translator = $translator;
-        $this->filesystem = $filesystem;
         $this->helloRetailService = $helloRetailService;
         $this->bus = $bus;
+
+        $storagePath = $configService->get('WexoHelloRetail.config.storagepath') ?? 'helloretail';
+        $projectDir = $kernel->getProjectDir();
+        $publicDir = $projectDir . '/public';
+        $fullPath = $publicDir . '/' . $storagePath;
+        $localFilesystemAdapter = new Local($fullPath);
+        $this->filesystem = new Filesystem($localFilesystemAdapter);
+
     }
 
     public static function getHandledMessages(): iterable

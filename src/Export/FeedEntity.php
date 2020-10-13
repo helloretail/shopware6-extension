@@ -10,13 +10,34 @@ use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelD
  */
 class FeedEntity implements FeedEntityInterface
 {
-    private string $feed;
-    private string $file;
-    private SalesChannelDomainEntity $salesChannelDomainEntity;
-    private array $associations;
-    private ?string $headerTemplate;
-    private ?string $bodyTemplate;
-    private ?string $footerTemplate;
+    /**
+     * @var string
+     */
+    private $feed;
+    /**
+     * @var string
+     */
+    private $file;
+    /**
+     * @var SalesChannelDomainEntity
+     */
+    private $salesChannelDomainEntity;
+    /**
+     * @var array
+     */
+    private $associations;
+    /**
+     * @var string|null
+     */
+    private $headerTemplate;
+    /**
+     * @var string|null
+     */
+    private $bodyTemplate;
+    /**
+     * @var string|null
+     */
+    private $footerTemplate;
 
     /**
      * {@inheritdoc}

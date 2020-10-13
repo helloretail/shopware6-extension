@@ -17,10 +17,22 @@ use Wexo\HelloRetail\Service\HelloRetailService;
  */
 class ProfileExporter implements ProfileExporterInterface
 {
-    protected LoggerInterface $logger;
-    protected SerializerInterface $serializer;
-    protected EntityRepositoryInterface $salesChannelRepository;
-    protected HelloRetailService $helloRetailService;
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+    /**
+     * @var SerializerInterface
+     */
+    protected $serializer;
+    /**
+     * @var EntityRepositoryInterface
+     */
+    protected $salesChannelRepository;
+    /**
+     * @var HelloRetailService
+     */
+    protected $helloRetailService;
 
     /**
      * ProfileExporter constructor.

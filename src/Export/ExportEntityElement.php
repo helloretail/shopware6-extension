@@ -11,14 +11,38 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
  */
 class ExportEntityElement
 {
-    protected SalesChannelContext $salesChannelContext;
-    protected string $directory;
-    protected string $id;
-    protected FeedEntityInterface $feedEntity;
-    protected string $entityType;
-    protected string $templateType;
-    protected ?array $allIds;
-    protected int $retryCount = 0;
+    /**
+     * @var SalesChannelContext
+     */
+    protected $salesChannelContext;
+    /**
+     * @var string
+     */
+    protected $directory;
+    /**
+     * @var string
+     */
+    protected $id;
+    /**
+     * @var FeedEntityInterface
+     */
+    protected $feedEntity;
+    /**
+     * @var string
+     */
+    protected $entityType;
+    /**
+     * @var string
+     */
+    protected $templateType;
+    /**
+     * @var array|null
+     */
+    protected $allIds;
+    /**
+     * @var int
+     */
+    protected $retryCount = 0;
 
     /**
      * ExportEntityElement constructor.

@@ -8,9 +8,18 @@ namespace Wexo\HelloRetail\Export;
  */
 class ExportEntity implements ExportEntityInterface
 {
-    private string $storeFrontSalesChannelId;
-    private string $salesChannelDomainId;
-    private array $feeds;
+    /**
+     * @var string
+     */
+    private $storeFrontSalesChannelId;
+    /**
+     * @var string
+     */
+    private $salesChannelDomainId;
+    /**
+     * @var array
+     */
+    private $feeds;
 
     /**
      * @return string

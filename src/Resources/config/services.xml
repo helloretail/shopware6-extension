@@ -20,7 +20,8 @@
             <argument type="service" id="Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface"/>
             <argument type="service" id="serializer"/>
             <argument type="service" id="sales_channel_domain.repository" />
-            <argument type="service" id="shopware.filesystem.public"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="kernel"/>
         </service>
 
         <service id="Wexo\HelloRetail\Export\Profiles\ProfileExporter" public="true">
@@ -34,9 +35,10 @@
             <argument type="service" id="monolog.logger"/>
             <argument type="service" id="service_container"/>
             <argument type="service" id="Shopware\Core\Framework\Adapter\Translation\Translator"/>
-            <argument type="service" id="shopware.filesystem.public"/>
             <argument type="service" id="Wexo\HelloRetail\Service\HelloRetailService" />
             <argument type="service" id="messenger.bus.shopware" />
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="kernel"/>
             <tag name="messenger.message_handler"/>
         </service>
 

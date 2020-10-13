@@ -22,4 +22,17 @@
             <completionMode>entity</completionMode>
         </component>
     </card>
+
+    <card>
+        <title>Hello Retail Storage Path</title>
+        <title lang="de-DE">Hello Retail Speicherpfad</title>
+        <title lang="da-DK">Hello Retail Opbevaringssti</title>
+
+        <input-field type="text">
+            <name>storagepath</name>
+            <label>Storage Path</label>
+            <defaultValue>helloretail</defaultValue>
+            <helpText>Relative path from sites webroot</helpText>
+        </input-field>
+    </card>
 </config>
