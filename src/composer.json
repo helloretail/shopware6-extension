@@ -1,0 +1,43 @@
+{
+    "name": "helret_plugin",
+    "description": "Hello Retail Personalization Suite",
+    "version": "v1.0.1",
+    "type": "shopware-platform-plugin",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Hello Retail ApS",
+            "homepage": "https://www.helloretail.com",
+            "role": "Manufacturer"
+        }
+    ],
+    "require": {
+        "shopware/core": "6.*.*"
+    },
+    "extra": {
+        "shopware-plugin-class": "Swag\\ExamplePlugin\\ExamplePlugin",
+        "plugin-icon": "src/Resources/config/plugin.png",
+        "copyright": "(c) by shopware AG",
+        "label": {
+            "de-DE": "Beispiel Plugin für Shopware",
+            "en-GB": "Example plugin for Shopware"
+        },
+        "description": {
+            "de-DE": "Deutsche Beschreibung des Plugins",
+            "en-GB": "English Description of Plugin"
+        },
+        "manufacturerLink": {
+            "de-DE": "https://store.shopware.com/shopware-ag.html",
+            "en-GB": "https://store.shopware.com/en/shopware-ag.html"
+        },
+        "supportLink": {
+            "de-DE": "https://docs.shopware.com/de",
+            "en-GB": "https://docs.shopware.com/en"
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Swag\\BaseClass\\": "src/"
+        }
+    }
+}
