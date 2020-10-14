@@ -21,7 +21,7 @@
     "extra": {
         "shopware-plugin-class": "Wexo\\HelloRetail\\WexoHelloRetail",
         "plugin-icon": "src/Resources/config/plugin.png",
-        "copyright": "(c) by WEXO A/S",
+        "copyright": "(c) Hello Retail ApS",
         "label": {
             "da-DK": "Hello Retail",
             "en-GB": "Hello Retail",
@@ -33,9 +33,9 @@
             "de-DE": "Hello Retail integration"
         },
         "manufacturerLink": {
-            "dk-DK": "https://www.wexo.dk",
-            "en-GB": "https://www.wexo.dk",
-            "de-DE": "https://www.wexo.dk"
+            "dk-DK": "https://www.helloretail.com",
+            "en-GB": "https://www.helloretail.com",
+            "de-DE": "https://www.helloretail.com"
         },
         "supportLink": {
             "da-DK": "https://www.wexo.dk/shopware-support",
