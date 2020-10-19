@@ -19,7 +19,7 @@
         "shopware/core": "*"
     },
     "extra": {
-        "shopware-plugin-class": "Wexo\\HelloRetail\\WexoHelloRetail",
+        "shopware-plugin-class": "Wexo\\HelloRetail\\HelRetHelloRetail",
         "plugin-icon": "src/Resources/config/plugin.png",
         "copyright": "(c) Hello Retail ApS",
         "label": {
