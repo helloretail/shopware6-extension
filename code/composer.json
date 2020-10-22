@@ -1,5 +1,5 @@
 {
-    "name": "wexo/helret_plugin",
+    "name": "wexo/HelRetHelloRetail",
     "description": "Hello Retail integration for Shopware 6",
     "type": "shopware-platform-plugin",
     "license": "proprietary",
