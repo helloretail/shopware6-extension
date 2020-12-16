@@ -12,15 +12,6 @@
             <label lang="de-DE">Partner-ID</label>
             <label lang="da-DK">Partner-ID</label>
         </input-field>
-
-        <component name="sw-code-editor">
-            <name>trackingScript</name>
-            <label>Tracking Script</label>
-            <label lang="de-DE">Tracking-Skript</label>
-            <label lang="da-DK">Tracking Script</label>
-            <mode>twig</mode>
-            <completionMode>entity</completionMode>
-        </component>
     </card>
 
     <card>
