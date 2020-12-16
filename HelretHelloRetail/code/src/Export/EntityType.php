@@ -12,6 +12,10 @@ class EntityType
     public const ORDER = 'entity_type_order';
     public const PRODUCT = 'entity_type_product';
 
+    /**
+     * @param $entityType
+     * @return string|null
+     */
     public static function getMatchingEntityType($entityType)
     {
         switch (strtolower($entityType)) {
