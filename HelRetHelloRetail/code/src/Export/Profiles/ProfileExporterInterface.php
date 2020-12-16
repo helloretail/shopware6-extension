@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Wexo\HelloRetail\Export\Profiles;
+namespace Helret\HelloRetail\Export\Profiles;
 
 /**
  * Interface ProfileExporterInterface
- * @package Wexo\HelloRetail\Export\Profiles
+ * @package Helret\HelloRetail\Export\Profiles
  */
 interface ProfileExporterInterface
 {

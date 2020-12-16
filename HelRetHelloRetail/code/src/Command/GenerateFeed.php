@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Wexo\HelloRetail\Command;
+namespace Helret\HelloRetail\Command;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -10,12 +10,12 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Wexo\HelloRetail\Export\Profiles\ProfileExporterInterface;
-use Wexo\HelloRetail\WexoHelloRetail;
+use Helret\HelloRetail\Export\Profiles\ProfileExporterInterface;
+use Helret\HelloRetail\HelretHelloRetail;
 
 class GenerateFeed extends Command
 {
-    protected static $defaultName = 'wexo:hello-retail:generate-feed';
+    protected static $defaultName = 'Helret:hello-retail:generate-feed';
 
     /**
      * @var ProfileExporterInterface
@@ -58,7 +58,7 @@ class GenerateFeed extends Command
         $feed = $input->getOption('feed');
 
         $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('typeId', WexoHelloRetail::SALES_CHANNEL_TYPE_HELLO_RETAIL));
+        $criteria->addFilter(new EqualsFilter('typeId', HelretHelloRetail::SALES_CHANNEL_TYPE_HELLO_RETAIL));
 
         $salesChannelId = $this->salesChannelRepository->searchIds(
             $criteria,

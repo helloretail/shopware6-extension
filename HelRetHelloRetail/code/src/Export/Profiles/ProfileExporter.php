@@ -1,19 +1,19 @@
 <?php declare(strict_types=1);
 
-namespace Wexo\HelloRetail\Export\Profiles;
+namespace Helret\HelloRetail\Export\Profiles;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Symfony\Component\Serializer\SerializerInterface;
-use Wexo\HelloRetail\Export\ExportEntity;
-use Wexo\HelloRetail\Export\ExportEntityInterface;
-use Wexo\HelloRetail\Service\HelloRetailService;
+use Helret\HelloRetail\Export\ExportEntity;
+use Helret\HelloRetail\Export\ExportEntityInterface;
+use Helret\HelloRetail\Service\HelloRetailService;
 
 /**
  * Class ProfileExporter
- * @package Wexo\HelloRetail\Export\Profiles
+ * @package Helret\HelloRetail\Export\Profiles
  */
 class ProfileExporter implements ProfileExporterInterface
 {

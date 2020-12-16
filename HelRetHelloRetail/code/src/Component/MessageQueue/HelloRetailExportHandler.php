@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Wexo\HelloRetail\Component\MessageQueue;
+namespace Helret\HelloRetail\Component\MessageQueue;
 
 use Shopware\Production\Kernel;
 use League\Flysystem\Filesystem;
@@ -17,14 +17,14 @@ use Shopware\Core\Framework\MessageQueue\Handler\AbstractMessageHandler;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Wexo\HelloRetail\Export\ExportEntityElement;
-use Wexo\HelloRetail\Export\TemplateType;
-use Wexo\HelloRetail\Service\HelloRetailService;
-use Wexo\HelloRetail\WexoHelloRetail;
+use Helret\HelloRetail\Export\ExportEntityElement;
+use Helret\HelloRetail\Export\TemplateType;
+use Helret\HelloRetail\Service\HelloRetailService;
+use Helret\HelloRetail\HelretHelloRetail;
 
 /**
  * Class HelloRetailExportHandler
- * @package Wexo\HelloRetail\Component\MessageQueue
+ * @package Helret\HelloRetail\Component\MessageQueue
  */
 class HelloRetailExportHandler extends AbstractMessageHandler
 {
@@ -83,7 +83,7 @@ class HelloRetailExportHandler extends AbstractMessageHandler
         $this->helloRetailService = $helloRetailService;
         $this->bus = $bus;
 
-        $storagePath = $configService->get('WexoHelloRetail.config.storagepath') ?? 'helloretail';
+        $storagePath = $configService->get('HelretHelloRetail.config.storagepath') ?? 'helloretail';
         $projectDir = $kernel->getProjectDir();
         $publicDir = $projectDir . '/public';
         $fullPath = $publicDir . '/' . $storagePath;
@@ -138,7 +138,7 @@ class HelloRetailExportHandler extends AbstractMessageHandler
             if (!$output) {
                 $this->translator->resetInjection();
                 $this->helloRetailService->exportLogger(
-                    WexoHelloRetail::EXPORT_ERROR,
+                    HelretHelloRetail::EXPORT_ERROR,
                     [
                         'entityId' => $entity->getId(),
                         'feed' => $feed,
@@ -152,7 +152,7 @@ class HelloRetailExportHandler extends AbstractMessageHandler
             $this->translator->resetInjection();
         } catch (\Error | \TypeError | \Exception $e) {
             $this->helloRetailService->exportLogger(
-                WexoHelloRetail::EXPORT_ERROR,
+                HelretHelloRetail::EXPORT_ERROR,
                 [
                     'entityId' => $entity->getId(),
                     'feed' => $feed,
@@ -194,7 +194,7 @@ class HelloRetailExportHandler extends AbstractMessageHandler
                 $feedContent .= $this->filesystem->read($header);
             } catch (\Error | \TypeError | FileNotFoundException | \Exception $e) {
                 $this->helloRetailService->exportLogger(
-                    WexoHelloRetail::EXPORT_ERROR,
+                    HelretHelloRetail::EXPORT_ERROR,
                     [
                         'header' => $header ?? null,
                         'feed' => $message->getFeedEntity()->getFeed(),
@@ -247,7 +247,7 @@ class HelloRetailExportHandler extends AbstractMessageHandler
         }
 
         $this->helloRetailService->exportLogger(
-            WexoHelloRetail::EXPORT_SUCCESS,
+            HelretHelloRetail::EXPORT_SUCCESS,
             [
                 'feed' => $message->getFeedEntity()->getFeed()
             ],
@@ -280,7 +280,7 @@ class HelloRetailExportHandler extends AbstractMessageHandler
             $this->bus->dispatch(new Envelope($message));
         } else {
             $this->helloRetailService->exportLogger(
-                WexoHelloRetail::EXPORT_ERROR,
+                HelretHelloRetail::EXPORT_ERROR,
                 [
                     'retryCount' => $retryCount,
                     'failures' => $failures,

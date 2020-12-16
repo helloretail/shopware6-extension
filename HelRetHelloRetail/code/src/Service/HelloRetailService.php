@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Wexo\HelloRetail\Service;
+namespace Helret\HelloRetail\Service;
 
 use Error;
 use Exception;
@@ -29,17 +29,17 @@ use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Symfony\Component\Serializer\SerializerInterface;
-use Wexo\HelloRetail\Export\EntityType;
-use Wexo\HelloRetail\Export\ExportEntityElement;
-use Wexo\HelloRetail\Export\ExportEntityInterface;
-use Wexo\HelloRetail\Export\FeedEntity;
-use Wexo\HelloRetail\Export\FeedEntityInterface;
-use Wexo\HelloRetail\Export\TemplateType;
-use Wexo\HelloRetail\WexoHelloRetail;
+use Helret\HelloRetail\Export\EntityType;
+use Helret\HelloRetail\Export\ExportEntityElement;
+use Helret\HelloRetail\Export\ExportEntityInterface;
+use Helret\HelloRetail\Export\FeedEntity;
+use Helret\HelloRetail\Export\FeedEntityInterface;
+use Helret\HelloRetail\Export\TemplateType;
+use Helret\HelloRetail\HelretHelloRetail;
 
 /**
  * Class HelloRetailService
- * @package Wexo\HelloRetail\Service
+ * @package Helret\HelloRetail\Service
  */
 class HelloRetailService
 {
@@ -122,7 +122,7 @@ class HelloRetailService
         $this->serializer = $serializer;
         $this->salesChannelDomainRepository = $salesChannelDomainRepository;
 
-        $storagePath = $configService->get('WexoHelloRetail.config.storagepath') ?? 'helloretail';
+        $storagePath = $configService->get('HelretHelloRetail.config.storagepath') ?? 'helloretail';
         $projectDir = $kernel->getProjectDir();
         $publicDir = $projectDir . '/public';
         $fullPath = $publicDir . '/' . $storagePath;
@@ -164,7 +164,7 @@ class HelloRetailService
             $feedEntity->setDomain($salesChannelDomain);
         } catch (Error | TypeError | NotEncodableValueException | Exception $e) {
             $this->exportLogger(
-                WexoHelloRetail::EXPORT_ERROR,
+                HelretHelloRetail::EXPORT_ERROR,
                 [
                     'feed' => $feed,
                     'error' => $e->getMessage(),
@@ -208,7 +208,7 @@ class HelloRetailService
         // Create temp dir for all file parts
         $tmpDir = 'hello-retail-generation-content/'
             . Uuid::randomHex()
-            . WexoHelloRetail::FILE_TYPE_INDICATOR_SEPARATOR
+            . HelretHelloRetail::FILE_TYPE_INDICATOR_SEPARATOR
             . $feed;
 
         $this->filesystem->put($tmpDir . DIRECTORY_SEPARATOR . TemplateType::HEADER, $content);
@@ -313,7 +313,7 @@ class HelloRetailService
                     'message' => $event,
                     'context' => $context,
                     'level' => $level,
-                    'channel' => WexoHelloRetail::LOG_CHANNEL
+                    'channel' => HelretHelloRetail::LOG_CHANNEL
                 ]
             ],
             Context::createDefaultContext()
@@ -336,7 +336,7 @@ class HelloRetailService
                 ) . PHP_EOL;
         } catch (Error | TypeError | Exception | StringTemplateRenderingException $e) {
             $this->exportLogger(
-                WexoHelloRetail::EXPORT_ERROR,
+                HelretHelloRetail::EXPORT_ERROR,
                 [
                     'template' => $template,
                     'data' => $data,

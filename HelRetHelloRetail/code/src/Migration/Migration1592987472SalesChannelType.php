@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace Wexo\HelloRetail\Migration;
+namespace Helret\HelloRetail\Migration;
 
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Migration\MigrationStep;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Wexo\HelloRetail\WexoHelloRetail;
+use Helret\HelloRetail\HelretHelloRetail;
 
 class Migration1592987472SalesChannelType extends MigrationStep
 {
@@ -17,7 +17,7 @@ class Migration1592987472SalesChannelType extends MigrationStep
 
     public function update(Connection $connection): void
     {
-        $helloRetail = Uuid::fromHexToBytes(WexoHelloRetail::SALES_CHANNEL_TYPE_HELLO_RETAIL);
+        $helloRetail = Uuid::fromHexToBytes(HelretHelloRetail::SALES_CHANNEL_TYPE_HELLO_RETAIL);
 
         $languageDefault = Uuid::fromHexToBytes(Defaults::LANGUAGE_SYSTEM);
         $languageDE = $this->getLanguageIdByLocale($connection, 'de-DE');
@@ -47,7 +47,7 @@ class Migration1592987472SalesChannelType extends MigrationStep
                 'sales_channel_type_id' => $helloRetail,
                 'language_id' => $languageDefault,
                 'name' => 'Hello Retail',
-                'manufacturer' => 'WEXO A/S',
+                'manufacturer' => 'Helret A/S',
                 'description' => 'Hello Retail Integration Sales Channel Type',
                 'created_at' => date(Defaults::STORAGE_DATE_TIME_FORMAT),
             ]
@@ -58,7 +58,7 @@ class Migration1592987472SalesChannelType extends MigrationStep
                 'sales_channel_type_id' => $helloRetail,
                 'language_id' => $languageDE,
                 'name' => 'Hello Retail',
-                'manufacturer' => 'WEXO A/S',
+                'manufacturer' => 'Helret A/S',
                 'description' => 'Hello Retail für die Einzelhandelsintegration',
                 'created_at' => date(Defaults::STORAGE_DATE_TIME_FORMAT),
             ]

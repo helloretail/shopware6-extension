@@ -5,12 +5,12 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="Wexo\HelloRetail\Controller\ApiController">
-            <argument type="service" id="Wexo\HelloRetail\Export\Profiles\ProfileExporter" />
+        <service id="Helret\HelloRetail\Controller\ApiController">
+            <argument type="service" id="Helret\HelloRetail\Export\Profiles\ProfileExporter" />
             <tag name="controller.service_arguments" />
         </service>
 
-        <service id="Wexo\HelloRetail\Service\HelloRetailService" public="true">
+        <service id="Helret\HelloRetail\Service\HelloRetailService" public="true">
             <argument type="service" id="log_entry.repository" />
             <argument type="service" id="monolog.logger"/>
             <argument type="service" id="messenger.bus.shopware" />
@@ -24,26 +24,26 @@
             <argument type="service" id="kernel"/>
         </service>
 
-        <service id="Wexo\HelloRetail\Export\Profiles\ProfileExporter" public="true">
+        <service id="Helret\HelloRetail\Export\Profiles\ProfileExporter" public="true">
             <argument type="service" id="monolog.logger"/>
             <argument type="service" id="serializer"/>
             <argument type="service" id="sales_channel.repository" />
-            <argument type="service" id="Wexo\HelloRetail\Service\HelloRetailService" />
+            <argument type="service" id="Helret\HelloRetail\Service\HelloRetailService" />
         </service>
 
-        <service id="Wexo\HelloRetail\Component\MessageQueue\HelloRetailExportHandler" public="true">
+        <service id="Helret\HelloRetail\Component\MessageQueue\HelloRetailExportHandler" public="true">
             <argument type="service" id="monolog.logger"/>
             <argument type="service" id="service_container"/>
             <argument type="service" id="Shopware\Core\Framework\Adapter\Translation\Translator"/>
-            <argument type="service" id="Wexo\HelloRetail\Service\HelloRetailService" />
+            <argument type="service" id="Helret\HelloRetail\Service\HelloRetailService" />
             <argument type="service" id="messenger.bus.shopware" />
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="kernel"/>
             <tag name="messenger.message_handler"/>
         </service>
 
-        <service id="Wexo\HelloRetail\Command\GenerateFeed">
-            <argument type="service" id="Wexo\HelloRetail\Export\Profiles\ProfileExporter"/>
+        <service id="Helret\HelloRetail\Command\GenerateFeed">
+            <argument type="service" id="Helret\HelloRetail\Export\Profiles\ProfileExporter"/>
             <argument type="service" id="sales_channel.repository"/>
             <tag name="console.command"/>
         </service>

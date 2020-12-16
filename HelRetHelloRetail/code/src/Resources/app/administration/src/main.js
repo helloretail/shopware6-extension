@@ -7,9 +7,9 @@ import './app/export-templates';
 import './extension/sw-sales-channel-detail-base';
 import './extension/sw-sales-channel-create-base';
 
-import './component/wexo-sales-channel-hello-retail';
+import './component/helret-sales-channel-hello-retail';
 
-import './module/wexo-cms/blocks/commerce/helloretail';
+import './module/helret-cms/blocks/commerce/helloretail';
 
 import enGb from '../../../translations/en_GB/messages.en-GB.json';
 

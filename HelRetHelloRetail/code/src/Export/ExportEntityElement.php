@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Wexo\HelloRetail\Export;
+namespace Helret\HelloRetail\Export;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
  * Class ExportEntityElement
- * @package Wexo\HelloRetail\Export
+ * @package Helret\HelloRetail\Export
  */
 class ExportEntityElement
 {

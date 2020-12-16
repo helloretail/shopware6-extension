@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace Wexo\HelloRetail\Component\MessageQueue;
+namespace Helret\HelloRetail\Component\MessageQueue;
 
-use Wexo\HelloRetail\Export\ExportEntityInterface;
+use Helret\HelloRetail\Export\ExportEntityInterface;
 
 /**
  * Class HelloRetailExport
- * @package Wexo\HelloRetail\Component\MessageQueue
+ * @package Helret\HelloRetail\Component\MessageQueue
  */
 class HelloRetailExport
 {

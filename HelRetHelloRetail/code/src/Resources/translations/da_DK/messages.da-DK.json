@@ -8,7 +8,7 @@
             }
         }
     },
-    "wexo-hello-retail": {
+    "helret-hello-retail": {
         "sales-channel-types": {
             "base": {
                 "titleGeneralSettings": "General settings",

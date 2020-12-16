@@ -2,7 +2,7 @@
 <div v-if="salesChannel" class="sw-sales-channel-detail-base">
 
     {% block sw_sales_channel_detail_base_general %}
-        <sw-card :isLoading="loading" :title="$tc('wexo-hello-retail.sales-channel-types.base.titleGeneralSettings')">
+        <sw-card :isLoading="loading" :title="$tc('helret-hello-retail.sales-channel-types.base.titleGeneralSettings')">
             <sw-container columns="1fr 200px" gap="0px 30px">
                 {% block sw_sales_channel_detail_base_general_name %}
                     <sw-text-field
@@ -29,7 +29,7 @@
                 <sw-entity-single-select
                     ref="storefrontSalesChannelId"
                     v-model="salesChannel.configuration.storefrontSalesChannelId"
-                    :label="$tc('wexo-hello-retail.sales-channel-types.base.storefront')"
+                    :label="$tc('helret-hello-retail.sales-channel-types.base.storefront')"
                     :criteria="storefrontSalesChannelCriteria"
                     labelProperty="name"
                     valueProperty="id"
@@ -43,7 +43,7 @@
                 <sw-entity-single-select
                     v-model="salesChannel.configuration.salesChannelDomainId"
                     required
-                    :label="$tc('wexo-hello-retail.sales-channel-types.base.storefrontDomain')"
+                    :label="$tc('helret-hello-retail.sales-channel-types.base.storefrontDomain')"
                     :criteria="storefrontSalesChannelDomainCriteria"
                     labelProperty="url"
                     valueProperty="id"
@@ -56,20 +56,20 @@
         </sw-card>
     {% endblock %}
 
-    <sw-card v-if="salesChannel.configuration.feeds" :isLoading="loading" :title="$tc('wexo-hello-retail.detail.titleFeedCard')">
+    <sw-card v-if="salesChannel.configuration.feeds" :isLoading="loading" :title="$tc('helret-hello-retail.detail.titleFeedCard')">
         <sw-text-field v-for="feed in feedsList"
                        :key="feed"
                        v-model="salesChannel.configuration.feeds[feed].file"
                        type="text"
-                       :placeholder="placeholder(salesChannel, `configuration.feeds.${feed}.file`, $tc('wexo-hello-retail.detail.placeholderFeedLocation'))"
-                       :label="$tc(`wexo-hello-retail.detail.feeds.${feed}Title`)">
+                       :placeholder="placeholder(salesChannel, `configuration.feeds.${feed}.file`, $tc('helret-hello-retail.detail.placeholderFeedLocation'))"
+                       :label="$tc(`helret-hello-retail.detail.feeds.${feed}Title`)">
             <template slot="suffix">
                 <sw-button
                     :isLoading="loading"
                     :disabled="loading"
                     @click="generateFeed(feed)"
                     variant="primary">
-                    {{ $tc('wexo-hello-retail.detail.labelGenerateFeedsBtn') }}
+                    {{ $tc('helret-hello-retail.detail.labelGenerateFeedsBtn') }}
                 </sw-button>
             </template>
         </sw-text-field>

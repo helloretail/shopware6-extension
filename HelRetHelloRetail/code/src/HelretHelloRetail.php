@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Wexo\HelloRetail;
+namespace Helret\HelloRetail;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -9,10 +9,10 @@ use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\DeactivateContext;
 
 /**
- * Class WexoHelloRetail
- * @package Wexo\HelloRetail
+ * Class HelretHelloRetail
+ * @package Helret\HelloRetail
  */
-class WexoHelloRetail extends Plugin
+class HelretHelloRetail extends Plugin
 {
     public const LOG_CHANNEL = 'hello-retail';
     public const EXPORT_ERROR = 'hello-retail.export.error';

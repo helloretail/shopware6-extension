@@ -1,7 +1,7 @@
 const ApiService = Shopware.Classes.ApiService;
 
 class HelloRetailApiService extends ApiService {
-    constructor(httpClient, loginService, apiEndpoint = 'wexo/hello-retail') {
+    constructor(httpClient, loginService, apiEndpoint = 'helret/hello-retail') {
         super(httpClient, loginService, apiEndpoint);
         this.name = 'helloRetailService';
     }

@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Wexo\HelloRetail\Export;
+namespace Helret\HelloRetail\Export;
 
 /**
  * Interface ExportEntityInterface
- * @package Wexo\HelloRetail\Export
+ * @package Helret\HelloRetail\Export
  */
 interface ExportEntityInterface
 {

@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace Wexo\HelloRetail\Export;
+namespace Helret\HelloRetail\Export;
 
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 
 /**
  * Interface FeedEntityInterface
- * @package Wexo\HelloRetail\Export
+ * @package Helret\HelloRetail\Export
  */
 interface FeedEntityInterface
 {

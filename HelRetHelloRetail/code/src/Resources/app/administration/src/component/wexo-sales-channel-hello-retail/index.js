@@ -1,10 +1,10 @@
-import template from './wexo-sales-channel-hello-retail.html.twig';
+import template from './helret-sales-channel-hello-retail.html.twig';
 
 const {Component, Mixin} = Shopware;
 const {Criteria} = Shopware.Data;
 const {mapApiErrors} = Component.getComponentHelper();
 
-Component.register('wexo-sales-channel-hello-retail', {
+Component.register('helret-sales-channel-hello-retail', {
     template,
 
     inject: [
