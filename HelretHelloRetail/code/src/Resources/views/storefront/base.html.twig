@@ -1,0 +1,19 @@
+{% sw_extends '@Storefront/storefront/base.html.twig' %}
+
+{% block base_script_csrf %}
+    {{ parent() }}
+
+    <script type="text/javascript">
+        (function () {
+            window['ADDWISH_PARTNER_ID'] = "{{ shopware.config.HelRetHelloRetail.config.partnerId }}"
+        })();
+        (function() {
+            var aws = document.createElement('script');
+            aws.type = 'text/javascript';
+            if (typeof(aws.async) != "undefined") { aws.async = true; }
+            aws.src = 'https://d1pna5l3xsntoj.cloudfront.net/scripts/company/awAddGift.js#{{ shopware.config.HelretHelloRetail.config.partnerId }}';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(aws, s);
+        })();
+    </script>
+{% endblock %}

@@ -1,7 +1,0 @@
-{% sw_extends '@Storefront/storefront/base.html.twig' %}
-
-{% block base_script_csrf %}
-    {{ parent() }}
-
-    {{ include(template_from_string(shopware.config.WexoHelloRetail.config.trackingScript)) }}
-{% endblock %}

@@ -1,0 +1,11 @@
+{% block sw_sales_channel_detail_base %}
+    <span v-if="isHelloRetail">
+        <helret-sales-channel-hello-retail
+                   :isLoading="isLoading"
+                   :salesChannel="salesChannel">
+        </helret-sales-channel-hello-retail>
+    </span>
+    <span v-else>
+        {% parent %}
+    </span>
+{% endblock %}

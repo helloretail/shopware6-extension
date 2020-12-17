@@ -1,0 +1,35 @@
+<product>
+    <url>{{ seoUrl('frontend.detail.page', {'productId': product.id}) }}</url>
+    <title>{% if product.name %}{{ product.name }}{% else %}{{ product.translated.name }}{% endif %}</title>
+    <ean>{{ product.ean }}</ean>
+    <sku>{{ product.productNumber }}</sku>
+    {% if product.cover %}
+    {% set thumbnail = product.cover.media.thumbnails.elements|filter(img => img.width == 400)|first %}
+    <imgurl>{% if thumbnail %}{{ thumbnail.url }}{% else %}product.cover.media.url{% endif %}</imgurl>
+    {% else %}
+    <imgurl />
+    {% endif %}
+    {% set prices = product.prices.elements|first %}
+    <price>{% if prices %}{{ prices.price.elements|first.gross }}{% else %}{{ product.price.elements|first.gross }}{% endif %}</price>
+    <oldPrice>{% if product.price %}{{ product.price.elements|first.gross }}{% endif %}</oldPrice>
+    <productnumber>{{ product.productNumber }}</productnumber>
+    <hierarchies>
+        {% if product.categories %}
+            {% for category in product.categories.elements %}
+                <hierarchy>
+                    {% for breadCrumb in category.breadcrumb %}
+                        <category>{{ breadCrumb }}</category>
+                    {% endfor %}
+                </hierarchy>
+            {% endfor %}
+        {% endif %}
+    </hierarchies>
+    <keywords>{% if product.searchKeywords %}{% for keyword in product.searchKeywords.elements %}{{ keyword.keyword }},{% endfor %}{% endif %}</keywords>
+    {% set color = product.properties.elements|filter(property => property.group.name == 'Color')|first %}
+    <color>{% if color %}{{ color.name }}{% endif %}</color>
+    {% set gender = product.properties.elements|filter(property => property.group.name == 'Gender')|first %}
+    <gender>{% if gender %}{{ gender.name }}{% endif %}</gender>
+    <instock>{% if product.availableStock > 0 %}true{% else %}false{% endif %}</instock>
+    <description>{{ product.description }}</description>
+    <brand>{% if product.manufacturer %}{{ product.manufacturer.name }}{% endif %}</brand>
+</product>
