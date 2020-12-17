@@ -254,8 +254,6 @@ class HelloRetailExportHandler extends AbstractMessageHandler
             Logger::INFO
         );
 
-        // TODO: Bug in normalizeRelativePath() which removes trailing slash, meaning the folder will not be deleted
-        // @see vendor/league/flysystem/src/Util.php
         $this->filesystem->deleteDir($dir);
     }
 

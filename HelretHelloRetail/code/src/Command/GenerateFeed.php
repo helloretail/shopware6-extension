@@ -15,7 +15,7 @@ use Helret\HelloRetail\HelretHelloRetail;
 
 class GenerateFeed extends Command
 {
-    protected static $defaultName = 'Helret:hello-retail:generate-feed';
+    protected static $defaultName = 'hello-retail:generate-feed';
 
     /**
      * @var ProfileExporterInterface
