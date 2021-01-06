@@ -1,0 +1,32 @@
+{
+    "sw-cms": {
+        "blocks": {
+            "commerce": {
+                "hello-retail": {
+                    "label": "Hello Retail Integration"
+                }
+            }
+        }
+    },
+    "helret-hello-retail": {
+        "sales-channel-types": {
+            "base": {
+                "titleGeneralSettings": "Generelle indstillinger",
+                "storefront": "Storefront",
+                "storefrontDomain": "Storefront domæne",
+                "storefrontDomainCurrency": "Storefront valuta",
+                "feedDirectory": "Feed mappe"
+            }
+        },
+        "detail": {
+            "placeholderFeedLocation": "Indtast feed fil navn...",
+            "titleFeedCard": "Feeds",
+            "labelGenerateFeedsBtn": "Generere Feed",
+            "generateTooltip": "Gem venligst inden generering",
+            "feeds": {
+                "productTitle": "Produkter",
+                "orderTitle": "Ordre"
+            }
+        }
+    }
+}

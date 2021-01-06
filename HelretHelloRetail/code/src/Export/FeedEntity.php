@@ -14,6 +14,12 @@ class FeedEntity implements FeedEntityInterface
      * @var string
      */
     private $feed;
+
+    /**
+     * @var string
+     */
+    private $feedDirectory;
+
     /**
      * @var string
      */
@@ -45,6 +51,14 @@ class FeedEntity implements FeedEntityInterface
     public function getFeed(): string
     {
         return $this->feed;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFeedDirectory(): string
+    {
+        return $this->feedDirectory;
     }
 
     /**
@@ -101,6 +115,14 @@ class FeedEntity implements FeedEntityInterface
     public function setFeed($feed): void
     {
         $this->feed = $feed;
+    }
+
+    /**
+     * @param string $feedDirectory
+     */
+    public function setFeedDirectory(string $feedDirectory): void
+    {
+        $this->feedDirectory = $feedDirectory;
     }
 
     /**

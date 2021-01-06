@@ -84,6 +84,16 @@ class HelloRetailService
     protected $filesystem;
 
     /**
+     * @var SystemConfigService
+     */
+    protected $configService;
+
+    /**
+     * @var Kernel
+     */
+    protected $kernel;
+
+    /**
      * HelloRetailService constructor.
      *
      * @param EntityRepositoryInterface $logEntryRepository
@@ -120,13 +130,24 @@ class HelloRetailService
         $this->seoUrlPlaceholderHandler = $seoUrlPlaceholderHandler;
         $this->serializer = $serializer;
         $this->salesChannelDomainRepository = $salesChannelDomainRepository;
+        $this->configService = $configService;
+        $this->kernel = $kernel;
 
-        $storagePath = $configService->get('HelretHelloRetail.config.storagepath') ?? 'helloretail';
-        $projectDir = $kernel->getProjectDir();
-        $publicDir = $projectDir . '/public';
-        $fullPath = $publicDir . '/' . $storagePath;
+        $fullPath = $this->getFeedDirectoryPath();
         $localFilesystemAdapter = new Local($fullPath);
         $this->filesystem = new Filesystem($localFilesystemAdapter);
+    }
+
+    /**
+     * @return string
+     */
+    public function getFeedDirectoryPath(): string
+    {
+        $storagePath = $this->configService->get(HelretHelloRetail::CONFIG_PATH . '.storagepath') ?? 'helloretail';
+        $projectDir = $this->kernel->getProjectDir();
+        $publicDir = $projectDir . DIRECTORY_SEPARATOR . 'public';
+
+        return $publicDir . DIRECTORY_SEPARATOR . $storagePath;
     }
 
     /**
@@ -159,6 +180,8 @@ class HelloRetailService
         try {
             $feedEntity = $this->serializer
                 ->deserialize(json_encode($exportEntity->getFeeds()[$feed]), FeedEntity::class, 'json');
+
+            $feedEntity->setFeedDirectory($exportEntity->getFeedDirectory());
             $feedEntity->setFeed($feed);
             $feedEntity->setDomain($salesChannelDomain);
         } catch (Error | TypeError | NotEncodableValueException | Exception $e) {

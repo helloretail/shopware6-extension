@@ -22,6 +22,11 @@ class ExportEntity implements ExportEntityInterface
     private $feeds;
 
     /**
+     * @var string
+     */
+    private $feedDirectory;
+
+    /**
      * @return string
      */
     public function getStorefrontSalesChannelId(): string
@@ -46,6 +51,14 @@ class ExportEntity implements ExportEntityInterface
     }
 
     /**
+     * @return string
+     */
+    public function getFeedDirectory(): string
+    {
+        return $this->feedDirectory;
+    }
+
+    /**
      * @param string $id
      */
     public function setStoreFrontSalesChannelId(string $id): void
@@ -67,5 +80,13 @@ class ExportEntity implements ExportEntityInterface
     public function setFeeds(array $feeds): void
     {
         $this->feeds = $feeds;
+    }
+
+    /**
+     * @param string $feedDirectory
+     */
+    public function setFeedDirectory(string $feedDirectory): void
+    {
+        $this->feedDirectory = $feedDirectory;
     }
 }

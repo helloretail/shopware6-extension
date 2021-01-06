@@ -18,6 +18,11 @@ interface FeedEntityInterface
     /**
      * @return string
      */
+    public function getFeedDirectory(): string;
+
+    /**
+     * @return string
+     */
     public function getFile(): string;
 
     /**
@@ -49,6 +54,11 @@ interface FeedEntityInterface
      * @param string $feed
      */
     public function setFeed(string $feed): void;
+
+    /**
+     * @param string $feedDirectory
+     */
+    public function setFeedDirectory(string $feedDirectory): void;
 
     /**
      * @param string $file

@@ -37,4 +37,14 @@ interface ExportEntityInterface
      * @param array $feeds
      */
     public function setFeeds(array $feeds): void;
+
+    /**
+     * @return string
+     */
+    public function getFeedDirectory(): string;
+
+    /**
+     * @param string $feedDirectory
+     */
+    public function setFeedDirectory(string $feedDirectory): void;
 }
