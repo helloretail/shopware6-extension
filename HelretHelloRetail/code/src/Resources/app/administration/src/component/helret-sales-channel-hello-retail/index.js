@@ -1,6 +1,6 @@
 import template from './helret-sales-channel-hello-retail.html.twig';
 
-const {Component, Mixin} = Shopware;
+const {Component, Mixin, Utils} = Shopware;
 const {Criteria} = Shopware.Data;
 const {mapApiErrors} = Component.getComponentHelper();
 
@@ -36,6 +36,8 @@ Component.register('helret-sales-channel-hello-retail', {
             loading: true,
             storefrontSalesChannelId: null,
             feedValues: [],
+            feedGeneratingList: [],
+            originalFeedValues: null
         }
     },
 
@@ -75,7 +77,7 @@ Component.register('helret-sales-channel-hello-retail', {
         },
 
         feedsList() {
-            return Object.keys(this.salesChannel.configuration.feeds).sort((a,b) => {
+            return Object.keys(this.salesChannel.configuration.feeds).sort((a, b) => {
                 return a.localeCompare(b);
             })
         },
@@ -84,12 +86,21 @@ Component.register('helret-sales-channel-hello-retail', {
     methods: {
         initChannel() {
             if (!this.salesChannel.configuration) {
-                this.$set(this.salesChannel, 'configuration', {});
+                this.$set(this.salesChannel, 'configuration', {
+                    feeds: this.helloRetailTemplateService.getExportTemplateRegistry(),
+                    feedDirectory: Utils.createId()
+                });
             }
 
             if (!this.salesChannel.configuration.feeds) {
                 this.$set(this.salesChannel.configuration, 'feeds', this.helloRetailTemplateService.getExportTemplateRegistry());
             }
+
+            if (!this.salesChannel.configuration.feedDirectory) {
+                this.$set(this.salesChannel.configuration, 'feedDirectory', Utils.createId());
+            }
+
+            this.originalFeedValues = JSON.parse(JSON.stringify(this.salesChannel.configuration.feeds));
         },
 
         fillSalesChannel() {
@@ -159,7 +170,30 @@ Component.register('helret-sales-channel-hello-retail', {
             this.$forceUpdate();
         },
 
+        enableGenerateFeed(feed) {
+            const originalFile = this.originalFeedValues[feed].file;
+
+            return originalFile !== null && originalFile === this.salesChannel.configuration.feeds[feed].file;
+        },
+
+        setFeedGenerating(feed) {
+            if (this.isFeedGenerating(feed)) {
+                return;
+            }
+
+            this.feedGeneratingList.push(feed);
+        },
+
+        isFeedGenerating(feed) {
+            return this.feedGeneratingList.indexOf(feed) > -1;
+        },
+
+        removeFeedGenerating(feed) {
+            this.feedGeneratingList.splice(this.feedGeneratingList.indexOf(feed), 1);
+        },
+
         generateFeed(feed) {
+            this.setFeedGenerating(feed);
             this.helloRetailService.generateFeed(this.salesChannel.id, feed)
                 .then((response) => {
                     if (response.error) {
@@ -173,7 +207,7 @@ Component.register('helret-sales-channel-hello-retail', {
                             message: response.message
                         })
                     }
-                })
+                }).finally(() => this.removeFeedGenerating(feed));
         }
     }
 });

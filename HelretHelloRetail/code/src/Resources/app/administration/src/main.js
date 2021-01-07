@@ -11,13 +11,15 @@ import './component/helret-sales-channel-hello-retail';
 
 import './module/helret-cms/blocks/commerce/helloretail';
 
-import enGb from '../../../translations/en_GB/messages.en-GB.json';
+import enGb from './snippet/en-GB.json';
+import deDE from './snippet/de-DE.json';
+import daDK from './snippet/da-DK.json';
 
 const { Application, Locale } = Shopware;
 
 Locale.extend('en-GB', enGb);
-Locale.extend('de-DE', enGb);
-Locale.extend('da-DK', enGb);
+Locale.extend('de-DE', deDE);
+Locale.extend('da-DK', daDK);
 
 Application.addServiceProvider('helloRetailService', () => {
     const serviceContainer = Application.getContainer('service');

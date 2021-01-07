@@ -83,10 +83,7 @@ class HelloRetailExportHandler extends AbstractMessageHandler
         $this->helloRetailService = $helloRetailService;
         $this->bus = $bus;
 
-        $storagePath = $configService->get('HelretHelloRetail.config.storagepath') ?? 'helloretail';
-        $projectDir = $kernel->getProjectDir();
-        $publicDir = $projectDir . '/public';
-        $fullPath = $publicDir . '/' . $storagePath;
+        $fullPath = $helloRetailService->getFeedDirectoryPath();
         $localFilesystemAdapter = new Local($fullPath);
         $this->filesystem = new Filesystem($localFilesystemAdapter);
 
@@ -215,9 +212,12 @@ class HelloRetailExportHandler extends AbstractMessageHandler
                     continue;
                 }
             }
+
+            $feedEntity = $message->getFeedEntity();
+
             // Construct file
             $feedContent .= $this->helloRetailService->renderFooter(
-                $message->getFeedEntity(),
+                $feedEntity,
                 $message->getSalesChannelContext()
             );
 
@@ -232,7 +232,10 @@ class HelloRetailExportHandler extends AbstractMessageHandler
 
                 return;
             } else {
-                $this->filesystem->put($message->getFeedEntity()->getFile(), $feedContent);
+                $this->filesystem->put(
+                    $feedEntity->getFeedDirectory() . DIRECTORY_SEPARATOR . $feedEntity->getFile(),
+                    $feedContent
+                );
             }
         } else {
             $this->handleRetry(

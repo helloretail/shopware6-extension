@@ -6,6 +6,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Routing\Exception\SalesChannelNotFoundException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -65,7 +66,11 @@ class GenerateFeed extends Command
             Context::createDefaultContext()
         )->firstId();
 
-        $this->profileExporter->generate($salesChannelId, $feed ? [$feed] : []);
+        try {
+            $this->profileExporter->generate($salesChannelId, $feed ? [$feed] : []);
+        } catch (SalesChannelNotFoundException $exception) {
+            $output->write("Could not find sales_channel with id: $salesChannelId");
+        }
 
         return 0;
     }

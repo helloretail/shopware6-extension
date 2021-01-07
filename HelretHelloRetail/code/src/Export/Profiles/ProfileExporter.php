@@ -6,6 +6,7 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\Routing\Exception\SalesChannelNotFoundException;
 use Symfony\Component\Serializer\SerializerInterface;
 use Helret\HelloRetail\Export\ExportEntity;
 use Helret\HelloRetail\Export\ExportEntityInterface;
@@ -54,17 +55,18 @@ class ProfileExporter implements ProfileExporterInterface
     }
 
     /**
-     * @param $salesChannelId
-     * @param array $feeds
-     * @param bool $now
-     * @return array
+     * @inheritdoc
      */
-    public function generate($salesChannelId, array $feeds = [], $now = false): array
+    public function generate(string $salesChannelId, array $feeds = [], bool $now = false): array
     {
         $salesChannelEntity = $this->salesChannelRepository->search(
             new Criteria([$salesChannelId]),
             Context::createDefaultContext()
         )->first();
+
+        if (!$salesChannelEntity) {
+            throw new SalesChannelNotFoundException();
+        }
 
         /** @var ExportEntityInterface $exportEntity */
         $exportEntity = $this->serializer
@@ -82,7 +84,9 @@ class ProfileExporter implements ProfileExporterInterface
                 continue;
             }
 
-            $this->helloRetailService->export($exportEntity, $key);
+            if (!$this->helloRetailService->export($exportEntity, $key)) {
+                $notExported[] = $key;
+            }
         }
 
         return $notExported;
