@@ -2,7 +2,6 @@
 
 namespace Helret\HelloRetail;
 
-use Helret\HelloRetail\Service\HelloRetailService;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -10,7 +9,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\DeactivateContext;
 use Shopware\Core\Framework\Plugin\Context\UninstallContext;
-use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
@@ -25,6 +23,7 @@ class HelretHelloRetail extends Plugin
     public const SALES_CHANNEL_TYPE_HELLO_RETAIL = '44f7e183909376bb5824abf830f4b879';
     public const FILE_TYPE_INDICATOR_SEPARATOR = '_';
     public const CONFIG_PATH = 'HelretHelloRetail.config';
+    public const STORAGE_PATH = 'hello-retail';
 
     /**
      * @param DeactivateContext $context
@@ -54,20 +53,25 @@ class HelretHelloRetail extends Plugin
         }
     }
 
+    /**
+     * @param UninstallContext $uninstallContext
+     */
     public function uninstall(UninstallContext $uninstallContext): void
     {
         $context = $uninstallContext->getContext();
 
-        /** @var SystemConfigService $systemConfigService */
-        $systemConfigService = $this->container->get(SystemConfigService::class);
-
-        // Remove all feeds and the base folder
-        $fileSystem = new Filesystem();
-        $projectDir = $this->container->get('kernel')->getProjectDir();
-        $dir = $projectDir . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . $systemConfigService->get(self::CONFIG_PATH . '.storagepath');
-        $fileSystem->remove($dir);
-
         if (!$uninstallContext->keepUserData()) {
+            // Remove all feeds and the base folder
+            $fileSystem = new Filesystem();
+            $projectDir = $this->container->get('kernel')->getProjectDir();
+            $dir = $projectDir
+                . DIRECTORY_SEPARATOR
+                . 'public'
+                . DIRECTORY_SEPARATOR
+                . self::STORAGE_PATH
+                . DIRECTORY_SEPARATOR;
+            $fileSystem->remove($dir);
+
             /** @var EntityRepositoryInterface $salesChannelRepository */
             $salesChannelRepository = $this->container->get('sales_channel.repository');
 

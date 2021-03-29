@@ -6,20 +6,20 @@
 
     <services>
         <service id="Helret\HelloRetail\Controller\ApiController">
-            <argument type="service" id="Helret\HelloRetail\Export\Profiles\ProfileExporter" />
-            <tag name="controller.service_arguments" />
+            <argument type="service" id="Helret\HelloRetail\Export\Profiles\ProfileExporter"/>
+            <tag name="controller.service_arguments"/>
         </service>
 
         <service id="Helret\HelloRetail\Service\HelloRetailService" public="true">
-            <argument type="service" id="log_entry.repository" />
+            <argument type="service" id="log_entry.repository"/>
             <argument type="service" id="monolog.logger"/>
-            <argument type="service" id="messenger.bus.shopware" />
+            <argument type="service" id="messenger.bus.shopware"/>
             <argument type="service" id="Shopware\Core\Framework\Adapter\Twig\StringTemplateRenderer"/>
             <argument type="service" id="service_container"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextService"/>
             <argument type="service" id="Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface"/>
             <argument type="service" id="serializer"/>
-            <argument type="service" id="sales_channel_domain.repository" />
+            <argument type="service" id="sales_channel_domain.repository"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="kernel"/>
         </service>
@@ -27,16 +27,16 @@
         <service id="Helret\HelloRetail\Export\Profiles\ProfileExporter" public="true">
             <argument type="service" id="monolog.logger"/>
             <argument type="service" id="serializer"/>
-            <argument type="service" id="sales_channel.repository" />
-            <argument type="service" id="Helret\HelloRetail\Service\HelloRetailService" />
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="Helret\HelloRetail\Service\HelloRetailService"/>
         </service>
 
         <service id="Helret\HelloRetail\Component\MessageQueue\HelloRetailExportHandler" public="true">
             <argument type="service" id="monolog.logger"/>
             <argument type="service" id="service_container"/>
             <argument type="service" id="Shopware\Core\Framework\Adapter\Translation\Translator"/>
-            <argument type="service" id="Helret\HelloRetail\Service\HelloRetailService" />
-            <argument type="service" id="messenger.bus.shopware" />
+            <argument type="service" id="Helret\HelloRetail\Service\HelloRetailService"/>
+            <argument type="service" id="messenger.bus.shopware"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="kernel"/>
             <tag name="messenger.message_handler"/>
@@ -46,6 +46,18 @@
             <argument type="service" id="Helret\HelloRetail\Export\Profiles\ProfileExporter"/>
             <argument type="service" id="sales_channel.repository"/>
             <tag name="console.command"/>
+        </service>
+
+        <service id="Helret\HelloRetail\ScheduledTask\HelloRetailHandler">
+            <argument type="service" id="scheduled_task.repository"/>
+            <argument type="service" id="Helret\HelloRetail\Export\Profiles\ProfileExporter"/>
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="Helret\HelloRetail\Service\HelloRetailService"/>
+            <tag name="messenger.message_handler"/>
+        </service>
+
+        <service id="Helret\HelloRetail\ScheduledTask\HelloRetailTask">
+            <tag name="shopware.scheduled.task"/>
         </service>
     </services>
 </container>

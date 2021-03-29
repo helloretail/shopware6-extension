@@ -143,11 +143,10 @@ class HelloRetailService
      */
     public function getFeedDirectoryPath(): string
     {
-        $storagePath = $this->configService->get(HelretHelloRetail::CONFIG_PATH . '.storagepath') ?? 'helloretail';
         $projectDir = $this->kernel->getProjectDir();
         $publicDir = $projectDir . DIRECTORY_SEPARATOR . 'public';
 
-        return $publicDir . DIRECTORY_SEPARATOR . $storagePath;
+        return $publicDir . DIRECTORY_SEPARATOR . HelretHelloRetail::STORAGE_PATH;
     }
 
     /**
