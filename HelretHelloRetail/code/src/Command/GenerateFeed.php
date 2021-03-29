@@ -68,8 +68,11 @@ class GenerateFeed extends Command
 
         try {
             $this->profileExporter->generate($salesChannelId, $feed ? [$feed] : []);
-        } catch (SalesChannelNotFoundException $exception) {
-            $output->write("Could not find sales_channel with id: $salesChannelId");
+        } catch (\Error | \TypeError | \Exception | SalesChannelNotFoundException $exception) {
+            $output->writeln(
+                "Could not find sales_channel with type ID: "
+                . HelretHelloRetail::SALES_CHANNEL_TYPE_HELLO_RETAIL
+            );
         }
 
         return 0;
