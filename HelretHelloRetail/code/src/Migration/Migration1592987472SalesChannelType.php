@@ -40,18 +40,24 @@ class Migration1592987472SalesChannelType extends MigrationStep
             ]
         );
 
-        if (!empty($idExists)) {
-            return;
-        }
-
-        $connection->insert(
-            'sales_channel_type',
+        // Delete previous translations
+        $connection->delete(
+            'sales_channel_type_translation',
             [
-                'id' => $helloRetail,
-                'icon_name' => 'brand-hello-retail',
-                'created_at' => date(Defaults::STORAGE_DATE_TIME_FORMAT),
+                'sales_channel_type_id' => $helloRetail
             ]
         );
+
+        if (empty($idExists)) {
+            $connection->insert(
+                'sales_channel_type',
+                [
+                    'id' => $helloRetail,
+                    'icon_name' => 'brand-hello-retail',
+                    'created_at' => date(Defaults::STORAGE_DATE_TIME_FORMAT),
+                ]
+            );
+        }
         $connection->insert(
             'sales_channel_type_translation',
             [
