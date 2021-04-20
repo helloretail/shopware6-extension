@@ -37,8 +37,6 @@
             <argument type="service" id="Shopware\Core\Framework\Adapter\Translation\Translator"/>
             <argument type="service" id="Helret\HelloRetail\Service\HelloRetailService"/>
             <argument type="service" id="messenger.bus.shopware"/>
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
-            <argument type="service" id="kernel"/>
             <tag name="messenger.message_handler"/>
         </service>
 

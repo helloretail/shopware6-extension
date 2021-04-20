@@ -2,14 +2,12 @@
 
 namespace Helret\HelloRetail\Component\MessageQueue;
 
-use Shopware\Production\Kernel;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\FilesystemInterface;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
-use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Framework\Adapter\Translation\Translator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -59,23 +57,18 @@ class HelloRetailExportHandler extends AbstractMessageHandler
 
     /**
      * HelloRetailExportHandler constructor.
-     *
-     * @param LoggerInterface                                        $logger
-     * @param ContainerInterface                                     $container
-     * @param Translator                                             $translator
-     * @param HelloRetailService                                     $helloRetailService
-     * @param MessageBusInterface                                    $bus
-     * @param SystemConfigService $configService
-     * @param Kernel $kernel
+     * @param LoggerInterface $logger
+     * @param ContainerInterface $container
+     * @param Translator $translator
+     * @param HelloRetailService $helloRetailService
+     * @param MessageBusInterface $bus
      */
     public function __construct(
         LoggerInterface $logger,
         ContainerInterface $container,
         Translator $translator,
         HelloRetailService $helloRetailService,
-        MessageBusInterface $bus,
-        SystemConfigService $configService,
-        Kernel $kernel
+        MessageBusInterface $bus
     ) {
         $this->logger = $logger;
         $this->container = $container;
