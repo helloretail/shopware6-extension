@@ -30,9 +30,6 @@ class Migration1592987472SalesChannelType extends MigrationStep
     {
         $helloRetail = Uuid::fromHexToBytes(HelretHelloRetail::SALES_CHANNEL_TYPE_HELLO_RETAIL);
 
-        $languageDefault = Uuid::fromHexToBytes(Defaults::LANGUAGE_SYSTEM);
-        $languageDE = $this->getLanguageIdByLocale($connection, 'de-DE');
-
         $idExists = $connection->fetchColumn(
             'SELECT `id` FROM `sales_channel_type` WHERE `id` = :id',
             [
@@ -62,21 +59,10 @@ class Migration1592987472SalesChannelType extends MigrationStep
             'sales_channel_type_translation',
             [
                 'sales_channel_type_id' => $helloRetail,
-                'language_id' => $languageDefault,
+                'language_id' => Uuid::fromHexToBytes(Defaults::LANGUAGE_SYSTEM),
                 'name' => 'Hello Retail',
                 'manufacturer' => 'Hello Retail ApS',
                 'description' => 'Hello Retail Integration Sales Channel Type',
-                'created_at' => date(Defaults::STORAGE_DATE_TIME_FORMAT),
-            ]
-        );
-        $connection->insert(
-            'sales_channel_type_translation',
-            [
-                'sales_channel_type_id' => $helloRetail,
-                'language_id' => $languageDE,
-                'name' => 'Hello Retail',
-                'manufacturer' => 'Hello Retail ApS',
-                'description' => 'Hello Retail für die Einzelhandelsintegration',
                 'created_at' => date(Defaults::STORAGE_DATE_TIME_FORMAT),
             ]
         );
