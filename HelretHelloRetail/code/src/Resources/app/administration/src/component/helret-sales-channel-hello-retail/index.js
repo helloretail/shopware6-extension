@@ -37,7 +37,8 @@ Component.register('helret-sales-channel-hello-retail', {
             storefrontSalesChannelId: null,
             feedValues: [],
             feedGeneratingList: [],
-            originalFeedValues: null
+            originalFeedValues: null,
+            storefrontDomainUrl: ""
         }
     },
 
@@ -100,6 +101,7 @@ Component.register('helret-sales-channel-hello-retail', {
                 this.$set(this.salesChannel.configuration, 'feedDirectory', Utils.createId());
             }
 
+            this.getStorefrontDomain();
             this.originalFeedValues = JSON.parse(JSON.stringify(this.salesChannel.configuration.feeds));
         },
 
@@ -190,6 +192,38 @@ Component.register('helret-sales-channel-hello-retail', {
 
         removeFeedGenerating(feed) {
             this.feedGeneratingList.splice(this.feedGeneratingList.indexOf(feed), 1);
+        },
+
+        getStorefrontDomain() {
+            const { salesChannelDomainId } = this.salesChannel.configuration;
+            if(!salesChannelDomainId){
+                return;
+            }
+
+            const criteria = new Criteria;
+            criteria.addFilter(Criteria.equals('id', salesChannelDomainId));
+
+            this.globalDomainRepository.search(criteria, Shopware.Context.api).then(r =>
+                r.first() ?
+                    this.storefrontDomainUrl = r.first().url :
+                    null
+            );
+        },
+
+        feedUrl(feed){
+            const _feed = this.salesChannel.configuration.feeds[feed]||false;
+            if(!_feed){
+                return;
+            }
+            const { feedDirectory, salesChannelDomainId } = this.salesChannel.configuration;
+            if(!feedDirectory || !salesChannelDomainId){
+                return;
+            }
+            const criteria = new Criteria;
+            criteria.addFilter(Criteria.equals('id', salesChannelDomainId));
+
+            let urlPath = `/helloretail/${feedDirectory}/${_feed.file}`;
+            return this.storefrontDomainUrl + urlPath;
         },
 
         generateFeed(feed) {

@@ -4,6 +4,7 @@ import './service/hello-retail-templates.service';
 import './app/init/svg-icons.init';
 import './app/export-templates';
 
+import './extension/sw-sales-channel-detail';
 import './extension/sw-sales-channel-detail-base';
 import './extension/sw-sales-channel-create-base';
 

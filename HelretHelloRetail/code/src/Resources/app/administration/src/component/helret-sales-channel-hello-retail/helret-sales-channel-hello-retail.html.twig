@@ -72,25 +72,17 @@
                  :title="$tc('helret-hello-retail.detail.titleFeedCard')">
             <sw-text-field v-for="feed in feedsList"
                            :key="feed"
-                           v-model="salesChannel.configuration.feeds[feed].file"
+                           :value="feedUrl(feed)"
+                           disabled
                            type="text"
                            :placeholder="placeholder(salesChannel, `configuration.feeds.${feed}.file`, $tc('helret-hello-retail.detail.placeholderFeedLocation'))"
                            :label="$tc(`helret-hello-retail.detail.feeds.${feed}Title`)">
                 <template slot="suffix">
-                    <sw-button
-                        :isLoading="isFeedGenerating(feed)"
-                        :disabled="!enableGenerateFeed(feed)"
-                        v-tooltip="{
-                            message: $tc('helret-hello-retail.detail.generateTooltip'),
-                            disabled: enableGenerateFeed(feed),
-                            showOnDisabledElements: true
-                        }"
-                        @click="generateFeed(feed)"
-                        variant="primary">
-                        {{ $tc('helret-hello-retail.detail.labelGenerateFeedsBtn') }}
-                    </sw-button>
+                    <sw-field-copyable :copyableText="feedUrl(feed)"></sw-field-copyable>
                 </template>
             </sw-text-field>
         </sw-card>
+
+
     </div>
 {% endblock %}
