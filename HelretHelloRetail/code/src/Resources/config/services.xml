@@ -57,5 +57,10 @@
         <service id="Helret\HelloRetail\ScheduledTask\HelloRetailTask">
             <tag name="shopware.scheduled.task"/>
         </service>
+
+        <service id="Helret\HelloRetail\Subscriber\SaleschannelSubscriber" public="true">
+            <tag name="kernel.event_subscriber" />
+            <argument type="service" id="sales_channel.repository" />
+        </service>
     </services>
 </container>
