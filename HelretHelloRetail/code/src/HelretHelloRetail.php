@@ -24,6 +24,8 @@ class HelretHelloRetail extends Plugin
     public const FILE_TYPE_INDICATOR_SEPARATOR = '_';
     public const CONFIG_PATH = 'HelretHelloRetail.config';
     public const STORAGE_PATH = 'hello-retail';
+    public const ORDER_FEED = "orders.xml";
+    public const PRODUCT_FEED = "products.xml";
 
     /**
      * @param DeactivateContext $context
