@@ -20,7 +20,7 @@ class SaleschannelSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-           SalesChannelEvents::SALES_CHANNEL_WRITTEN => "onRetailChannelWritten",
+            SalesChannelEvents::SALES_CHANNEL_WRITTEN => "onRetailChannelWritten",
         ];
     }
 
@@ -36,13 +36,16 @@ class SaleschannelSubscriber implements EventSubscriberInterface
 
         /* update payloads if is first time run */
         foreach ($event->getPayloads() as $payload) {
-            /* If payloay for feeds set */
+            $updateStatement = [];
+            /* If payload for feeds set */
             if (isset($payload['configuration']) && isset($payload['configuration']['feeds'])) {
                 /* save payload, as we are going to pass it through with a few edits */
                 $updateStatement = $this->updateFeed($payload);
             }
             /* if changed */
-            if (count($event->getPayloads()) > 0 && $event->getPayloads()[0] != $updateStatement) {
+            if (count($event->getPayloads()) > 0
+                && ! empty($updateStatement)
+                && $event->getPayloads()[0] != $updateStatement) {
                 $this->salesChannelRepository->update([$updateStatement], $event->getContext());
             }
         }
@@ -58,7 +61,6 @@ class SaleschannelSubscriber implements EventSubscriberInterface
                 return HelretHelloRetail::ORDER_FEED;
             }
         }
-
         return "unknown.xml";
     }
 

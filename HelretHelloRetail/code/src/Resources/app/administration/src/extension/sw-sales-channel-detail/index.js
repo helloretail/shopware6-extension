@@ -1,13 +1,16 @@
 const { Component, Mixin } = Shopware;
 
-Component.override('sw-sales-channel-detail', {
+import saveFinish from "../utils/saveFinish"
 
+Component.override('sw-sales-channel-detail', {
     inject: [
         'helloRetailService',
+        'salesChannelService',
     ],
 
     mixins: [
-        Mixin.getByName('notification')
+        Mixin.getByName('notification'),
+
     ],
 
     watch: {
@@ -24,34 +27,7 @@ Component.override('sw-sales-channel-detail', {
 
     methods: {
 
-        createdComponent() {
-            this.$super('createdComponent');
-        },
-        saveFinish() {
+        saveFinish,
 
-            /* stop if not is Hello Retail channel */
-            if (this.helloRetailService.getTypeId() !== this.salesChannel.typeId) {
-                return;
-            }
-            /* Get feeds */
-            let feeds = JSON.parse(JSON.stringify(this.salesChannel.configuration.feeds));
-            /* Generate feeds based on objects keys eg order and product */
-            Object.keys(feeds).forEach(feed => {
-                this.helloRetailService.generateFeed(this.salesChannel.id, feed)
-                    .then((response) => {
-                        if (response.error) {
-                            this.createNotificationError({
-                                title: this.$t('Error'),
-                                message: response.message
-                            });
-                        } else {
-                            this.createNotificationSuccess({
-                                title: this.$t('Success'),
-                                message: response.message
-                            })
-                        }
-                    });
-            })
-        }
     }
 });
