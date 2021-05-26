@@ -19,7 +19,7 @@
             }
         },
         "detail": {
-            "placeholderFeedLocation": "Indtast feed fil navn...",
+            "placeholderFeedLocation": "Feed filnavn kommer her når de øvrige indstillinger er sat og gemt.",
             "titleFeedCard": "Feeds",
             "labelGenerateFeedsBtn": "Generere Feed",
             "generateTooltip": "Gem venligst inden generering",

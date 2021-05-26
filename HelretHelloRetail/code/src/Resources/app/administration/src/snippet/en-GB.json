@@ -19,7 +19,7 @@
             }
         },
         "detail": {
-            "placeholderFeedLocation": "Enter feed file name...",
+            "placeholderFeedLocation": "The feed filename will be shown once the other fields is filled out and saved",
             "titleFeedCard": "Feeds",
             "labelGenerateFeedsBtn": "Generate Feed",
             "generateTooltip": "Please save before generating",

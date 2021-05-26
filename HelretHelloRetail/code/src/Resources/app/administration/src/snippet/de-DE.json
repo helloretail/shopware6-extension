@@ -19,7 +19,7 @@
             }
         },
         "detail": {
-            "placeholderFeedLocation": "Geben Sie den Feed-Standort ein...",
+            "placeholderFeedLocation": "Der Feed-Dateiname wird angezeigt, sobald die anderen Felder ausgefüllt und gespeichert sind",
             "titleFeedCard": "Einspeisungen",
             "labelGenerateFeedsBtn": "Feed generieren",
             "generateTooltip": "Bitte speichern Sie vor dem Generieren",
