@@ -27,6 +27,20 @@ class HelretHelloRetail extends Plugin
     public const ORDER_FEED = "orders.xml";
     public const PRODUCT_FEED = "products.xml";
 
+    /* Settings config, used in task handler for mapping systemConfig, for the run interval. */
+    public const CONFIG_FIELDS = [
+        "order" => [
+            ["amount" => "OrdersTimeAmount1", "format" => "OrdersTimeFormat1"],
+            ["amount" => "OrdersTimeAmount2", "format" => "OrdersTimeFormat2"],
+            ["amount" => "OrdersTimeAmount3", "format" => "OrdersTimeFormat3"]
+        ],
+        "product" => [
+            ["amount" => "ProductTimeAmount1", "format" => "ProductTimeFormat1"],
+            ["amount" => "ProductTimeAmount2", "format" => "ProductTimeFormat2"],
+            ["amount" => "ProductTimeAmount3", "format" => "ProductTimeFormat3"]
+        ]
+    ];
+
     /**
      * @param DeactivateContext $context
      */

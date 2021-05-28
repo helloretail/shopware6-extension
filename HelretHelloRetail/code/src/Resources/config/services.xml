@@ -46,16 +46,17 @@
             <tag name="console.command"/>
         </service>
 
+        <service id="Helret\HelloRetail\ScheduledTask\HelloRetailTask">
+            <tag name="shopware.scheduled.task"/>
+        </service>
+
         <service id="Helret\HelloRetail\ScheduledTask\HelloRetailHandler">
             <argument type="service" id="scheduled_task.repository"/>
             <argument type="service" id="Helret\HelloRetail\Export\Profiles\ProfileExporter"/>
             <argument type="service" id="sales_channel.repository"/>
             <argument type="service" id="Helret\HelloRetail\Service\HelloRetailService"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
             <tag name="messenger.message_handler"/>
-        </service>
-
-        <service id="Helret\HelloRetail\ScheduledTask\HelloRetailTask">
-            <tag name="shopware.scheduled.task"/>
         </service>
 
         <service id="Helret\HelloRetail\Subscriber\SaleschannelSubscriber" public="true">

@@ -13,4 +13,226 @@
             <label lang="da-DK">Partner-ID</label>
         </input-field>
     </card>
+
+    <!-- schedule 1 -->
+    <card>
+        <title>Orders feed generation schedule 1</title>
+        <title lang="de-DE">Zeitplan für die Feed-Generierung von Bestellungen 1</title>
+        <title lang="da-DK">Tidsplan for ordre feeds generering 1</title>
+
+        <input-field type="int" >
+            <name>OrdersTimeAmount1</name>
+            <label>Time in whole numbers</label>
+            <label lang="de-DE">Zeit in ganzen Zahlen</label>
+            <label lang="da-DK">Tid i hele tal</label>
+            <defaultValue>30</defaultValue>
+        </input-field>
+        <input-field type="single-select">
+            <name>OrdersTimeFormat1</name>
+            <options>
+                <option>
+                    <id>minutes</id>
+                    <name>Minutes</name>
+                    <name lang="de-DE">Protokoll</name>
+                    <name lang="da-DK">Minutter</name>
+                </option>
+                <option>
+                    <id>hours</id>
+                    <name>Hours</name>
+                    <name lang="de-DE">Std</name>
+                    <name lang="da-DK">Timer</name>
+                </option>
+            </options>
+            <defaultValue>minutes</defaultValue>
+            <label>format selection</label>
+            <label lang="de-DE">Formatauswahl</label>
+            <label lang="da-DK">Format valg</label>
+        </input-field>
+    </card>
+
+
+
+    <!-- schedule 2 -->
+    <card>
+        <title>Orders feed generation schedule 2</title>
+        <title lang="de-DE">Zeitplan für die Feed-Generierung von Bestellungen 2</title>
+        <title lang="da-DK">Tidsplan for ordre feeds generering 2</title>
+
+        <input-field type="int" >
+            <name>OrdersTimeAmount2</name>
+            <label>Time in whole numbers</label>
+            <label lang="de-DE">Zeit in ganzen Zahlen</label>
+            <label lang="da-DK">Tid i hele tal</label>
+            <defaultValue>1</defaultValue>
+        </input-field>
+        <input-field type="single-select">
+            <name>OrdersTimeFormat2</name>
+            <options>
+                <option>
+                    <id>minutes</id>
+                    <name>Minutes</name>
+                    <name lang="de-DE">Protokoll</name>
+                    <name lang="da-DK">Minutter</name>
+                </option>
+                <option>
+                    <id>hours</id>
+                    <name>Hours</name>
+                    <name lang="de-DE">Std</name>
+                    <name lang="da-DK">Timer</name>
+                </option>
+            </options>
+            <defaultValue>hours</defaultValue>
+            <label>format selection</label>
+            <label lang="de-DE">Formatauswahl</label>
+            <label lang="da-DK">Format valg</label>
+        </input-field>
+    </card>
+
+    <!-- schedule 3 -->
+    <card>
+        <title>Orders feed generation schedule 3</title>
+        <title lang="de-DE">Zeitplan für die Feed-Generierung von Bestellungen 3</title>
+        <title lang="da-DK">Tidsplan for ordre feeds generering 3</title>
+
+        <input-field type="int" >
+            <name>OrdersTimeAmount3</name>
+            <label>Time in whole numbers</label>
+            <label lang="de-DE">Zeit in ganzen Zahlen</label>
+            <label lang="da-DK">Tid i hele tal</label>
+            <defaultValue>2</defaultValue>
+        </input-field>
+        <input-field type="single-select">
+            <name>OrdersTimeFormat3</name>
+            <options>
+                <option>
+                    <id>minutes</id>
+                    <name>Minutes</name>
+                    <name lang="de-DE">Protokoll</name>
+                    <name lang="da-DK">Minutter</name>
+                </option>
+                <option>
+                    <id>hours</id>
+                    <name>Hours</name>
+                    <name lang="de-DE">Std</name>
+                    <name lang="da-DK">Timer</name>
+                </option>
+            </options>
+            <defaultValue>hours</defaultValue>
+            <label>format selection</label>
+            <label lang="de-DE">Formatauswahl</label>
+            <label lang="da-DK">Format valg</label>
+        </input-field>
+    </card>
+
+
+    <!-- schedule 4 -->
+    <card>
+        <title>Products feed generation schedule 1</title>
+        <title lang="de-DE">Zeitplan für die Erzeugung von Produktfutter 1</title>
+        <title lang="da-DK">Tidsplan for produkt feeds generering 1</title>
+
+        <input-field type="int">
+            <name>ProductTimeAmount1</name>
+            <label>Time in whole numbers</label>
+            <label lang="de-DE">Zeit in ganzen Zahlen</label>
+            <label lang="da-DK">Tid i hele tal</label>
+            <defaultValue>30</defaultValue>
+        </input-field>
+        <input-field type="single-select">
+            <name>ProductTimeFormat1</name>
+            <options>
+                <option>
+                    <id>minutes</id>
+                    <name>Minutes</name>
+                    <name lang="de-DE">Protokoll</name>
+                    <name lang="da-DK">Minutter</name>
+                </option>
+                <option>
+                    <id>hours</id>
+                    <name>Hours</name>
+                    <name lang="de-DE">Std</name>
+                    <name lang="da-DK">Timer</name>
+                </option>
+            </options>
+            <defaultValue>minutes</defaultValue>
+            <label>format selection</label>
+            <label lang="de-DE">Formatauswahl</label>
+            <label lang="da-DK">Format valg</label>
+        </input-field>
+    </card>
+
+
+    <!-- schedule 5 -->
+    <card>
+        <title>Products feed generation schedule 2</title>
+        <title lang="de-DE">Zeitplan für die Erzeugung von Produktfutter 2</title>
+        <title lang="da-DK">Tidsplan for produkt feeds generering 2</title>
+
+        <input-field type="int">
+            <name>ProductTimeAmount2</name>
+            <label>Time in whole numbers</label>
+            <label lang="de-DE">Zeit in ganzen Zahlen</label>
+            <label lang="da-DK">Tid i hele tal</label>
+            <defaultValue>1</defaultValue>
+        </input-field>
+        <input-field type="single-select">
+            <name>ProductTimeFormat2</name>
+            <options>
+                <option>
+                    <id>minutes</id>
+                    <name>Minutes</name>
+                    <name lang="de-DE">Protokoll</name>
+                    <name lang="da-DK">Minutter</name>
+                </option>
+                <option>
+                    <id>hours</id>
+                    <name>Hours</name>
+                    <name lang="de-DE">Std</name>
+                    <name lang="da-DK">Timer</name>
+                </option>
+            </options>
+            <defaultValue>hours</defaultValue>
+            <label>format selection</label>
+            <label lang="de-DE">Formatauswahl</label>
+            <label lang="da-DK">Format valg</label>
+        </input-field>
+    </card>
+
+
+    <!-- schedule 6 -->
+    <card>
+        <title>Products feed generation schedule 3</title>
+        <title lang="de-DE">Zeitplan für die Erzeugung von Produktfutter 3</title>
+        <title lang="da-DK">Tidsplan for produkt feeds generering 3</title>
+
+        <input-field type="int">
+            <name>ProductTimeAmount3</name>
+            <label>Time in whole numbers</label>
+            <label lang="de-DE">Zeit in ganzen Zahlen</label>
+            <label lang="da-DK">Tid i hele tal</label>
+            <defaultValue>2</defaultValue>
+        </input-field>
+        <input-field type="single-select">
+            <name>ProductTimeFormat3</name>
+            <options>
+                <option>
+                    <id>minutes</id>
+                    <name>Minutes</name>
+                    <name lang="de-DE">Protokoll</name>
+                    <name lang="da-DK">Minutter</name>
+                </option>
+                <option>
+                    <id>hours</id>
+                    <name>Hours</name>
+                    <name lang="de-DE">Std</name>
+                    <name lang="da-DK">Timer</name>
+                </option>
+            </options>
+            <defaultValue>hours</defaultValue>
+            <label>format selection</label>
+            <label lang="de-DE">Formatauswahl</label>
+            <label lang="da-DK">Format valg</label>
+        </input-field>
+    </card>
+
 </config>
