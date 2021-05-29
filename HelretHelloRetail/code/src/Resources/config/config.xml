@@ -19,13 +19,12 @@
         <title>Orders feed generation schedule 1</title>
         <title lang="de-DE">Zeitplan für die Feed-Generierung von Bestellungen 1</title>
         <title lang="da-DK">Tidsplan for ordre feeds generering 1</title>
-
         <input-field type="int" >
             <name>OrdersTimeAmount1</name>
-            <label>Time in whole numbers</label>
-            <label lang="de-DE">Zeit in ganzen Zahlen</label>
-            <label lang="da-DK">Tid i hele tal</label>
-            <defaultValue>30</defaultValue>
+            <label>Time in whole numbers (0 to deactive scheduled run)</label>
+            <label lang="de-DE">Zeit in ganzen Zahlen (0 bis deaktivierter geplanter Lauf)</label>
+            <label lang="da-DK">Tid i hele tal (0 for at deaktivere interval)</label>
+            <defaultValue>0</defaultValue>
         </input-field>
         <input-field type="single-select">
             <name>OrdersTimeFormat1</name>
@@ -60,10 +59,10 @@
 
         <input-field type="int" >
             <name>OrdersTimeAmount2</name>
-            <label>Time in whole numbers</label>
-            <label lang="de-DE">Zeit in ganzen Zahlen</label>
-            <label lang="da-DK">Tid i hele tal</label>
-            <defaultValue>1</defaultValue>
+            <label>Time in whole numbers (0 to deactive scheduled run)</label>
+            <label lang="de-DE">Zeit in ganzen Zahlen (0 bis deaktivierter geplanter Lauf)</label>
+            <label lang="da-DK">Tid i hele tal (0 for at deaktivere interval)</label>
+            <defaultValue>0</defaultValue>
         </input-field>
         <input-field type="single-select">
             <name>OrdersTimeFormat2</name>
@@ -81,7 +80,8 @@
                     <name lang="da-DK">Timer</name>
                 </option>
             </options>
-            <defaultValue>hours</defaultValue>
+            <defaultValue>minutes</defaultValue>
+            <defaultValue>minutes</defaultValue>
             <label>format selection</label>
             <label lang="de-DE">Formatauswahl</label>
             <label lang="da-DK">Format valg</label>
@@ -96,10 +96,10 @@
 
         <input-field type="int" >
             <name>OrdersTimeAmount3</name>
-            <label>Time in whole numbers</label>
-            <label lang="de-DE">Zeit in ganzen Zahlen</label>
-            <label lang="da-DK">Tid i hele tal</label>
-            <defaultValue>2</defaultValue>
+            <label>Time in whole numbers (0 to deactive scheduled run)</label>
+            <label lang="de-DE">Zeit in ganzen Zahlen (0 bis deaktivierter geplanter Lauf)</label>
+            <label lang="da-DK">Tid i hele tal (0 for at deaktivere interval)</label>
+            <defaultValue>0</defaultValue>
         </input-field>
         <input-field type="single-select">
             <name>OrdersTimeFormat3</name>
@@ -117,7 +117,8 @@
                     <name lang="da-DK">Timer</name>
                 </option>
             </options>
-            <defaultValue>hours</defaultValue>
+            <defaultValue>minutes</defaultValue>
+            <defaultValue>minutes</defaultValue>
             <label>format selection</label>
             <label lang="de-DE">Formatauswahl</label>
             <label lang="da-DK">Format valg</label>
@@ -133,10 +134,10 @@
 
         <input-field type="int">
             <name>ProductTimeAmount1</name>
-            <label>Time in whole numbers</label>
-            <label lang="de-DE">Zeit in ganzen Zahlen</label>
-            <label lang="da-DK">Tid i hele tal</label>
-            <defaultValue>30</defaultValue>
+            <label>Time in whole numbers (0 to deactive scheduled run)</label>
+            <label lang="de-DE">Zeit in ganzen Zahlen (0 bis deaktivierter geplanter Lauf)</label>
+            <label lang="da-DK">Tid i hele tal (0 for at deaktivere interval)</label>
+            <defaultValue>0</defaultValue>
         </input-field>
         <input-field type="single-select">
             <name>ProductTimeFormat1</name>
@@ -170,10 +171,10 @@
 
         <input-field type="int">
             <name>ProductTimeAmount2</name>
-            <label>Time in whole numbers</label>
-            <label lang="de-DE">Zeit in ganzen Zahlen</label>
-            <label lang="da-DK">Tid i hele tal</label>
-            <defaultValue>1</defaultValue>
+            <label>Time in whole numbers (0 to deactive scheduled run)</label>
+            <label lang="de-DE">Zeit in ganzen Zahlen (0 bis deaktivierter geplanter Lauf)</label>
+            <label lang="da-DK">Tid i hele tal (0 for at deaktivere interval)</label>
+            <defaultValue>0</defaultValue>
         </input-field>
         <input-field type="single-select">
             <name>ProductTimeFormat2</name>
@@ -191,7 +192,8 @@
                     <name lang="da-DK">Timer</name>
                 </option>
             </options>
-            <defaultValue>hours</defaultValue>
+            <defaultValue>minutes</defaultValue>
+            <defaultValue>minutes</defaultValue>
             <label>format selection</label>
             <label lang="de-DE">Formatauswahl</label>
             <label lang="da-DK">Format valg</label>
@@ -207,10 +209,10 @@
 
         <input-field type="int">
             <name>ProductTimeAmount3</name>
-            <label>Time in whole numbers</label>
-            <label lang="de-DE">Zeit in ganzen Zahlen</label>
-            <label lang="da-DK">Tid i hele tal</label>
-            <defaultValue>2</defaultValue>
+            <label>Time in whole numbers (0 to deactive scheduled run)</label>
+            <label lang="de-DE">Zeit in ganzen Zahlen (0 bis deaktivierter geplanter Lauf)</label>
+            <label lang="da-DK">Tid i hele tal (0 for at deaktivere interval)</label>
+            <defaultValue>0</defaultValue>
         </input-field>
         <input-field type="single-select">
             <name>ProductTimeFormat3</name>
@@ -228,7 +230,7 @@
                     <name lang="da-DK">Timer</name>
                 </option>
             </options>
-            <defaultValue>hours</defaultValue>
+            <defaultValue>minutes</defaultValue>
             <label>format selection</label>
             <label lang="de-DE">Formatauswahl</label>
             <label lang="da-DK">Format valg</label>

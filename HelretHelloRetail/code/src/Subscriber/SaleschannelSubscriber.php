@@ -26,11 +26,20 @@ class SaleschannelSubscriber implements EventSubscriberInterface
 
     public function onRetailChannelWritten($event): void
     {
+        /* try catch in case writeResults are empty */
+        try {
+            $criteria = new Criteria([$event->getWriteResults()[0]->getPrimaryKey()]);
+            $salesChannel = $this
+                ->salesChannelRepository
+                ->search($criteria, $event->getContext())
+                ->getEntities()
+                ->first();
+        } catch (\Exception $e) {
+            $salesChannel = null;
+        }
 
-        $criteria = new Criteria([$event->getWriteResults()[0]->getPrimaryKey()]);
-        $salesChannel = $this->salesChannelRepository->search($criteria, $event->getContext())->getEntities()->first();
         /* If not a hello retail channel, break! */
-        if (HelretHelloRetail::SALES_CHANNEL_TYPE_HELLO_RETAIL != $salesChannel->getTypeId()) {
+        if ($salesChannel == null || HelretHelloRetail::SALES_CHANNEL_TYPE_HELLO_RETAIL != $salesChannel->getTypeId()) {
             return;
         }
 

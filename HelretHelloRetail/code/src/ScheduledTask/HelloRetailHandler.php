@@ -19,9 +19,6 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
  */
 class HelloRetailHandler extends ScheduledTaskHandler
 {
-
-
-
     /**
      * @var ProfileExporterInterface
      */
@@ -116,7 +113,7 @@ class HelloRetailHandler extends ScheduledTaskHandler
             /* get the fields from systemConfig now */
             foreach ($fields as $feedIntervalSettings) {
                 $format = (string)$feedIntervalSettings['format'];
-                $amount = (string)$feedIntervalSettings['amount'];
+                $amount = (int)$feedIntervalSettings['amount'];
 
                 if ($format == "hours") {
                     array_push($intervals, $this->getTimeTilNextRun($amount * 60 * 60));
@@ -173,7 +170,16 @@ class HelloRetailHandler extends ScheduledTaskHandler
     {
         $feeds = [];
         foreach (array_keys(HelretHelloRetail::CONFIG_FIELDS) as $feedName) {
-            $nextRun = min($this->getIntervalsInSeconds($feedName, $salesChannelId));
+            $intervals = $this->getIntervalsInSeconds($feedName, $salesChannelId);
+
+            /* if intervals not an empty array, then get closest run */
+            if (!empty($intervals)) {
+                $nextRun = min($intervals);
+            } else {
+                /* else make sure it wont run, by setting a value above the run buffer */
+                $nextRun = HelloRetailTask::getDefaultInterval() +1;
+            }
+
             /* if within the interval of this task, its time to run */
             if ($nextRun <= HelloRetailTask::getDefaultInterval()) {
                 array_push($feeds, $feedName);
@@ -188,6 +194,11 @@ class HelloRetailHandler extends ScheduledTaskHandler
      */
     private function getTimeTilNextRun(int $interval): int
     {
-        return abs((time() % $interval) - $interval);
+        /* return seconds until next run */
+        if ($interval != 0) {
+            return abs((time() % $interval) - $interval);
+        }
+        /* if interval is 0, then never run it! */
+        return HelloRetailTask::getDefaultInterval() + 1;
     }
 }
