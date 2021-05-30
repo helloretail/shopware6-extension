@@ -12,18 +12,28 @@ class SaleschannelSubscriber implements EventSubscriberInterface
 
     private EntityRepository $salesChannelRepository;
 
+    /**
+     * SaleschannelSubscriber constructor.
+     * @param EntityRepository $salesChannelRepository
+     */
     public function __construct(EntityRepository $salesChannelRepository)
     {
         $this->salesChannelRepository = $salesChannelRepository;
     }
 
-    public static function getSubscribedEvents()
+    /**
+     * @return string[]
+     */
+    public static function getSubscribedEvents(): array
     {
         return [
             SalesChannelEvents::SALES_CHANNEL_WRITTEN => "onRetailChannelWritten",
         ];
     }
 
+    /**
+     * @param $event
+     */
     public function onRetailChannelWritten($event): void
     {
         /* try catch in case writeResults are empty */
@@ -61,6 +71,10 @@ class SaleschannelSubscriber implements EventSubscriberInterface
     }
 
 
+    /**
+     * @param array $feed
+     * @return string
+     */
     private function getFeedFile(array $feed): string
     {
         if ($feed['file'] == null && isset($feed['name'])) {
@@ -74,6 +88,10 @@ class SaleschannelSubscriber implements EventSubscriberInterface
     }
 
 
+    /**
+     * @param array $payload
+     * @return array
+     */
     private function updateFeed(array $payload): array
     {
         foreach ($payload['configuration']['feeds'] as $feed_key => $feed) {

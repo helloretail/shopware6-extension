@@ -95,8 +95,10 @@ class HelloRetailHandler extends ScheduledTaskHandler
         }
     }
 
+
     /**
      * @param string|null $type
+     * @param string $salesChannelId
      * @return array
      */
     private function getIntervalsInSeconds(?string $type, string $salesChannelId): array
@@ -112,14 +114,8 @@ class HelloRetailHandler extends ScheduledTaskHandler
             $fields = $this->getSettingsFromSystemConfig($type, HelretHelloRetail::CONFIG_FIELDS, $salesChannelId);
             /* get the fields from systemConfig now */
             foreach ($fields as $feedIntervalSettings) {
-                $format = (string)$feedIntervalSettings['format'];
                 $amount = (int)$feedIntervalSettings['amount'];
-
-                if ($format == "hours") {
-                    array_push($intervals, $this->getTimeTilNextRun($amount * 60 * 60));
-                } elseif ($format == "minutes") {
-                    array_push($intervals, $this->getTimeTilNextRun($amount * 60));
-                }
+                array_push($intervals, $this->getTimeTilNextRun($amount));
             }
         } catch (\Exception $e) {
             $this->helloRetailService->exportLogger(
@@ -135,8 +131,10 @@ class HelloRetailHandler extends ScheduledTaskHandler
     }
 
     /**
-     * @param string|null $type
-     * @return array|string[][][]
+     * @param string $type
+     * @param array|null $fields
+     * @param $salesChannelId
+     * @return array
      */
     private function getSettingsFromSystemConfig(string $type, ?array $fields, $salesChannelId): array
     {
@@ -148,14 +146,11 @@ class HelloRetailHandler extends ScheduledTaskHandler
         /* get configFields from systemConfigService */
         $configFields = $this->configService->get("HelretHelloRetail.config", $salesChannelId);
         /* shake out the required fields */
-        foreach ($fields[$type] as $settingsFields) {
-            $formatKey = $settingsFields['format'];
-            $amountKey = $settingsFields['amount'];
 
-            if (isset($configFields[$formatKey]) && isset($configFields[$amountKey])) {
+        foreach ($fields[$type] as $settingsFieldKey) {
+            if (isset($configFields[$settingsFieldKey])) {
                 $valueFields[] = [
-                    "format" => $configFields[$formatKey],
-                    "amount" => $configFields[$amountKey]
+                    "amount" => $configFields[$settingsFieldKey]
                 ];
             }
         }
@@ -187,6 +182,7 @@ class HelloRetailHandler extends ScheduledTaskHandler
         }
         return $feeds;
     }
+
 
     /**
      * @param int $interval

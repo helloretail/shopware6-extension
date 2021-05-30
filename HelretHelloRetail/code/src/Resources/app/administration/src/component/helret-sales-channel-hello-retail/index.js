@@ -207,8 +207,7 @@ Component.register('helret-sales-channel-hello-retail', {
             }
             const criteria = new Criteria;
             criteria.addFilter(Criteria.equals('id', salesChannelDomainId));
-
-            let urlPath = `/helloretail/${feedDirectory}/${_feed.file}`;
+            let urlPath = `/hello-retail/${feedDirectory}/${_feed.file}`;
             return this.storefrontDomainUrl + urlPath;
         },
 

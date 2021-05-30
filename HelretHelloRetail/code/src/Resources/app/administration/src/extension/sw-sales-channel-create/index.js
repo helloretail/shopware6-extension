@@ -10,7 +10,6 @@ const insertIdIntoRoute = (to, from, next) => {
     next();
 };
 
-
 Component.override('sw-sales-channel-create', {
 
     inject: [

@@ -26,8 +26,6 @@ Component.override('sw-sales-channel-detail', {
     },
 
     methods: {
-
         saveFinish,
-
     }
 });
