@@ -11,7 +11,6 @@ const insertIdIntoRoute = (to, from, next) => {
 };
 
 Component.override('sw-sales-channel-create', {
-
     inject: [
         'helloRetailService',
         'salesChannelService',
@@ -20,6 +19,7 @@ Component.override('sw-sales-channel-create', {
     mixins: [
         Mixin.getByName('notification')
     ],
+
     computed: {
         allowSaving() {
             return this.acl.can('sales_channel.creator');
@@ -36,5 +36,5 @@ Component.override('sw-sales-channel-create', {
         onSave() {
             this.$super("onSave");
         }
-    }
+    },
 });

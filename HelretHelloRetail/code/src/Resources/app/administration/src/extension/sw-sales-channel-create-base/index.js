@@ -18,5 +18,4 @@ Component.override('sw-sales-channel-create-base', {
             return this.$route.params.typeId === this.helloRetailService.getTypeId();
         }
     },
-
 });

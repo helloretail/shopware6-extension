@@ -14,8 +14,6 @@
         </input-field>
     </card>
 
-
-
     <card>
         <title>Generate feeds on schedule</title>
         <title lang="de-DE">Feeds termingerecht generieren</title>
@@ -89,7 +87,6 @@
             </options>
             <defaultValue>0</defaultValue>
         </input-field>
-
 
         <input-field type="single-select">
             <name>ProductTimeAmount</name>

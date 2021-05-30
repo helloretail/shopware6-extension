@@ -5,7 +5,6 @@ namespace Helret\HelloRetail\ScheduledTask;
 use Helret\HelloRetail\Export\Profiles\ProfileExporterInterface;
 use Helret\HelloRetail\HelretHelloRetail;
 use Helret\HelloRetail\Service\HelloRetailService;
-use mysql_xdevapi\Exception;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -33,7 +32,8 @@ class HelloRetailHandler extends ScheduledTaskHandler
      * @var HelloRetailService
      */
     protected $helloRetailService;
-    private SystemConfigService $configService;
+
+    protected SystemConfigService $configService;
 
     /**
      * HelloRetailHandler constructor.
@@ -41,6 +41,7 @@ class HelloRetailHandler extends ScheduledTaskHandler
      * @param ProfileExporterInterface $profileExporter
      * @param EntityRepositoryInterface $salesChannelRepository
      * @param HelloRetailService $helloRetailService
+     * @param SystemConfigService $configService
      */
     public function __construct(
         EntityRepositoryInterface $scheduledTaskRepository,
@@ -95,7 +96,6 @@ class HelloRetailHandler extends ScheduledTaskHandler
         }
     }
 
-
     /**
      * @param string|null $type
      * @param string $salesChannelId
@@ -144,9 +144,9 @@ class HelloRetailHandler extends ScheduledTaskHandler
             return $valueFields;
         }
         /* get configFields from systemConfigService */
-        $configFields = $this->configService->get("HelretHelloRetail.config", $salesChannelId);
-        /* shake out the required fields */
+        $configFields = $this->configService->get(HelretHelloRetail::CONFIG_PATH, $salesChannelId);
 
+        /* shake out the required fields */
         foreach ($fields[$type] as $settingsFieldKey) {
             if (isset($configFields[$settingsFieldKey])) {
                 $valueFields[] = [
@@ -154,6 +154,7 @@ class HelloRetailHandler extends ScheduledTaskHandler
                 ];
             }
         }
+
         return $valueFields;
     }
 
@@ -180,6 +181,7 @@ class HelloRetailHandler extends ScheduledTaskHandler
                 array_push($feeds, $feedName);
             }
         }
+
         return $feeds;
     }
 
@@ -194,6 +196,7 @@ class HelloRetailHandler extends ScheduledTaskHandler
         if ($interval != 0) {
             return abs((time() % $interval) - $interval);
         }
+
         /* if interval is 0, then never run it! */
         return HelloRetailTask::getDefaultInterval() + 1;
     }

@@ -1,4 +1,5 @@
 <?php declare(strict_types=1);
+
 namespace Helret\HelloRetail\Subscriber;
 
 use Helret\HelloRetail\HelretHelloRetail;
@@ -7,13 +8,16 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelEvents;
 
-class SaleschannelSubscriber implements EventSubscriberInterface
+/**
+ * Class SalesChannelSubscriber
+ * @package Helret\HelloRetail\Subscriber
+ */
+class SalesChannelSubscriber implements EventSubscriberInterface
 {
-
-    private EntityRepository $salesChannelRepository;
+    protected EntityRepository $salesChannelRepository;
 
     /**
-     * SaleschannelSubscriber constructor.
+     * SalesChannelSubscriber constructor.
      * @param EntityRepository $salesChannelRepository
      */
     public function __construct(EntityRepository $salesChannelRepository)
@@ -70,7 +74,6 @@ class SaleschannelSubscriber implements EventSubscriberInterface
         }
     }
 
-
     /**
      * @param array $feed
      * @return string
@@ -84,9 +87,9 @@ class SaleschannelSubscriber implements EventSubscriberInterface
                 return HelretHelloRetail::ORDER_FEED;
             }
         }
+
         return "unknown.xml";
     }
-
 
     /**
      * @param array $payload
@@ -100,6 +103,7 @@ class SaleschannelSubscriber implements EventSubscriberInterface
                 $payload['configuration']['feeds'][$feed_key]['file'] = $this->getFeedFile($feed);
             }
         }
+
         return $payload;
     }
 }

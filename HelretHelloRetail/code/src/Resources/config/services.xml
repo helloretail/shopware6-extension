@@ -59,7 +59,7 @@
             <tag name="messenger.message_handler"/>
         </service>
 
-        <service id="Helret\HelloRetail\Subscriber\SaleschannelSubscriber" public="true">
+        <service id="Helret\HelloRetail\Subscriber\SalesChannelSubscriber" public="true">
             <tag name="kernel.event_subscriber" />
             <argument type="service" id="sales_channel.repository" />
         </service>
