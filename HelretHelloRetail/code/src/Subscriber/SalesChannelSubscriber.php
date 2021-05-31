@@ -4,6 +4,7 @@ namespace Helret\HelloRetail\Subscriber;
 
 use Helret\HelloRetail\HelretHelloRetail;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelEvents;
@@ -36,9 +37,9 @@ class SalesChannelSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @param $event
+     * @param EntityWrittenEvent $event
      */
-    public function onRetailChannelWritten($event): void
+    public function onRetailChannelWritten(EntityWrittenEvent $event): void
     {
         /* try catch in case writeResults are empty */
         try {
