@@ -8,23 +8,10 @@ namespace Helret\HelloRetail\Export;
  */
 class ExportEntity implements ExportEntityInterface
 {
-    /**
-     * @var string
-     */
-    private $storeFrontSalesChannelId;
-    /**
-     * @var string
-     */
-    private $salesChannelDomainId;
-    /**
-     * @var array
-     */
-    private $feeds;
-
-    /**
-     * @var string
-     */
-    private $feedDirectory;
+    private string $storeFrontSalesChannelId;
+    private string $salesChannelDomainId;
+    private array $feeds;
+    private string $feedDirectory;
 
     /**
      * @return string

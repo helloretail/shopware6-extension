@@ -15,8 +15,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelEvents;
  */
 class SalesChannelSubscriber implements EventSubscriberInterface
 {
-    /** @var EntityRepository */
-    protected $salesChannelRepository;
+    protected EntityRepository $salesChannelRepository;
 
     /**
      * SalesChannelSubscriber constructor.

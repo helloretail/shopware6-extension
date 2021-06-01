@@ -10,14 +10,8 @@ use Helret\HelloRetail\Export\ExportEntityInterface;
  */
 class HelloRetailExport
 {
-    /**
-     * @var ExportEntityInterface
-     */
-    protected $exportEntity;
-    /**
-     * @var string
-     */
-    protected $feed;
+    protected ExportEntityInterface $exportEntity;
+    protected string $feed;
 
     /**
      * HelloRetailExport constructor.

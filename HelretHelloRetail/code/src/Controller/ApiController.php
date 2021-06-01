@@ -16,10 +16,7 @@ use Helret\HelloRetail\HelretHelloRetail;
  */
 class ApiController extends AbstractController
 {
-    /**
-     * @var ProfileExporterInterface
-     */
-    protected $profileExporter;
+    protected ProfileExporterInterface $profileExporter;
 
     /**
      * ApiController constructor.
@@ -30,13 +27,11 @@ class ApiController extends AbstractController
         $this->profileExporter = $profileExporter;
     }
 
-    //phpcs:disable
     /**
-     * @Route("/api/v{version}/helret/hello-retail/getTypeId", name="api.action.helret.hello-retail.getTypeId", methods={"GET"})
+     * @Route("/api/helret/hello-retail/getTypeId", name="api.action.helret.hello-retail.getTypeId", methods={"GET"})
      * @param Context $context
      * @return Response
      */
-    //phpcs:enable
     public function getTypeId(Context $context): Response
     {
         return new Response(HelretHelloRetail::SALES_CHANNEL_TYPE_HELLO_RETAIL);
@@ -44,7 +39,7 @@ class ApiController extends AbstractController
 
     //phpcs:disable
     /**
-     * @Route("/api/v{version}/helret/hello-retail/generateFeed/{salesChannelId}/{feed}", name="api.action.helret.hello-retail.generateFeed", methods={"POST"})
+     * @Route("/api/helret/hello-retail/generateFeed/{salesChannelId}/{feed}", name="api.action.helret.hello-retail.generateFeed", methods={"POST"})
      * @param Context $context
      * @param $salesChannelId
      * @param $feed

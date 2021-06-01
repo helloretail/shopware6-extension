@@ -30,30 +30,12 @@ class HelloRetailExportHandler extends AbstractMessageHandler
     private const RETRIES = 20;
     private const SLEEP_BETWEEN_RETRIES = 20; // Seconds
 
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-    /**
-     * @var ContainerInterface
-     */
-    protected $container;
-    /**
-     * @var Translator
-     */
-    protected $translator;
-    /**
-     * @var Filesystem|FilesystemInterface
-     */
-    protected $filesystem;
-    /**
-     * @var HelloRetailService
-     */
-    protected $helloRetailService;
-    /**
-     * @var MessageBusInterface
-     */
-    protected $bus;
+    protected LoggerInterface $logger;
+    protected ContainerInterface $container;
+    protected Translator $translator;
+    protected Filesystem $filesystem;
+    protected HelloRetailService $helloRetailService;
+    protected MessageBusInterface $bus;
 
     /**
      * HelloRetailExportHandler constructor.
@@ -82,6 +64,9 @@ class HelloRetailExportHandler extends AbstractMessageHandler
 
     }
 
+    /**
+     * @return iterable
+     */
     public static function getHandledMessages(): iterable
     {
         return [ExportEntityElement::class];
@@ -156,6 +141,9 @@ class HelloRetailExportHandler extends AbstractMessageHandler
         }
     }
 
+    /**
+     * @param ExportEntityElement $message
+     */
     private function collectFiles(ExportEntityElement $message)
     {
         $dir = $message->getDirectory();

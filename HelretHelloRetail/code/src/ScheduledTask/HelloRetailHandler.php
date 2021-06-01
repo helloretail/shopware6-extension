@@ -18,25 +18,10 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
  */
 class HelloRetailHandler extends ScheduledTaskHandler
 {
-    /**
-     * @var ProfileExporterInterface
-     */
-    protected $profileExporter;
-
-    /**
-     * @var EntityRepositoryInterface
-     */
-    protected $salesChannelRepository;
-
-    /**
-     * @var HelloRetailService
-     */
-    protected $helloRetailService;
-
-    /**
-     * @var SystemConfigService
-     */
-    protected $configService;
+    protected ProfileExporterInterface $profileExporter;
+    protected EntityRepositoryInterface $salesChannelRepository;
+    protected HelloRetailService $helloRetailService;
+    protected SystemConfigService $configService;
 
     /**
      * HelloRetailHandler constructor.
