@@ -33,7 +33,10 @@ class HelloRetailHandler extends ScheduledTaskHandler
      */
     protected $helloRetailService;
 
-    protected SystemConfigService $configService;
+    /**
+     * @var SystemConfigService
+     */
+    protected $configService;
 
     /**
      * HelloRetailHandler constructor.
