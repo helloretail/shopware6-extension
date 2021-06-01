@@ -24,6 +24,18 @@ class HelretHelloRetail extends Plugin
     public const FILE_TYPE_INDICATOR_SEPARATOR = '_';
     public const CONFIG_PATH = 'HelretHelloRetail.config';
     public const STORAGE_PATH = 'hello-retail';
+    public const ORDER_FEED = "orders.xml";
+    public const PRODUCT_FEED = "products.xml";
+
+    /* Settings config, used in task handler for mapping systemConfig, for the run interval. */
+    public const CONFIG_FIELDS = [
+        "order" => [
+            "amount" => "OrdersTimeAmount"
+        ],
+        "product" => [
+            "amount" => "ProductTimeAmount"
+        ]
+    ];
 
     /**
      * @param DeactivateContext $context

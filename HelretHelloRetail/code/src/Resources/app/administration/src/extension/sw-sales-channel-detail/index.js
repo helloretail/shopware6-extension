@@ -1,9 +1,16 @@
-const { Component } = Shopware;
+const { Component, Mixin } = Shopware;
+
+import saveFinish from "../utils/saveFinish"
 
 Component.override('sw-sales-channel-detail', {
-
     inject: [
-        'helloRetailService'
+        'helloRetailService',
+        'salesChannelService',
+    ],
+
+    mixins: [
+        Mixin.getByName('notification'),
+
     ],
 
     watch: {
@@ -19,8 +26,6 @@ Component.override('sw-sales-channel-detail', {
     },
 
     methods: {
-        createdComponent() {
-            this.$super('createdComponent');
-        },
+        saveFinish,
     }
 });

@@ -11,7 +11,8 @@ Component.register('helret-sales-channel-hello-retail', {
         'salesChannelService',
         'repositoryFactory',
         'helloRetailTemplateService',
-        'helloRetailService'
+        'helloRetailService',
+        'acl'
     ],
 
     mixins: [
@@ -33,11 +34,12 @@ Component.register('helret-sales-channel-hello-retail', {
 
     data() {
         return {
+            showDeleteModal: false, // Handle the deletion of the sales channel(s)
             loading: true,
             storefrontSalesChannelId: null,
             feedValues: [],
-            feedGeneratingList: [],
-            originalFeedValues: null
+            originalFeedValues: null,
+            storefrontDomainUrl: ""
         }
     },
 
@@ -100,6 +102,7 @@ Component.register('helret-sales-channel-hello-retail', {
                 this.$set(this.salesChannel.configuration, 'feedDirectory', Utils.createId());
             }
 
+            this.getStorefrontDomain();
             this.originalFeedValues = JSON.parse(JSON.stringify(this.salesChannel.configuration.feeds));
         },
 
@@ -176,38 +179,56 @@ Component.register('helret-sales-channel-hello-retail', {
             return originalFile !== null && originalFile === this.salesChannel.configuration.feeds[feed].file;
         },
 
-        setFeedGenerating(feed) {
-            if (this.isFeedGenerating(feed)) {
+        getStorefrontDomain() {
+            const { salesChannelDomainId } = this.salesChannel.configuration;
+            if(!salesChannelDomainId){
                 return;
             }
 
-            this.feedGeneratingList.push(feed);
+            const criteria = new Criteria;
+            criteria.addFilter(Criteria.equals('id', salesChannelDomainId));
+
+            this.globalDomainRepository.search(criteria, Shopware.Context.api).then(r =>
+                r.first() ?
+                    this.storefrontDomainUrl = r.first().url :
+                    null
+            );
         },
 
-        isFeedGenerating(feed) {
-            return this.feedGeneratingList.indexOf(feed) > -1;
+        feedUrl(feed){
+            const _feed = this.salesChannel.configuration.feeds[feed]||false;
+
+            if(!_feed || _feed.file === null){
+                return;
+            }
+            const { feedDirectory, salesChannelDomainId } = this.salesChannel.configuration;
+            if(!feedDirectory || !salesChannelDomainId){
+                return;
+            }
+            const criteria = new Criteria;
+            criteria.addFilter(Criteria.equals('id', salesChannelDomainId));
+            let urlPath = `/hello-retail/${feedDirectory}/${_feed.file}`;
+            return this.storefrontDomainUrl + urlPath;
         },
 
-        removeFeedGenerating(feed) {
-            this.feedGeneratingList.splice(this.feedGeneratingList.indexOf(feed), 1);
+        // Handle the deletion of the sales channel(s)
+        onCloseDeleteModal() {
+            this.showDeleteModal = false;
         },
 
-        generateFeed(feed) {
-            this.setFeedGenerating(feed);
-            this.helloRetailService.generateFeed(this.salesChannel.id, feed)
-                .then((response) => {
-                    if (response.error) {
-                        this.createNotificationError({
-                            title: this.$t('Error'),
-                            message: response.message
-                        });
-                    } else {
-                        this.createNotificationSuccess({
-                            title: this.$t('Success'),
-                            message: response.message
-                        })
-                    }
-                }).finally(() => this.removeFeedGenerating(feed));
-        }
+        onConfirmDelete() {
+            this.showDeleteModal = false;
+
+            this.$nextTick(() => {
+                this.deleteSalesChannel(this.salesChannel.id);
+                this.$router.push({ name: 'sw.dashboard.index' });
+            });
+        },
+        deleteSalesChannel(salesChannelId) {
+            this.salesChannelRepository.delete(salesChannelId, Shopware.Context.api).then(() => {
+                this.$root.$emit('sales-channel-change');
+            });
+        },
+
     }
 });

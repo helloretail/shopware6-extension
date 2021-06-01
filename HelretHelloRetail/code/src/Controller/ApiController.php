@@ -60,7 +60,7 @@ class ApiController extends AbstractController
 
             return new JsonResponse([
                 'success' => true,
-                'message' => 'Export has been queued'
+                'message' => 'Export for ' . $feed . 's has been queued'
             ]);
         } catch (\Exception $exception) {
             return new JsonResponse([
