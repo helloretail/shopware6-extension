@@ -4,6 +4,7 @@ namespace Helret\HelloRetail\Service;
 
 use Error;
 use Exception;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use TypeError;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Adapter\Local;
@@ -131,10 +132,13 @@ class HelloRetailService
          * @see vendor/shopware/core/Content/ProductExport/ScheduledTask/ProductExportPartialGenerationHandler.php
          * finalizeExport()
          */
-        $salesChannelContext = $this->salesChannelContextService->get(
+        $params = new SalesChannelContextServiceParameters(
             $exportEntity->getStorefrontSalesChannelId(),
             "",
             $salesChannelDomain->getLanguageId()
+        );
+        $salesChannelContext = $this->salesChannelContextService->get(
+            $params
         );
 
         /** @var FeedEntityInterface $feedEntity */

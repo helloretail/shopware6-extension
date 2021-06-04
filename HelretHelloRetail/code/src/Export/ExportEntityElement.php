@@ -103,8 +103,9 @@ class ExportEntityElement
 
     /**
      * @param array|null $allIds
+     * @return void
      */
-    public function setAllIds(array $allIds): ?array
+    public function setAllIds(?array $allIds): void
     {
         $this->allIds = $allIds;
     }
