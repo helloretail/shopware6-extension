@@ -4,6 +4,7 @@ namespace Helret\HelloRetail\Subscriber;
 
 use Helret\HelloRetail\HelretHelloRetail;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -15,13 +16,13 @@ use Shopware\Core\System\SalesChannel\SalesChannelEvents;
  */
 class SalesChannelSubscriber implements EventSubscriberInterface
 {
-    protected EntityRepository $salesChannelRepository;
+    protected EntityRepositoryInterface $salesChannelRepository;
 
     /**
      * SalesChannelSubscriber constructor.
-     * @param EntityRepository $salesChannelRepository
+     * @param EntityRepositoryInterface $salesChannelRepository
      */
-    public function __construct(EntityRepository $salesChannelRepository)
+    public function __construct(EntityRepositoryInterface $salesChannelRepository)
     {
         $this->salesChannelRepository = $salesChannelRepository;
     }
