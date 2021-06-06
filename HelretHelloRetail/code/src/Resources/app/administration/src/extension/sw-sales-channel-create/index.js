@@ -26,6 +26,10 @@ Component.override('sw-sales-channel-create', {
         }
     },
 
+    isHelloRetail: {
+        type: Boolean
+    },
+
     methods: {
         createdComponent() {
             this.$super('createdComponent');

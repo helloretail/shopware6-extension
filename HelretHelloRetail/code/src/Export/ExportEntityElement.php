@@ -11,38 +11,14 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
  */
 class ExportEntityElement
 {
-    /**
-     * @var SalesChannelContext
-     */
-    protected $salesChannelContext;
-    /**
-     * @var string
-     */
-    protected $directory;
-    /**
-     * @var string
-     */
-    protected $id;
-    /**
-     * @var FeedEntityInterface
-     */
-    protected $feedEntity;
-    /**
-     * @var string
-     */
-    protected $entityType;
-    /**
-     * @var string
-     */
-    protected $templateType;
-    /**
-     * @var array|null
-     */
-    protected $allIds;
-    /**
-     * @var int
-     */
-    protected $retryCount = 0;
+    protected SalesChannelContext $salesChannelContext;
+    protected string $directory;
+    protected string $id;
+    protected FeedEntityInterface $feedEntity;
+    protected string $entityType;
+    protected string $templateType;
+    protected ?array $allIds;
+    protected int $retryCount = 0;
 
     /**
      * ExportEntityElement constructor.
@@ -126,9 +102,10 @@ class ExportEntityElement
     }
 
     /**
-     * @param array $allIds
+     * @param array|null $allIds
+     * @return void
      */
-    public function setAllIds(array $allIds)
+    public function setAllIds(?array $allIds): void
     {
         $this->allIds = $allIds;
     }

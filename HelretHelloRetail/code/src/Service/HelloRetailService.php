@@ -4,6 +4,7 @@ namespace Helret\HelloRetail\Service;
 
 use Error;
 use Exception;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use TypeError;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Adapter\Local;
@@ -42,56 +43,18 @@ use Helret\HelloRetail\HelretHelloRetail;
  */
 class HelloRetailService
 {
-    /**
-     * @var EntityRepositoryInterface
-     */
-    protected $logEntryRepository;
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-    /**
-     * @var MessageBusInterface
-     */
-    protected $bus;
-    /**
-     * @var StringTemplateRenderer
-     */
-    protected $templateRenderer;
-    /**
-     * @var ContainerInterface
-     */
-    protected $container;
-    /**
-     * @var SalesChannelContextServiceInterface
-     */
-    protected $salesChannelContextService;
-    /**
-     * @var SeoUrlPlaceholderHandlerInterface
-     */
-    protected $seoUrlPlaceholderHandler;
-    /**
-     * @var SerializerInterface
-     */
-    protected $serializer;
-    /**
-     * @var EntityRepositoryInterface
-     */
-    protected $salesChannelDomainRepository;
-    /**
-     * @var FilesystemInterface
-     */
-    protected $filesystem;
-
-    /**
-     * @var SystemConfigService
-     */
-    protected $configService;
-
-    /**
-     * @var Kernel
-     */
-    protected $kernel;
+    protected EntityRepositoryInterface $logEntryRepository;
+    protected LoggerInterface $logger;
+    protected MessageBusInterface $bus;
+    protected StringTemplateRenderer $templateRenderer;
+    protected ContainerInterface $container;
+    protected SalesChannelContextServiceInterface $salesChannelContextService;
+    protected SeoUrlPlaceholderHandlerInterface $seoUrlPlaceholderHandler;
+    protected SerializerInterface $serializer;
+    protected EntityRepositoryInterface $salesChannelDomainRepository;
+    protected FilesystemInterface $filesystem;
+    protected SystemConfigService $configService;
+    protected Kernel $kernel;
 
     /**
      * HelloRetailService constructor.
@@ -169,10 +132,13 @@ class HelloRetailService
          * @see vendor/shopware/core/Content/ProductExport/ScheduledTask/ProductExportPartialGenerationHandler.php
          * finalizeExport()
          */
-        $salesChannelContext = $this->salesChannelContextService->get(
+        $params = new SalesChannelContextServiceParameters(
             $exportEntity->getStorefrontSalesChannelId(),
             "",
             $salesChannelDomain->getLanguageId()
+        );
+        $salesChannelContext = $this->salesChannelContextService->get(
+            $params
         );
 
         /** @var FeedEntityInterface $feedEntity */
@@ -256,7 +222,7 @@ class HelloRetailService
      * @param array $data
      * @return bool|string
      */
-    public function renderHeader(FeedEntityInterface $feedEntity, SalesChannelContext $context, $data = [])
+    public function renderHeader(FeedEntityInterface $feedEntity, SalesChannelContext $context, array $data = [])
     {
         return $this->renderTemplate($feedEntity->getHeaderTemplate(), $data, $context);
     }
@@ -265,13 +231,13 @@ class HelloRetailService
      * @param FeedEntityInterface $feedEntity
      * @param SalesChannelContext $context
      * @param array $data
-     * @return bool|string
+     * @return string
      */
     public function renderBody(
         FeedEntityInterface $feedEntity,
         SalesChannelContext $context,
-        $data = []
-    ) {
+        array $data = []
+    ): string {
         return $this->replaceSeoUrlPlaceholder(
             $this->renderTemplate($feedEntity->getBodyTemplate(), $data, $context),
             $feedEntity->getDomain(),

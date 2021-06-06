@@ -18,22 +18,10 @@ use Helret\HelloRetail\Service\HelloRetailService;
  */
 class ProfileExporter implements ProfileExporterInterface
 {
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-    /**
-     * @var SerializerInterface
-     */
-    protected $serializer;
-    /**
-     * @var EntityRepositoryInterface
-     */
-    protected $salesChannelRepository;
-    /**
-     * @var HelloRetailService
-     */
-    protected $helloRetailService;
+    protected LoggerInterface $logger;
+    protected SerializerInterface $serializer;
+    protected EntityRepositoryInterface $salesChannelRepository;
+    protected HelloRetailService $helloRetailService;
 
     /**
      * ProfileExporter constructor.

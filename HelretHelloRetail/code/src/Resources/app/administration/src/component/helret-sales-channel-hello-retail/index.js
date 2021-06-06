@@ -2,7 +2,7 @@ import template from './helret-sales-channel-hello-retail.html.twig';
 
 const {Component, Mixin, Utils} = Shopware;
 const {Criteria} = Shopware.Data;
-const {mapApiErrors} = Component.getComponentHelper();
+const {mapPropertyErrors} = Component.getComponentHelper();
 
 Component.register('helret-sales-channel-hello-retail', {
     template,
@@ -56,7 +56,7 @@ Component.register('helret-sales-channel-hello-retail', {
     },
 
     computed: {
-        ...mapApiErrors('salesChannel', ['name']),
+        ...mapPropertyErrors('salesChannel', ['name']),
 
         storefrontSalesChannelCriteria() {
             const criteria = new Criteria();

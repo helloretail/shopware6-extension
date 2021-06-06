@@ -14,19 +14,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Helret\HelloRetail\Export\Profiles\ProfileExporterInterface;
 use Helret\HelloRetail\HelretHelloRetail;
 
+/**
+ * Class GenerateFeed
+ * @package Helret\HelloRetail\Command
+ */
 class GenerateFeed extends Command
 {
     protected static $defaultName = 'hello-retail:generate-feed';
-
-    /**
-     * @var ProfileExporterInterface
-     */
-    protected $profileExporter;
-
-    /**
-     * @var EntityRepositoryInterface
-     */
-    protected $salesChannelRepository;
+    protected ProfileExporterInterface $profileExporter;
+    protected EntityRepositoryInterface $salesChannelRepository;
 
     /**
      * GenerateFeed constructor.
@@ -54,7 +50,7 @@ class GenerateFeed extends Command
      * @param OutputInterface $output
      * @return int
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $feed = $input->getOption('feed');
 
