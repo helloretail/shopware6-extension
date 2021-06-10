@@ -25,7 +25,8 @@
             "generateTooltip": "Gem venligst inden generering",
             "feeds": {
                 "productTitle": "Produkter",
-                "orderTitle": "Ordre"
+                "orderTitle": "Ordre",
+                "categoryTitle": "Kategorier"
             }
         }
     }

@@ -101,7 +101,6 @@ Component.register('helret-sales-channel-hello-retail', {
             if (!this.salesChannel.configuration.feedDirectory) {
                 this.$set(this.salesChannel.configuration, 'feedDirectory', Utils.createId());
             }
-
             this.getStorefrontDomain();
             this.originalFeedValues = JSON.parse(JSON.stringify(this.salesChannel.configuration.feeds));
         },

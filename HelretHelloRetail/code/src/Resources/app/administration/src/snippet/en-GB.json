@@ -25,7 +25,8 @@
             "generateTooltip": "Please save before generating",
             "feeds": {
                 "productTitle": "Products",
-                "orderTitle": "Orders"
+                "orderTitle": "Orders",
+                "categoryTitle": "Categories"
             }
         }
     }

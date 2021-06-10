@@ -25,7 +25,8 @@
             "generateTooltip": "Bitte speichern Sie vor dem Generieren",
             "feeds": {
                 "productTitle": "Produkte",
-                "orderTitle": "Aufträge"
+                "orderTitle": "Aufträge",
+                "categoryTitle": "Kategorien"
             }
         }
     }
