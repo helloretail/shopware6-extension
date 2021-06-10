@@ -8,6 +8,9 @@
         <service id="Helret\HelloRetail\Controller\ApiController">
             <argument type="service" id="Helret\HelloRetail\Export\Profiles\ProfileExporter"/>
             <tag name="controller.service_arguments"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
         </service>
 
         <service id="Helret\HelloRetail\Service\HelloRetailService" public="true">
@@ -37,6 +40,7 @@
             <argument type="service" id="Shopware\Core\Framework\Adapter\Translation\Translator"/>
             <argument type="service" id="Helret\HelloRetail\Service\HelloRetailService"/>
             <argument type="service" id="messenger.bus.shopware"/>
+            <argument type="service" id="Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder"/>
             <tag name="messenger.message_handler"/>
         </service>
 
