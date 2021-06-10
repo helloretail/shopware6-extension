@@ -308,10 +308,10 @@ class HelloRetailService
     {
         try {
             return $this->templateRenderer->render(
-                    $template,
-                    $data,
-                    $context->getContext()
-                ) . PHP_EOL;
+                $template,
+                $data,
+                $context->getContext()
+            ) . PHP_EOL;
         } catch (Error | TypeError | Exception | StringTemplateRenderingException $e) {
             $this->exportLogger(
                 HelretHelloRetail::EXPORT_ERROR,
