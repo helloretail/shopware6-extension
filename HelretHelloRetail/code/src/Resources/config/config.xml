@@ -157,5 +157,70 @@
             </options>
             <defaultValue>0</defaultValue>
         </input-field>
+
+        <input-field type="single-select">
+            <name>CategoryTimeAmount</name>
+            <label>Interval for category feed generation.</label>
+            <label lang="de-DE">Intervall für die Generierung von Kategorie-Feeds</label>
+            <label lang="da-DK">Interval for kategori feed generering.</label>
+            <options>
+                <option>
+                    <id>0</id>
+                    <name>Deactivated</name>
+                    <name lang="de-DE">Deaktiviert</name>
+                    <name lang="da-DK">Deaktiveret</name>
+                </option>
+                <option>
+                    <id>900</id>
+                    <name>15 minutes</name>
+                    <name lang="de-DE">15 Minuten</name>
+                    <name lang="da-DK">15 minutter</name>
+                </option>
+                <option>
+                    <id>1800</id>
+                    <name>30 minutes</name>
+                    <name lang="de-DE">30 Minuten</name>
+                    <name lang="da-DK">30 minutter</name>
+                </option>
+                <option>
+                    <id>3600</id>
+                    <name>1 hour</name>
+                    <name lang="de-DE">1 Std</name>
+                    <name lang="da-DK">1 time</name>
+                </option>
+                <option>
+                    <id>7200</id>
+                    <name>2 hours</name>
+                    <name lang="de-DE">2 Std</name>
+                    <name lang="da-DK">2 timer</name>
+                </option>
+                <option>
+                    <id>10800</id>
+                    <name>3 hours</name>
+                    <name lang="de-DE">3 Std</name>
+                    <name lang="da-DK">3 timer</name>
+                </option>
+                <option>
+                    <id>21600</id>
+                    <name>6 hours</name>
+                    <name lang="de-DE">6 Std</name>
+                    <name lang="da-DK">6 timer</name>
+                </option>
+                <option>
+                    <id>43200</id>
+                    <name>12 hours</name>
+                    <name lang="de-DE">12 Std</name>
+                    <name lang="da-DK">12 timer</name>
+                </option>
+                <option>
+                    <id>86400</id>
+                    <name>1 day</name>
+                    <name lang="de-DE">1 Tag</name>
+                    <name lang="da-DK">1 dag</name>
+                </option>
+            </options>
+            <defaultValue>0</defaultValue>
+        </input-field>
+
     </card>
 </config>

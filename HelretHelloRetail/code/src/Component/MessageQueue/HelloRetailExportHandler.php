@@ -5,9 +5,9 @@ namespace Helret\HelloRetail\Component\MessageQueue;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\FileNotFoundException;
-use League\Flysystem\FilesystemInterface;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilderInterface;
 use Shopware\Core\Framework\Adapter\Translation\Translator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -36,6 +36,7 @@ class HelloRetailExportHandler extends AbstractMessageHandler
     protected Filesystem $filesystem;
     protected HelloRetailService $helloRetailService;
     protected MessageBusInterface $bus;
+    private ProductStreamBuilderInterface $productStreamBuilder;
 
     /**
      * HelloRetailExportHandler constructor.
@@ -50,7 +51,8 @@ class HelloRetailExportHandler extends AbstractMessageHandler
         ContainerInterface $container,
         Translator $translator,
         HelloRetailService $helloRetailService,
-        MessageBusInterface $bus
+        MessageBusInterface $bus,
+        ProductStreamBuilderInterface $productStreamBuilder
     ) {
         $this->logger = $logger;
         $this->container = $container;
@@ -62,6 +64,7 @@ class HelloRetailExportHandler extends AbstractMessageHandler
         $localFilesystemAdapter = new Local($fullPath);
         $this->filesystem = new Filesystem($localFilesystemAdapter);
 
+        $this->productStreamBuilder = $productStreamBuilder;
     }
 
     /**
@@ -85,11 +88,15 @@ class HelloRetailExportHandler extends AbstractMessageHandler
         $feed = $feedEntity->getFeed();
         $salesChannelContext = $message->getSalesChannelContext();
 
+        $context = $salesChannelContext->getContext();
+        $context->setConsiderInheritance(true);
+
+
         $this->translator->injectSettings(
             $salesChannelContext->getSalesChannel()->getId(),
             $feedEntity->getDomain()->getLanguageId(),
             $feedEntity->getDomain()->getLanguage()->getLocaleId(),
-            $salesChannelContext->getContext()
+            $context
         );
 
         /** @var EntityRepositoryInterface $repository */
@@ -100,15 +107,37 @@ class HelloRetailExportHandler extends AbstractMessageHandler
             $criteria->addAssociation($association);
         }
 
-        $entity = $repository->search($criteria, $salesChannelContext->getContext())->first();
+        $entity = $repository->search($criteria, $context)->first();
 
         try {
+            $data = [
+                "{$feed}" => $entity
+            ];
+
+            if ($feed === 'category') {
+                if ($entity->getProductStreamId()) {
+                    $filters = $this->productStreamBuilder->buildFilters(
+                        $entity->getProductStreamId(),
+                        $context
+                    );
+
+                    $productCriteria = new Criteria();
+                    $productCriteria->addFilter(...$filters);
+
+                    $productRepository = $this->container->get("product.repository");
+                    $products = $productRepository->search($productCriteria, $context);
+
+                    $data['products'] = $products;
+                } else {
+                    $data['products'] = $entity->getProducts();
+                }
+            }
+
+
             $output = $this->helloRetailService->renderBody(
                 $feedEntity,
                 $salesChannelContext,
-                [
-                    "{$feed}" => $entity
-                ]
+                $data
             );
             if (!$output) {
                 $this->translator->resetInjection();

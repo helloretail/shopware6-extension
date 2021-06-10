@@ -171,6 +171,11 @@ class HelloRetailService
             $criteria->addFilter(new EqualsFilter('product.active', true));
         }
 
+        if (EntityType::getMatchingEntityType($feed) == EntityType::CATEGORY) {
+            $criteria->addFilter(new EqualsFilter('category.active', true));
+        }
+
+
         $entityIdsResult = $repository->searchIds($criteria, $salesChannelContext->getContext());
         $entityIds = $entityIdsResult->getIds();
 

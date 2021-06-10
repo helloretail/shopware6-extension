@@ -87,6 +87,8 @@ class SalesChannelSubscriber implements EventSubscriberInterface
                 return HelretHelloRetail::PRODUCT_FEED;
             } elseif ($feed['name'] == 'order') {
                 return HelretHelloRetail::ORDER_FEED;
+            } elseif ($feed['name'] == 'category') {
+                return HelretHelloRetail::CATEGORY_FEED;
             }
         }
 

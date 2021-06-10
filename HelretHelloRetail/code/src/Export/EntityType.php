@@ -11,6 +11,7 @@ class EntityType
     public const CUSTOMER = 'entity_type_customer';
     public const ORDER = 'entity_type_order';
     public const PRODUCT = 'entity_type_product';
+    public const CATEGORY = 'entity_type_category';
 
     /**
      * @param $entityType
@@ -25,6 +26,8 @@ class EntityType
                 return self::ORDER;
             case 'product':
                 return self::PRODUCT;
+            case 'category':
+                return self::CATEGORY;
             default:
                 return null;
         }
