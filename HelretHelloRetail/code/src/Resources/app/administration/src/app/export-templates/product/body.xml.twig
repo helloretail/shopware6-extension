@@ -4,10 +4,10 @@
     <ean>{{ product.ean }}</ean>
     <sku>{{ product.productNumber }}</sku>
     {% if product.cover %}
-    {% set thumbnail = product.cover.media.thumbnails.elements|filter(img => img.width == 400)|first %}
-    <imgurl>{% if thumbnail %}{{ thumbnail.url }}{% else %}product.cover.media.url{% endif %}</imgurl>
+        {% set thumbnail = product.cover.media.thumbnails.elements|filter(img => img.width == 400)|first %}
+        <imgurl>{% if thumbnail %}{{ thumbnail.url }}{% else %}product.cover.media.url{% endif %}</imgurl>
     {% else %}
-    <imgurl />
+        <imgurl/>
     {% endif %}
     {% set prices = product.prices.elements|first %}
     <price>{% if prices %}{{ prices.price.elements|first.gross }}{% else %}{{ product.price.elements|first.gross }}{% endif %}</price>
@@ -24,6 +24,22 @@
             {% endfor %}
         {% endif %}
     </hierarchies>
+
+    {% if product.extensions.properties %}
+        <properties>
+            {% for key, value in product.extensions.properties %}
+                <property>
+                    <name>{{ key }}</name>
+                    <options>
+                        {% for option in value %}
+                            <option>{{ option.name }}</option>
+                        {% endfor %}
+                    </options>
+                </property>
+            {% endfor %}
+        </properties>
+    {% endif %}
+
     <keywords>{% if product.searchKeywords %}{% for keyword in product.searchKeywords.elements %}{{ keyword.keyword }},{% endfor %}{% endif %}</keywords>
     {% set color = product.properties.elements|filter(property => property.group.name == 'Color')|first %}
     <color>{% if color %}{{ color.name }}{% endif %}</color>
