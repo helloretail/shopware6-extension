@@ -110,6 +110,14 @@ class HelloRetailExportHandler extends AbstractMessageHandler
         $entity = $repository->search($criteria, $context)->first();
 
         try {
+            if($feed == 'product' && $entity->getProperties()) {
+                /** @var ProductEntity $entity */
+                $properties = [];
+                foreach ($entity->getProperties() as $property) {
+                    $properties[$property->getGroup()->getName()][] = $property;
+                }
+                $entity->setExtensions(['properties' => $properties]);
+            }
             $data = [
                 "{$feed}" => $entity
             ];
