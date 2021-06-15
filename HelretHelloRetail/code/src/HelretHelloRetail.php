@@ -39,7 +39,6 @@ class HelretHelloRetail extends Plugin
         "category" => [
             "amount" => "CategoryTimeAmount"
         ]
-
     ];
 
     /**
