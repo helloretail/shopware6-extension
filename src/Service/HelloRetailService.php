@@ -180,7 +180,8 @@ class HelloRetailService
         $entityIds = $entityIdsResult->getIds();
 
         $content = $this->renderHeader($feedEntity, $salesChannelContext, [
-            "{$feed}sTotal" => $entityIdsResult->getTotal()
+            "{$feed}sTotal" => $entityIdsResult->getTotal(),
+            "updatedAt" => date("Y-m-d H:i:s")
         ]);
 
         // Create temp dir for all file parts
