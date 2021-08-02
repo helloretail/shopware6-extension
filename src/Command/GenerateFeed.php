@@ -57,18 +57,20 @@ class GenerateFeed extends Command
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('typeId', HelretHelloRetail::SALES_CHANNEL_TYPE_HELLO_RETAIL));
 
-        $salesChannelId = $this->salesChannelRepository->searchIds(
+        $salesChannelIds = $this->salesChannelRepository->searchIds(
             $criteria,
             Context::createDefaultContext()
-        )->firstId();
+        )->getIds();
 
-        try {
-            $this->profileExporter->generate($salesChannelId, $feed ? [$feed] : []);
-        } catch (\Error | \TypeError | \Exception | SalesChannelNotFoundException $exception) {
-            $output->writeln(
-                "Could not find sales_channel with type ID: "
-                . HelretHelloRetail::SALES_CHANNEL_TYPE_HELLO_RETAIL
-            );
+        foreach ($salesChannelIds as $salesChannelId) {
+            try {
+                $this->profileExporter->generate($salesChannelId, $feed ? [$feed] : []);
+            } catch (\Error | \TypeError | \Exception | SalesChannelNotFoundException $exception) {
+                $output->writeln(
+                    "Could not find sales_channel with type ID: "
+                    . HelretHelloRetail::SALES_CHANNEL_TYPE_HELLO_RETAIL
+                );
+            }
         }
 
         return 0;
