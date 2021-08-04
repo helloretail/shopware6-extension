@@ -3,7 +3,7 @@
 {% block base_script_csrf %}
     {{ "helret-hello-retail.sales-channel-types.base.titleGeneralSettings"|trans }}
     {{ parent() }}
-
+    {% block hello_retail_javascript %}
     <script type="text/javascript">
         (function () {
             window['ADDWISH_PARTNER_ID'] = "{{ config("HelretHelloRetail").config.partnerId }}"
@@ -17,4 +17,5 @@
             s.parentNode.insertBefore(aws, s);
         })();
     </script>
+    {% endblock %}
 {% endblock %}
