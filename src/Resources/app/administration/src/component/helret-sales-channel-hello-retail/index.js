@@ -189,15 +189,9 @@ Component.register('helret-sales-channel-hello-retail', {
 
             this.globalDomainRepository.search(criteria, Shopware.Context.api).then(r =>
                 r.first() ?
-                    this.storefrontDomainUrl = this.trimStorefrontDomainUrl(r.first().url) :
+                    this.storefrontDomainUrl = r.first().url :
                     null
             );
-        },
-
-        trimStorefrontDomainUrl(domain) {
-            // Strip everything after TLD
-            const regex = /(?:https?:\/\/)?(?:[^@/\n]+@)?(?:www.)?([^:/?\n]+)/gim
-            return regex.exec(domain)[0];
         },
 
         feedUrl(feed){
