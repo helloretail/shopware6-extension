@@ -196,7 +196,7 @@ Component.register('helret-sales-channel-hello-retail', {
 
         trimStorefrontDomainUrl(domain) {
             // Strip everything after TLD
-            let regex = /(?:https?:\/\/)?(?:[^@/\n]+@)?(?:www.)?([^:/?\n]+)/gim
+            const regex = /(?:https?:\/\/)?(?:[^@/\n]+@)?(?:www.)?([^:/?\n]+)/gim
             return regex.exec(domain)[0];
         },
 
