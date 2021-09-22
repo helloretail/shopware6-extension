@@ -112,6 +112,8 @@ class FeedEntity implements FeedEntityInterface
      */
     public function setDomain(SalesChannelDomainEntity $salesChannelDomainEntity): void
     {
+        $parsedUrl = parse_url($salesChannelDomainEntity->getUrl());
+        $salesChannelDomainEntity->setUrl($parsedUrl['scheme'] . '://' . $parsedUrl['host']);
         $this->salesChannelDomainEntity = $salesChannelDomainEntity;
     }
 
