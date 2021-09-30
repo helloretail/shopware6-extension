@@ -9,9 +9,12 @@ use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilderInterface;
 use Shopware\Core\Framework\Adapter\Translation\Translator;
+use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\SalesChannelRepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\MessageQueue\Handler\AbstractMessageHandler;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -38,6 +41,9 @@ class HelloRetailExportHandler extends AbstractMessageHandler
     protected MessageBusInterface $bus;
     private ProductStreamBuilderInterface $productStreamBuilder;
 
+    protected SalesChannelRepositoryInterface $salesChannelProductRepository;
+    protected SystemConfigService $configService;
+
     /**
      * HelloRetailExportHandler constructor.
      * @param LoggerInterface $logger
@@ -45,6 +51,9 @@ class HelloRetailExportHandler extends AbstractMessageHandler
      * @param Translator $translator
      * @param HelloRetailService $helloRetailService
      * @param MessageBusInterface $bus
+     * @param ProductStreamBuilderInterface $productStreamBuilder
+     * @param SalesChannelRepositoryInterface $salesChannelProductRepository
+     * @param SystemConfigService $configService
      */
     public function __construct(
         LoggerInterface $logger,
@@ -52,19 +61,23 @@ class HelloRetailExportHandler extends AbstractMessageHandler
         Translator $translator,
         HelloRetailService $helloRetailService,
         MessageBusInterface $bus,
-        ProductStreamBuilderInterface $productStreamBuilder
+        ProductStreamBuilderInterface $productStreamBuilder,
+        SalesChannelRepositoryInterface $salesChannelProductRepository,
+        SystemConfigService $configService
     ) {
         $this->logger = $logger;
         $this->container = $container;
         $this->translator = $translator;
         $this->helloRetailService = $helloRetailService;
         $this->bus = $bus;
+        $this->salesChannelProductRepository = $salesChannelProductRepository;
 
         $fullPath = $helloRetailService->getFeedDirectoryPath();
         $localFilesystemAdapter = new Local($fullPath);
         $this->filesystem = new Filesystem($localFilesystemAdapter);
 
         $this->productStreamBuilder = $productStreamBuilder;
+        $this->configService = $configService;
     }
 
     /**
@@ -110,6 +123,32 @@ class HelloRetailExportHandler extends AbstractMessageHandler
         $entity = $repository->search($criteria, $context)->first();
 
         try {
+            if ($this->configService->get('HelretHelloRetail.config.advancedPricing')) {
+                if ($feed === 'product') {
+                    $criteria = new Criteria([$message->getId()]);
+                    $iterator = new SalesChannelRepositoryIterator($this->salesChannelProductRepository, $salesChannelContext, $criteria);
+                    $productResult = $iterator->fetch();
+
+                    if ($productResult !== null) {
+                        $products = $productResult->getEntities();
+
+                        $calcutedPriceData = [];
+                        foreach ($products as $product) {
+                            $calculatedPrices = $product->getCalculatedPrices();
+                            $calculatedPrice = $product->getCalculatedPrice();
+                        }
+
+                        $calcutedPriceData = [
+                            'calculatedPrices' => $calculatedPrices,
+                            'calculatedPrice' => $calculatedPrice
+                        ];
+
+                        $entity->getPrice()->setExtensions($calcutedPriceData);
+                    }
+                }
+            }
+
+
             if($feed == 'product' && $entity->getProperties()) {
                 /** @var ProductEntity $entity */
                 $properties = [];
@@ -121,6 +160,7 @@ class HelloRetailExportHandler extends AbstractMessageHandler
             $data = [
                 "{$feed}" => $entity
             ];
+
 
             if ($feed === 'category') {
                 if ($entity->getProductStreamId()) {
@@ -140,7 +180,6 @@ class HelloRetailExportHandler extends AbstractMessageHandler
                     $data['products'] = $entity->getProducts();
                 }
             }
-
 
             $output = $this->helloRetailService->renderBody(
                 $feedEntity,

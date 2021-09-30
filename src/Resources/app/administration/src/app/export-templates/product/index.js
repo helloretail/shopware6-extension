@@ -17,6 +17,7 @@ Shopware.Service('helloRetailTemplateService').registerExportTemplate({
         'media',
         'cover',
         'product.parent',
-        'properties.group'
+        'properties.group',
+        'cheapestPrice'
     ]
 });
