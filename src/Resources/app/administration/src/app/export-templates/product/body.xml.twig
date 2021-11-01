@@ -17,7 +17,7 @@
         {% if product.categories %}
             {% for category in product.categories.elements %}
                 <hierarchy>
-                    {% for breadCrumb in category.breadcrumb %}
+                    {% for breadCrumb in category.getBreadCrumb %}
                         <category>{{ breadCrumb }}</category>
                     {% endfor %}
                 </hierarchy>
