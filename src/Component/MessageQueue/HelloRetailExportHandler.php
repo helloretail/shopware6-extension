@@ -133,7 +133,7 @@ class HelloRetailExportHandler extends AbstractMessageHandler
                     $productCriteria->addFilter(...$filters);
 
                     $productRepository = $this->container->get("product.repository");
-                    $products = $productRepository->search($productCriteria, $context);
+                    $products = $productRepository->search($productCriteria, $context)->getEntities();
 
                     $data['products'] = $products;
                 } else {

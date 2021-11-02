@@ -4,7 +4,7 @@
     <description>{% if category.description %}{{ category.description }}{% else %}{{ category.translated.description }}{% endif %}</description>
     <keywords>{% if category.translated.keywords %}{% for keyword in category.translated.keywords %}{{ keyword.keyword }},{% endfor %}{% endif %}</keywords>
     <hierarchy>
-        {% for breadCrumb in category.breadcrumb %}
+        {% for breadCrumb in category.getBreadCrumb %}
             <category>{{ breadCrumb }}</category>
         {% endfor %}
     </hierarchy>
