@@ -126,7 +126,11 @@ class HelloRetailExportHandler extends AbstractMessageHandler
             if ($this->configService->get('HelretHelloRetail.config.advancedPricing')) {
                 if ($feed === 'product') {
                     $criteria = new Criteria([$message->getId()]);
-                    $iterator = new SalesChannelRepositoryIterator($this->salesChannelProductRepository, $salesChannelContext, $criteria);
+                    $iterator = new SalesChannelRepositoryIterator(
+                        $this->salesChannelProductRepository,
+                        $salesChannelContext,
+                        $criteria
+                    );
                     $productResult = $iterator->fetch();
 
                     if ($productResult !== null) {
@@ -148,7 +152,6 @@ class HelloRetailExportHandler extends AbstractMessageHandler
                 }
             }
 
-
             if($feed == 'product' && $entity->getProperties()) {
                 /** @var ProductEntity $entity */
                 $properties = [];
@@ -160,7 +163,6 @@ class HelloRetailExportHandler extends AbstractMessageHandler
             $data = [
                 "{$feed}" => $entity
             ];
-
 
             if ($feed === 'category') {
                 if ($entity->getProductStreamId()) {
