@@ -9,9 +9,9 @@
     {% else %}
         <imgurl/>
     {% endif %}
-    {% set productPrice = product.price.elements|first %}
-    <price>{% if productPrice %}{{ productPrice.gross }}{% endif %}</price>
-    <oldPrice>{% if productPrice.listPrice %}{{ productPrice.listPrice.gross }}{% endif %}</oldPrice>
+    {% set prices = product.prices.elements|first %}
+    <price>{% if prices %}{{ prices.price.elements|first.gross }}{% else %}{{ product.price.elements|first.gross }}{% endif %}</price>
+    <oldPrice>{% if product.price %}{{ product.price.elements|first.gross }}{% endif %}</oldPrice>
     <productnumber>{{ product.productNumber }}</productnumber>
     <hierarchies>
         {% if product.categories %}
