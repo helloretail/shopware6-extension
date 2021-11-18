@@ -183,9 +183,10 @@ class HelloRetailService
 
         if ($this->configService->get('HelretHelloRetail.config.orderLimit')) {
             if (EntityType::getMatchingEntityType($feed) == EntityType::ORDER) {
+                $amountOfMonths = $this->configService->getInt('HelretHelloRetail.config.orderLimitMonths') ?: 2;
                 $criteria->addFilter(new RangeFilter(
                     'createdAt',
-                    [RangeFilter::GTE => (new \DateTime('-2 month'))->format('Y-m-d')]
+                    [RangeFilter::GTE => (new \DateTime("-{$amountOfMonths} month"))->format('Y-m-d')]
                 ));
             }
         }
