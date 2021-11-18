@@ -4,6 +4,7 @@ namespace Helret\HelloRetail\Service;
 
 use Error;
 use Exception;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use TypeError;
 use League\Flysystem\Filesystem;
@@ -169,12 +170,26 @@ class HelloRetailService
         $criteria = new Criteria();
         if (EntityType::getMatchingEntityType($feed) == EntityType::PRODUCT) {
             $criteria->addFilter(new EqualsFilter('product.active', true));
+            $criteria->addFilter(new EqualsFilter(
+                'product.visibilities.salesChannelId',
+                $salesChannelContext->getSalesChannel()->getId()
+            ));
         }
 
         if (EntityType::getMatchingEntityType($feed) == EntityType::CATEGORY) {
             $criteria->addFilter(new EqualsFilter('category.active', true));
         }
 
+
+        if ($this->configService->get('HelretHelloRetail.config.orderLimit')) {
+            if (EntityType::getMatchingEntityType($feed) == EntityType::ORDER) {
+                $amountOfMonths = $this->configService->getInt('HelretHelloRetail.config.orderLimitMonths') ?: 2;
+                $criteria->addFilter(new RangeFilter(
+                    'createdAt',
+                    [RangeFilter::GTE => (new \DateTime("-{$amountOfMonths} month"))->format('Y-m-d')]
+                ));
+            }
+        }
 
         $entityIdsResult = $repository->searchIds($criteria, $salesChannelContext->getContext());
         $entityIds = $entityIdsResult->getIds();

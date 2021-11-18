@@ -15,6 +15,39 @@
     </card>
 
     <card>
+        <title>Sync Advanced pricing and Limit orders</title>
+        <title lang="de-DE">Synchronisieren Sie Advanced Pricing und Limit Orders</title>
+        <title lang="da-DK">Synkroniser Advanced-priser og begræns ordrer</title>
+
+        <input-field type="bool">
+            <name>orderLimit</name>
+            <label>Limit Orders</label>
+            <label lang="de-DE">Limit Orders</label>
+            <label lang="da-DK">Begræns ordrer</label>
+            <helpText>When active it will only sync orders made in the past X months</helpText>
+            <helpText lang="de-DE">Wenn es aktiv ist, werden nur Bestellungen synchronisiert, die in den letzten X Monaten getätigt wurden</helpText>
+            <helpText lang="da-DK">Hvis aktiv, vil synkronisering af ordrer kun foretages fra de sidste X måneder</helpText>
+        </input-field>
+        <input-field type="int">
+            <name>orderLimitMonths</name>
+            <label>Amount of months in the above setting.</label>
+            <label lang="de-DE">Anzahl der Monate in der obigen Einstellung</label>
+            <label lang="da-DK">Antal måneder i ovenstående indstilling</label>
+            <defaultValue>2</defaultValue>
+        </input-field>
+
+        <input-field type="bool">
+            <name>advancedPricing</name>
+            <label>Advanced Pricing</label>
+            <label lang="de-DE">Adcanced Pricing</label>
+            <label lang="da-DK">Advanced Pricing</label>
+            <helpText>Sync products with Advance pricing instead of List and Normal prices</helpText>
+            <helpText lang="de-DE">Synchronisieren Sie Produkte mit Advance anstelle von Listen- und Normalpreisen</helpText>
+            <helpText lang="da-DK">Synkroniser produkter med Advance priser i stedet for Liste og normale priser</helpText>
+        </input-field>
+    </card>
+
+    <card>
         <title>Generate feeds on schedule</title>
         <title lang="de-DE">Feeds termingerecht generieren</title>
         <title lang="da-DK">Tidsplan for feed generering.</title>
