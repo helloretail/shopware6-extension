@@ -28,7 +28,7 @@
     {% if product.cheapestPrice is not empty %}
         <oldPrice>{% if product.cheapestPrice %}{% if product.cheapestPrice.price.elements|first.listPrice is not null %}{{ product.cheapestPrice.price.elements|first.listPrice.gross|round(2, 'ceil') }}{% else %}{{ product.cheapestPrice.price.elements|first.gross }}{% endif %}{% else %}{{ product.price.elements|first.gross }}{% endif %}</oldPrice>
     {% else %}
-        <oldPrice>{% if product.price %}{{ product.price.elements|first.gross }}{% endif %}</oldPrice>
+        <oldPrice>{% if product.price.elements|first.listPrice %}{{ product.price.elements|first.listPrice.gross }}{% endif %}</oldPrice>
     {% endif %}
     <productnumber>{{ product.productNumber }}</productnumber>
     <hierarchies>
