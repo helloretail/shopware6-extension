@@ -11,7 +11,7 @@
         {% for orderItem in page.order.lineItems.elements %}
             <span class="addwish-product"
                   data-unit-price="{{ orderItem.unitPrice }}"
-                  data-url="{{ seoUrl('frontend.detail.page', {'productId': orderItem.productId}) }}"
+                  {% if orderItem.productId %}data-url="{{ seoUrl('frontend.detail.page', {'productId': orderItem.productId}) }}"{% endif %}
                   data-productnumber="{{ orderItem.payload.productNumber }}"
             ></span>
         {% endfor %}
