@@ -27,13 +27,14 @@
             <helpText>When active it will only sync orders made in the past X months</helpText>
             <helpText lang="de-DE">Wenn es aktiv ist, werden nur Bestellungen synchronisiert, die in den letzten X Monaten getätigt wurden</helpText>
             <helpText lang="da-DK">Hvis aktiv, vil synkronisering af ordrer kun foretages fra de sidste X måneder</helpText>
+            <defaultValue>false</defaultValue>
         </input-field>
         <input-field type="int">
             <name>orderLimitMonths</name>
             <label>Amount of months in the above setting.</label>
             <label lang="de-DE">Anzahl der Monate in der obigen Einstellung</label>
             <label lang="da-DK">Antal måneder i ovenstående indstilling</label>
-            <defaultValue>2</defaultValue>
+            <defaultValue>6</defaultValue>
         </input-field>
 
         <input-field type="bool">
@@ -44,6 +45,7 @@
             <helpText>Sync products with Advance pricing instead of List and Normal prices</helpText>
             <helpText lang="de-DE">Synchronisieren Sie Produkte mit Advance anstelle von Listen- und Normalpreisen</helpText>
             <helpText lang="da-DK">Synkroniser produkter med Advance priser i stedet for Liste og normale priser</helpText>
+            <defaultValue>false</defaultValue>
         </input-field>
     </card>
 
@@ -254,6 +256,5 @@
             </options>
             <defaultValue>0</defaultValue>
         </input-field>
-
     </card>
 </config>
