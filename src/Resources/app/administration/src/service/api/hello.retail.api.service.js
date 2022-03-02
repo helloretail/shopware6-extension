@@ -1,4 +1,4 @@
-const ApiService = Shopware.Classes.ApiService;
+const { ApiService } = Shopware.Classes;
 
 class HelloRetailApiService extends ApiService {
     constructor(httpClient, loginService, apiEndpoint = 'helret/hello-retail') {
