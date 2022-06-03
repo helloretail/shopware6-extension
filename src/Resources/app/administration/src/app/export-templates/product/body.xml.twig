@@ -5,7 +5,7 @@
     <sku>{{ product.productNumber }}</sku>
     {% if product.cover %}
         {% set thumbnail = product.cover.media.thumbnails.elements|filter(img => img.width == 400)|first %}
-        <imgurl>{% if thumbnail %}{{ thumbnail.url }}{% else %}product.cover.media.url{% endif %}</imgurl>
+        <imgurl>{% if thumbnail %}{{ thumbnail.url }}{% else %}{{ product.cover.media.url }}{% endif %}</imgurl>
     {% else %}
         <imgurl/>
     {% endif %}
