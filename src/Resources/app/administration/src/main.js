@@ -12,16 +12,9 @@ import './extension/sw-sales-channel-create-base';
 import './component/helret-sales-channel-hello-retail';
 
 import './module/helret-cms/blocks/commerce/helloretail';
+import "./module/sw-sales-channel/view/hello-retail-comparison";
 
-import enGb from './snippet/en-GB.json';
-import deDE from './snippet/de-DE.json';
-import daDK from './snippet/da-DK.json';
-
-const { Application, Locale } = Shopware;
-
-Locale.extend('en-GB', enGb);
-Locale.extend('de-DE', deDE);
-Locale.extend('da-DK', daDK);
+const {Application} = Shopware;
 
 Application.addServiceProvider('helloRetailService', () => {
     const serviceContainer = Application.getContainer('service');
@@ -29,3 +22,25 @@ Application.addServiceProvider('helloRetailService', () => {
 
     return new HelloRetailService(initContainer.httpClient, serviceContainer.loginService);
 });
+
+Shopware.Module.register('hello-retail-tabs', {
+    routeMiddleware(next, currentRoute) {
+        if (currentRoute.name === 'sw.sales.channel.detail') {
+            currentRoute.children.push({
+                name: 'sw.sales.channel.detail.hello-retail-comparison',
+                path: 'hello-retail-comparison',
+                component: 'sw-sales-channel-detail-hello-retail-comparison',
+                meta: {
+                    parentPath: 'sw.sales.channel.list',
+                    privilege: 'sales_channel.viewer',
+                }
+            });
+        }
+        next(currentRoute);
+    }
+});
+
+
+if (module.hot) {
+    module.hot.accept();
+}

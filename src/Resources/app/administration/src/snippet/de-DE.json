@@ -28,6 +28,14 @@
                 "orderTitle": "Aufträge",
                 "categoryTitle": "Kategorien"
             }
+        },
+        "comparison": {
+            "feed": {
+                "product": "Produkt",
+                "category": "Kategorie",
+                "order": "Bestellen"
+            },
+            "select": "Feed exporttyp"
         }
     }
 }

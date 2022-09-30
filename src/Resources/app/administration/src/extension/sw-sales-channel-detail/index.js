@@ -1,8 +1,11 @@
-const { Component, Mixin } = Shopware;
+import template from './template.html.twig';
+
+const {Component, Mixin} = Shopware;
 
 import saveFinish from "../utils/saveFinish"
 
 Component.override('sw-sales-channel-detail', {
+    template,
 
     inject: [
         'helloRetailService',
@@ -11,7 +14,6 @@ Component.override('sw-sales-channel-detail', {
 
     mixins: [
         Mixin.getByName('notification'),
-
     ],
 
     watch: {

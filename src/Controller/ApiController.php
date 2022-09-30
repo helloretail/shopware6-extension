@@ -2,51 +2,50 @@
 
 namespace Helret\HelloRetail\Controller;
 
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
+use Helret\HelloRetail\Core\Content\Feeds\ExportEntity;
+use Shopware\Core\Content\Product\ProductEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Helret\HelloRetail\Export\Profiles\ProfileExporterInterface;
 use Helret\HelloRetail\HelretHelloRetail;
+use Symfony\Component\Serializer\Serializer;
 
 /**
- * @RouteScope(scopes={"api"})
+ * @Route(defaults={"_routeScope"={"api"}})
  */
 class ApiController extends AbstractController
 {
     protected ProfileExporterInterface $profileExporter;
+    protected iterable $feeds;
+    protected Serializer $serializer;
 
     /**
      * ApiController constructor.
-     * @param ProfileExporterInterface $profileExporter
      */
-    public function __construct(ProfileExporterInterface $profileExporter)
+    public function __construct(ProfileExporterInterface $profileExporter, iterable $feeds, Serializer $serializer)
     {
         $this->profileExporter = $profileExporter;
+        $this->feeds = $feeds;
+        $this->serializer = $serializer;
     }
 
     /**
      * @Route("/api/helret/hello-retail/getTypeId", name="api.action.helret.hello-retail.getTypeId", methods={"GET"})
-     * @param Context $context
      * @return Response
      */
-    public function getTypeId(Context $context): Response
+    public function getTypeId(): Response
     {
         return new Response(HelretHelloRetail::SALES_CHANNEL_TYPE_HELLO_RETAIL);
     }
 
-    //phpcs:disable
     /**
-     * @Route("/api/helret/hello-retail/generateFeed/{salesChannelId}/{feed}", name="api.action.helret.hello-retail.generateFeed", methods={"POST"})
-     * @param Context $context
-     * @param $salesChannelId
-     * @param $feed
-     * @return JsonResponse
+     * @Route("/api/helret/hello-retail/generateFeed/{salesChannelId}/{feed}",
+     *     name="api.action.helret.hello-retail.generateFeed",
+     *     methods={"POST"})
      */
-    //phpcs:enable
-    public function generateFeed(Context $context, $salesChannelId, $feed): JsonResponse
+    public function generateFeed(string $salesChannelId, string $feed): JsonResponse
     {
         try {
             if (in_array($feed, $this->profileExporter->generate($salesChannelId, [$feed]))) {
@@ -63,5 +62,24 @@ class ApiController extends AbstractController
                 'message' => $exception->getMessage()
             ]);
         }
+    }
+
+    /**
+     * @Route("/api/helret/hello-retail/getExportEntities",
+     *     name="api.action.helret.hello-retail.getExportEntities",
+     *     methods={"GET"})
+     */
+    public function getExportEntities(): JsonResponse
+    {
+
+        $feeds = [];
+        foreach ($this->feeds as $key => $feed) {
+            if ($feed instanceof ExportEntity) {
+                $feeds[$key] = $this->serializer->normalize($feed);
+            }
+        }
+        return new JsonResponse([
+            "feeds" => $feeds
+        ]);
     }
 }

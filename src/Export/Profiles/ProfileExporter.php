@@ -62,17 +62,18 @@ class ProfileExporter implements ProfileExporterInterface
 
         $notExported = [];
         foreach ($exportEntity->getFeeds() as $key => $feed) {
-            if ((!empty($feeds) && !in_array($key, $feeds))
-                || !$feed['file']
-                || !$feed['headerTemplate']
-                || !$feed['bodyTemplate']
-                || !$feed['footerTemplate']
-            ) {
+            if ((!empty($feeds) && !in_array($key, $feeds)) || !$feed['file']) {
                 $notExported[] = $key;
                 continue;
             }
 
-            if (!$this->helloRetailService->export($exportEntity, $key)) {
+            try {
+                $exported = $this->helloRetailService->export($exportEntity, $key);
+            } catch (\Exception $e) {
+                $exported = false;
+            }
+
+            if (!$exported) {
                 $notExported[] = $key;
             }
         }

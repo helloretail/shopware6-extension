@@ -1,4 +1,4 @@
-const { ApiService } = Shopware.Classes;
+const {ApiService} = Shopware.Classes;
 
 class HelloRetailApiService extends ApiService {
     constructor(httpClient, loginService, apiEndpoint = 'helret/hello-retail') {
@@ -14,12 +14,14 @@ class HelloRetailApiService extends ApiService {
         return this.httpClient.post(
             `/${this.getApiBasePath()}/generateFeed/${salesChannelId}/${feed}`,
             {},
-            {
-                headers: this.getBasicHeaders()
-            }
-        ).then((response) => {
-            return ApiService.handleResponse(response);
-        });
+            {headers: this.getBasicHeaders()}
+        ).then(response => ApiService.handleResponse(response))
+    }
+
+    getExportEntities() {
+        return this.httpClient
+            .get(`/${this.getApiBasePath()}/getExportEntities`, {}, {headers: this.getBasicHeaders()})
+            .then(response => ApiService.handleResponse(response));
     }
 }
 

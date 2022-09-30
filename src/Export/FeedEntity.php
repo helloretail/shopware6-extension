@@ -11,6 +11,7 @@ use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelD
 class FeedEntity implements FeedEntityInterface
 {
     private string $feed;
+    private ?string $entity = null;
     private string $feedDirectory;
     private string $file;
     private SalesChannelDomainEntity $salesChannelDomainEntity;
@@ -147,5 +148,15 @@ class FeedEntity implements FeedEntityInterface
     public function setFooterTemplate($template): void
     {
         $this->footerTemplate = $template;
+    }
+
+    public function setEntity(?string $entity): void
+    {
+        $this->entity = $entity;
+    }
+
+    public function getEntity(): string
+    {
+        return $this->entity ?: $this->feed;
     }
 }

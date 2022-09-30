@@ -28,6 +28,14 @@
                 "orderTitle": "Ordre",
                 "categoryTitle": "Kategorier"
             }
+        },
+        "comparison": {
+            "feed": {
+                "product": "Produkt",
+                "category": "Kategori",
+                "order": "Ordre"
+            },
+            "select": "Feed export type"
         }
     }
 }

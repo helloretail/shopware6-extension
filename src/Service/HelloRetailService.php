@@ -2,10 +2,20 @@
 
 namespace Helret\HelloRetail\Service;
 
+use DateTime;
 use Error;
 use Exception;
+use Helret\HelloRetail\Core\Content\Feeds\ExportEntity;
+use Laminas\Loader\Exception\InvalidPathException;
+use Shopware\Core\Content\ProductExport\Event\ProductExportLoggingEvent;
+use Shopware\Core\Content\ProductExport\Exception\RenderProductException;
+use Shopware\Core\Content\ProductExport\ProductExportEntity;
+use Shopware\Core\Framework\Adapter\Twig\TwigVariableParser;
+use Shopware\Core\Framework\DataAbstractionLayer\Dbal\EntityDefinitionQueryHelper;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
+use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use TypeError;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Adapter\Local;
@@ -55,22 +65,12 @@ class HelloRetailService
     protected EntityRepositoryInterface $salesChannelDomainRepository;
     protected FilesystemInterface $filesystem;
     protected SystemConfigService $configService;
-    protected Kernel $kernel;
+    protected string $projectRoot;
+    protected TwigVariableParser $twigVariableParser;
+    protected iterable $feeds;
 
     /**
      * HelloRetailService constructor.
-     *
-     * @param EntityRepositoryInterface $logEntryRepository
-     * @param LoggerInterface $logger
-     * @param MessageBusInterface $bus
-     * @param StringTemplateRenderer $templateRenderer
-     * @param ContainerInterface $container
-     * @param SalesChannelContextServiceInterface $salesChannelContextService
-     * @param SeoUrlPlaceholderHandlerInterface $seoUrlPlaceholderHandler
-     * @param SerializerInterface $serializer
-     * @param EntityRepositoryInterface $salesChannelDomainRepository
-     * @param SystemConfigService $configService
-     * @param Kernel $kernel
      */
     public function __construct(
         EntityRepositoryInterface $logEntryRepository,
@@ -83,7 +83,9 @@ class HelloRetailService
         SerializerInterface $serializer,
         EntityRepositoryInterface $salesChannelDomainRepository,
         SystemConfigService $configService,
-        Kernel $kernel
+        string $projectRoot,
+        TwigVariableParser $twigVariableParser,
+        iterable $feeds
     ) {
         $this->logEntryRepository = $logEntryRepository;
         $this->logger = $logger;
@@ -95,7 +97,9 @@ class HelloRetailService
         $this->serializer = $serializer;
         $this->salesChannelDomainRepository = $salesChannelDomainRepository;
         $this->configService = $configService;
-        $this->kernel = $kernel;
+        $this->projectRoot = $projectRoot;
+        $this->twigVariableParser = $twigVariableParser;
+        $this->feeds = $feeds;
 
         $fullPath = $this->getFeedDirectoryPath();
         $localFilesystemAdapter = new Local($fullPath);
@@ -107,9 +111,7 @@ class HelloRetailService
      */
     public function getFeedDirectoryPath(): string
     {
-        $projectDir = $this->kernel->getProjectDir();
-        $publicDir = $projectDir . DIRECTORY_SEPARATOR . 'public';
-
+        $publicDir = $this->projectRoot . DIRECTORY_SEPARATOR . 'public';
         return $publicDir . DIRECTORY_SEPARATOR . HelretHelloRetail::STORAGE_PATH;
     }
 
@@ -117,6 +119,7 @@ class HelloRetailService
      * @param ExportEntityInterface $exportEntity
      * @param string $feed
      * @return bool
+     * @throws Exception
      */
     public function export(ExportEntityInterface $exportEntity, string $feed): bool
     {
@@ -133,24 +136,17 @@ class HelloRetailService
          * @see vendor/shopware/core/Content/ProductExport/ScheduledTask/ProductExportPartialGenerationHandler.php
          * finalizeExport()
          */
-        $params = new SalesChannelContextServiceParameters(
+        $salesChannelContext = $this->salesChannelContextService->get(new SalesChannelContextServiceParameters(
             $exportEntity->getStorefrontSalesChannelId(),
             "",
             $salesChannelDomain->getLanguageId()
-        );
-        $salesChannelContext = $this->salesChannelContextService->get(
-            $params
-        );
+        ));
 
         /** @var FeedEntityInterface $feedEntity */
         try {
             $feedEntity = $this->serializer
                 ->deserialize(json_encode($exportEntity->getFeeds()[$feed]), FeedEntity::class, 'json');
-
-            $feedEntity->setFeedDirectory($exportEntity->getFeedDirectory());
-            $feedEntity->setFeed($feed);
-            $feedEntity->setDomain($salesChannelDomain);
-        } catch (Error | TypeError | NotEncodableValueException | Exception $e) {
+        } catch (Error|TypeError|NotEncodableValueException|Exception $e) {
             $this->exportLogger(
                 HelretHelloRetail::EXPORT_ERROR,
                 [
@@ -164,8 +160,18 @@ class HelloRetailService
             return false;
         }
 
-        /** @var EntityRepositoryInterface $repository */
-        $repository = $this->container->get("$feed.repository");
+        $exportFeed = $this->getFeed($feed);
+
+        $feedEntity->setFeedDirectory($exportEntity->getFeedDirectory());
+        $feedEntity->setFeed($feed);
+        $feedEntity->setDomain($salesChannelDomain);
+        $feedEntity->setEntity($exportFeed->getEntity());
+
+        $this->setInheritedTemplates($feedEntity, $exportFeed);
+        if (!$feedEntity->getHeaderTemplate() || !$feedEntity->getBodyTemplate() || !$feedEntity->getFooterTemplate()) {
+            return false;
+        }
+
 
         $criteria = new Criteria();
         if (EntityType::getMatchingEntityType($feed) == EntityType::PRODUCT) {
@@ -174,24 +180,39 @@ class HelloRetailService
                 'product.visibilities.salesChannelId',
                 $salesChannelContext->getSalesChannel()->getId()
             ));
-        }
-
-        if (EntityType::getMatchingEntityType($feed) == EntityType::CATEGORY) {
+        } elseif (EntityType::getMatchingEntityType($feed) == EntityType::CATEGORY) {
             $criteria->addFilter(new EqualsFilter('category.active', true));
-        }
-
-
-        if ($this->configService->get('HelretHelloRetail.config.orderLimit')) {
-            if (EntityType::getMatchingEntityType($feed) == EntityType::ORDER) {
-                $amountOfMonths = $this->configService->getInt('HelretHelloRetail.config.orderLimitMonths') ?: 2;
+        } elseif (EntityType::getMatchingEntityType($feed) == EntityType::ORDER) {
+            $salesChannelId = $salesChannelContext->getSalesChannelId();
+            $criteria->addFilter(new EqualsFilter('salesChannelId', $salesChannelId));
+            if ($this->configService->get('HelretHelloRetail.config.orderLimit', $salesChannelId)) {
+                $amountOfMonths = $this->configService->getInt(
+                    'HelretHelloRetail.config.orderLimitMonths',
+                    $salesChannelId
+                ) ?: 2;
                 $criteria->addFilter(new RangeFilter(
                     'createdAt',
-                    [RangeFilter::GTE => (new \DateTime("-{$amountOfMonths} month"))->format('Y-m-d')]
+                    [RangeFilter::GTE => (new DateTime("-{$amountOfMonths} month"))->format('Y-m-d')]
                 ));
             }
         }
 
-        $entityIdsResult = $repository->searchIds($criteria, $salesChannelContext->getContext());
+        $this->extendCriteria($criteria, $feed, $feedEntity, $salesChannelContext);
+        $criteria->setLimit(2);
+
+        $repository = $this->container->get(("{$exportFeed->getEntity()}.repository"));
+        if ($repository instanceof SalesChannelRepositoryInterface) {
+            $entityIdsResult = $repository->searchIds($criteria, $salesChannelContext);
+        } else {
+            $entityIdsResult = $repository->searchIds($criteria, $salesChannelContext->getContext());
+        }
+
+        // Dynamically add associations
+        $feedEntity->setAssociations(array_merge(
+            $feedEntity->getAssociations(),
+            $this->getAssociations($feedEntity->getBodyTemplate(), $repository)
+        ));
+
         $entityIds = $entityIdsResult->getIds();
 
         $content = $this->renderHeader($feedEntity, $salesChannelContext, [
@@ -300,7 +321,7 @@ class HelloRetailService
         string $event,
         array $context,
         int $level = Logger::ERROR
-    ) {
+    ): void {
         $this->logEntryRepository->create(
             [
                 [
@@ -323,12 +344,8 @@ class HelloRetailService
     private function renderTemplate(?string $template, array $data, SalesChannelContext $context)
     {
         try {
-            return $this->templateRenderer->render(
-                $template,
-                $data,
-                $context->getContext()
-            ) . PHP_EOL;
-        } catch (Error | TypeError | Exception | StringTemplateRenderingException $e) {
+            return $this->templateRenderer->render($template, $data, $context->getContext()) . PHP_EOL;
+        } catch (Error|TypeError|Exception|StringTemplateRenderingException $e) {
             $this->exportLogger(
                 HelretHelloRetail::EXPORT_ERROR,
                 [
@@ -339,8 +356,65 @@ class HelloRetailService
                     'errorType' => get_class($e)
                 ]
             );
-
-            return false;
         }
+        return false;
+    }
+
+    protected function getAssociations(string $template, EntityRepositoryInterface $repo): array
+    {
+        try {
+            $variables = $this->twigVariableParser->parse($template);
+        } catch (\Exception $e) {
+            return [];
+            // Should we throw, or just rely on the associations from the conf file?
+            // throw new RenderProductException($e->getMessage());
+        }
+
+        $associations = [];
+        foreach ($variables as $variable) {
+            $associations[] = EntityDefinitionQueryHelper::getAssociationPath($variable, $repo->getDefinition());
+        }
+
+        return array_filter(array_unique($associations));
+    }
+
+    protected function setInheritedTemplates(FeedEntityInterface $feedEntity, ?ExportEntity $exportEntity): void
+    {
+        if ($feedEntity->getHeaderTemplate() && $feedEntity->getBodyTemplate() && $feedEntity->getFooterTemplate()) {
+            return;
+        }
+
+        if (!$exportEntity) {
+            return;
+        }
+
+        if (!$feedEntity->getHeaderTemplate()) {
+            $feedEntity->setHeaderTemplate($exportEntity->getHeaderTemplate());
+        }
+        if (!$feedEntity->getBodyTemplate()) {
+            $feedEntity->setBodyTemplate($exportEntity->getBodyTemplate());
+        }
+        if (!$feedEntity->getFooterTemplate()) {
+            $feedEntity->setFooterTemplate($exportEntity->getFooterTemplate());
+        }
+    }
+
+    protected function getFeed(string $feed): ?ExportEntity
+    {
+        foreach ($this->feeds as $feedEntity) {
+            if ($feedEntity instanceof ExportEntity && $feedEntity->getFeed() === $feed) {
+                return $feedEntity;
+            }
+        }
+
+        return null;
+    }
+
+    protected function extendCriteria(
+        Criteria $criteria,
+        string $feed,
+        FeedEntityInterface $feedEntity,
+        SalesChannelContext $context
+    ): void {
     }
 }
