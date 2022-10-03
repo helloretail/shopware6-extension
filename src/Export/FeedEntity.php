@@ -15,10 +15,10 @@ class FeedEntity implements FeedEntityInterface
     private string $feedDirectory;
     private string $file;
     private SalesChannelDomainEntity $salesChannelDomainEntity;
-    private array $associations;
-    private ?string $headerTemplate;
-    private ?string $bodyTemplate;
-    private ?string $footerTemplate;
+    private array $associations = [];
+    private ?string $headerTemplate = null;
+    private ?string $bodyTemplate = null;
+    private ?string $footerTemplate = null;
 
     /**
      * {@inheritdoc}
