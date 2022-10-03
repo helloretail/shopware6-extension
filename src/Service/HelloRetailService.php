@@ -197,15 +197,21 @@ class HelloRetailService
         $repository = $this->container->get(("{$exportFeed->getEntity()}.repository"));
         if ($repository instanceof SalesChannelRepositoryInterface) {
             $entityIdsResult = $repository->searchIds($criteria, $salesChannelContext);
+            /** @var EntityRepositoryInterface $pureRepo */
+            $pureRepo = $this->container->get(("$feed.repository"));
+            $associations = $this->getAssociations($feedEntity->getBodyTemplate(), $pureRepo);
+            unset($pureRepo);
         } else {
+            /** @var EntityRepositoryInterface $repository */
             $entityIdsResult = $repository->searchIds($criteria, $salesChannelContext->getContext());
+            $associations = $this->getAssociations($feedEntity->getBodyTemplate(), $repository);
         }
 
         // Dynamically add associations
         $feedEntity->setAssociations(array_merge(
             $feedEntity->getAssociations(),
             $exportFeed->associations,
-            $this->getAssociations($feedEntity->getBodyTemplate(), $repository)
+            $associations
         ));
 
         $entityIds = $entityIdsResult->getIds();
