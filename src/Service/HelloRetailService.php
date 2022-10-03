@@ -210,6 +210,7 @@ class HelloRetailService
         // Dynamically add associations
         $feedEntity->setAssociations(array_merge(
             $feedEntity->getAssociations(),
+            $exportFeed->associations,
             $this->getAssociations($feedEntity->getBodyTemplate(), $repository)
         ));
 

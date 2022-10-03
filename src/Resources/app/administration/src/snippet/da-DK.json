@@ -35,7 +35,8 @@
                 "category": "Kategori",
                 "order": "Ordre"
             },
-            "select": "Feed export type"
+            "select": "Feed export type",
+            "exportTypesMissing": "Noget gik galt ved indlæsning af Export type(r)"
         }
     }
 }

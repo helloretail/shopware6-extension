@@ -12,6 +12,7 @@ abstract class ExportEntity
 {
     protected string $feed;
     protected string $file;
+    public array $associations = [];
 
     private ?string $baseDir = null;
 

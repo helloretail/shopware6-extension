@@ -81,9 +81,9 @@ Component.register('sw-sales-channel-detail-hello-retail-comparison', {
             if (!this.salesChannel.configuration.feeds[this.feedType]) {
                 this.salesChannel.configuration.feeds[this.feedType] = {
                     name: this.feedType,
-                    headerTemplate: "",
-                    bodyTemplate: "",
-                    footerTemplate: "",
+                    headerTemplate: null,
+                    bodyTemplate: null,
+                    footerTemplate: null,
                     file: `${this.feedType}.xml`,
                     associations: []
                 }
@@ -117,7 +117,7 @@ Component.register('sw-sales-channel-detail-hello-retail-comparison', {
         },
 
         getFeedOptions() {
-            if (this.entities) {
+            if (this.entities && Object.keys(this.entities).length) {
                 return Object.keys(this.entities).map(function (key) {
                     return {
                         label: this.$tc(this.entities[key].snippetKey),
@@ -125,8 +125,8 @@ Component.register('sw-sales-channel-detail-hello-retail-comparison', {
                     };
                 }.bind(this));
             }
-            return [];
 
+            // Fallback
             return [
                 {
                     label: this.$tc('helret-hello-retail.comparison.feed.product'),

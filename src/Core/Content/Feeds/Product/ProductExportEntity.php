@@ -8,6 +8,19 @@ use Shopware\Core\Content\Product\ProductDefinition;
 class ProductExportEntity extends ExportEntity
 {
     protected string $feed = ProductDefinition::ENTITY_NAME;
+    protected string $file = "products.xml";
+    public array $associations = [
+        'prices',
+        'categories',
+        'seoUrls',
+        'searchKeywords',
+        'manufacturer',
+        'media',
+        'cover',
+        'product.parent',
+        'properties.group',
+        'cheapestPrice'
+    ];
 
     public function getSnippetKey(): string
     {

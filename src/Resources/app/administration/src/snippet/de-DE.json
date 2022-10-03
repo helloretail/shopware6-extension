@@ -35,7 +35,8 @@
                 "category": "Kategorie",
                 "order": "Bestellen"
             },
-            "select": "Feed exporttyp"
+            "select": "Feed exporttyp",
+            "exportTypesMissing": "Beim Laden der Exporttypen ist ein Fehler aufgetreten"
         }
     }
 }
