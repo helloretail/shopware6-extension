@@ -60,20 +60,19 @@ Component.register('sw-sales-channel-detail-hello-retail-comparison', {
 
         outerCompleterFunctionHeader() {
             return this.outerCompleterFunction({
-                productExport: 'product_export',
+                helloRetailExport: 'helloRetailExport',
             });
         },
 
         outerCompleterFunctionBody() {
             return this.outerCompleterFunction({
-                productExport: 'product_export',
-                product: 'product',
+                helloRetailExport: 'helloRetailExport',
             });
         },
 
         outerCompleterFunctionFooter() {
             return this.outerCompleterFunction({
-                productExport: 'product_export',
+                helloRetailExport: 'helloRetailExport',
             });
         },
 
@@ -106,14 +105,15 @@ Component.register('sw-sales-channel-detail-hello-retail-comparison', {
         },
 
         outerCompleterFunction(mapping) {
-            const entityMappingService = this.entityMappingService;
-
             return function completerFunction(prefix) {
-                const entityMapping = entityMappingService.getEntityMapping(prefix, mapping);
+                const entityMapping = this.entityMappingService.getEntityMapping(prefix, {
+                    ...mapping,
+                    [this.feedType]: this.feedType,
+                });
                 return Object.keys(entityMapping).map(val => {
                     return {value: val};
                 });
-            };
+            }.bind(this);
         },
 
         getFeedOptions() {
