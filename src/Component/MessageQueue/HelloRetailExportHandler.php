@@ -126,6 +126,9 @@ class HelloRetailExportHandler extends AbstractMessageHandler
         /** @var SalesChannelProductEntity|CategoryEntity|OrderEntity $entity */
         $repository = $this->container->get(("{$feedEntity->getEntity()}.repository"));
         if ($repository instanceof SalesChannelRepositoryInterface) {
+            if ($criteria->hasAssociation("parent")) {
+                $criteria->removeAssociation("parent");
+            }
             $entity = $repository->search($criteria, $salesChannelContext)->first();
         } else {
             $entity = $repository->search($criteria, $salesChannelContext->getContext())->first();

@@ -17,7 +17,6 @@ class ProductExportEntity extends ExportEntity
         'manufacturer',
         'media',
         'cover',
-        'parent',
         'properties.group',
         'cheapestPrice'
     ];
