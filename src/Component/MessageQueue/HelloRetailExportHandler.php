@@ -46,7 +46,6 @@ class HelloRetailExportHandler extends AbstractMessageHandler
     protected MessageBusInterface $bus;
     private ProductStreamBuilderInterface $productStreamBuilder;
 
-    protected SalesChannelRepositoryInterface $salesChannelProductRepository;
     protected SystemConfigService $configService;
 
     /**
@@ -57,7 +56,6 @@ class HelloRetailExportHandler extends AbstractMessageHandler
      * @param HelloRetailService $helloRetailService
      * @param MessageBusInterface $bus
      * @param ProductStreamBuilderInterface $productStreamBuilder
-     * @param SalesChannelRepositoryInterface $salesChannelProductRepository
      * @param SystemConfigService $configService
      */
     public function __construct(
@@ -67,7 +65,6 @@ class HelloRetailExportHandler extends AbstractMessageHandler
         HelloRetailService $helloRetailService,
         MessageBusInterface $bus,
         ProductStreamBuilderInterface $productStreamBuilder,
-        SalesChannelRepositoryInterface $salesChannelProductRepository,
         SystemConfigService $configService
     ) {
         $this->logger = $logger;
@@ -75,11 +72,9 @@ class HelloRetailExportHandler extends AbstractMessageHandler
         $this->translator = $translator;
         $this->helloRetailService = $helloRetailService;
         $this->bus = $bus;
-        $this->salesChannelProductRepository = $salesChannelProductRepository;
 
         $fullPath = $helloRetailService->getFeedDirectoryPath();
-        $localFilesystemAdapter = new Local($fullPath);
-        $this->filesystem = new Filesystem($localFilesystemAdapter);
+        $this->filesystem = new Filesystem(new Local($fullPath));
 
         $this->productStreamBuilder = $productStreamBuilder;
         $this->configService = $configService;
