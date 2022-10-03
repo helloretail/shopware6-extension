@@ -2,10 +2,6 @@
 
 namespace Helret\HelloRetail;
 
-use Helret\HelloRetail\Core\Content\Feeds\Category\CategoryExportEntity;
-use Helret\HelloRetail\Core\Content\Feeds\ExportEntity;
-use Helret\HelloRetail\Core\Content\Feeds\Order\OrderExportEntity;
-use Helret\HelloRetail\Core\Content\Feeds\Product\ProductExportEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -116,7 +112,7 @@ class HelretHelloRetail extends Plugin
         if (version_compare($updateContext->getCurrentPluginVersion(), "3.0.0", "<") &&
             version_compare($updateContext->getUpdatePluginVersion(), "3.0.0", "==")) {
             $salesChannelRepository = $this->container->get("sales_channel.repository");
-            
+
             $updateTemplate = $this->getUpdateTemplatesV300();
             $templates = ["headerTemplate", "bodyTemplate", "footerTemplate"];
 
@@ -167,7 +163,7 @@ class HelretHelloRetail extends Plugin
     }
 
     /**
-     * @return \string[][]
+     * @return string[][]
      * Get template before v3.0.0, now added using php
      */
     private function getUpdateTemplatesV300(): array
