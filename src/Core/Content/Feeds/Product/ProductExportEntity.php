@@ -17,7 +17,7 @@ class ProductExportEntity extends ExportEntity
         'manufacturer',
         'media',
         'cover',
-        'product.parent',
+        'parent',
         'properties.group',
         'cheapestPrice'
     ];
@@ -25,5 +25,10 @@ class ProductExportEntity extends ExportEntity
     public function getSnippetKey(): string
     {
         return "helret-hello-retail.comparison.feed.product";
+    }
+
+    public function getEntity(): string
+    {
+        return "sales_channel.product";
     }
 }
