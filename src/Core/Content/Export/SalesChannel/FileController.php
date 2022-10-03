@@ -5,11 +5,7 @@ namespace Helret\HelloRetail\Core\Content\Export\SalesChannel;
 use Helret\HelloRetail\HelretHelloRetail;
 use League\Flysystem\FilesystemInterface;
 use Shopware\Core\Content\ProductExport\Exception\ExportNotGeneratedException;
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Routing\Annotation\Since;
-use Shopware\Storefront\Controller\StorefrontController;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,6 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class FileController extends AbstractController
 {
+    /** @var FilesystemInterface $fileSystem Public fileSystem */
     protected FilesystemInterface $fileSystem;
 
     public function __construct(
@@ -35,7 +32,7 @@ class FileController extends AbstractController
      *     methods={"GET"},
      *     defaults={"auth_required"=false})
      */
-    public function index(Request $request, Context $context): Response
+    public function index(Request $request): Response
     {
         $path = HelretHelloRetail::STORAGE_PATH . "/{$request->get("feedDirectory")}";
 
@@ -44,33 +41,13 @@ class FileController extends AbstractController
             throw new ExportNotGeneratedException();
         }
 
-//        dd($this->fileSystem->has(HelretHelloRetail::STORAGE_PATH));
-//        $criteria = (new Criteria())
-//            ->addFilter(new EqualsFilter("configuration.feedDirectory", $request->get("feedKey")));
-//
-//        dd($criteria);
-//        $export = $this->exportRepository->search($criteria, $context)->first();
-//        if (!$export) {
-//            throw new ExportNotFoundException(null, $request->get("fileName"));
-//        }
-
-////        $filePath = $this->getFilePath();
-//        if (!$this->fileSystem->has($filePath){
-//            // Generate
-//        throw new ExportNotGeneratedExpception();
-//    }
-//
-//
-//        // vendor/shopware/core/Content/ProductExport/SalesChannel/ExportController.php
-//        $content = $this->fileSystem->read($filePath);
-        $contentType = "text/xml"; //$this->getContentType($productExport->getFileFormat());
-        $encoding = "UTF-8"; //$productExport->getEncoding();
+        $encoding = "UTF-8";
 
         $content = $this->fileSystem->read("$path/{$request->get("fileName")}");
         return (new Response(
-            $content ? $content : null,
+            $content ?: null,
             200,
-            ['Content-Type' => $contentType . ';charset=' . $encoding]
+            ['Content-Type' => "text/xml;charset=$encoding"]
         ))->setCharset($encoding);
     }
 }

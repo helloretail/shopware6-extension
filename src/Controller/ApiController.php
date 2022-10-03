@@ -3,7 +3,6 @@
 namespace Helret\HelloRetail\Controller;
 
 use Helret\HelloRetail\Core\Content\Feeds\ExportEntity;
-use Shopware\Core\Content\Product\ProductEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;

@@ -105,9 +105,9 @@ class HelretHelloRetail extends Plugin
         }
     }
 
-    public function update(UpdateContext $updateContext): void
+    public function postUpdate(UpdateContext $updateContext): void
     {
-        parent::update($updateContext);
+        parent::postUpdate($updateContext);
 
         if (version_compare($updateContext->getCurrentPluginVersion(), "3.0.0", "<") &&
             version_compare($updateContext->getUpdatePluginVersion(), "3.0.0", "==")) {
