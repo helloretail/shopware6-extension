@@ -126,6 +126,7 @@ class HelloRetailExportHandler extends AbstractMessageHandler
         /** @var SalesChannelProductEntity|CategoryEntity|OrderEntity $entity */
         $repository = $this->container->get(("{$feedEntity->getEntity()}.repository"));
         if ($repository instanceof SalesChannelRepositoryInterface) {
+            // sales_channel.product throws an exception if the parent association is applied
             if ($criteria->hasAssociation("parent")) {
                 $criteria->removeAssociation("parent");
             }
