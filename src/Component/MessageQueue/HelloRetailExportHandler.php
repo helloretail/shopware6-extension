@@ -2,7 +2,6 @@
 
 namespace Helret\HelloRetail\Component\MessageQueue;
 
-use Helret\HelloRetail\Export\FeedEntityInterface;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\FileNotFoundException;
@@ -344,12 +343,5 @@ class HelloRetailExportHandler extends AbstractMessageHandler
 
             $this->filesystem->deleteDir($dir);
         }
-    }
-
-    protected function getRepositoryId(FeedEntityInterface $entity): string
-    {
-        return $entity->getFeed() !== "product" ?
-            "{$entity->getFeed()}.repository" :
-            "sales_channel.product.repository";
     }
 }
