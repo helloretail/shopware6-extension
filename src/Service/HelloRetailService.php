@@ -192,7 +192,6 @@ class HelloRetailService
         }
 
         $this->extendCriteria($criteria, $feed, $feedEntity, $salesChannelContext);
-        $criteria->setLimit(2);
 
         $repository = $this->container->get(("{$exportFeed->getEntity()}.repository"));
         if ($repository instanceof SalesChannelRepositoryInterface) {
