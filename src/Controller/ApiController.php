@@ -58,8 +58,7 @@ class ApiController extends AbstractController
         } catch (\Exception $exception) {
             return new JsonResponse([
                 'error' => true,
-                'message' => $exception->getMessage(),
-                'msg' => $exception->getMessage(),
+                'message' => $exception->getMessage()
             ]);
         }
     }
@@ -71,7 +70,6 @@ class ApiController extends AbstractController
      */
     public function getExportEntities(): JsonResponse
     {
-
         $feeds = [];
         foreach ($this->feeds as $key => $feed) {
             if ($feed instanceof ExportEntity) {

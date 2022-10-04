@@ -15,6 +15,7 @@ use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilderInterface;
 use Shopware\Core\Framework\Adapter\Translation\AbstractTranslator;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\MessageQueue\Handler\AbstractMessageHandler;
+use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -139,7 +140,7 @@ class HelloRetailExportHandler extends AbstractMessageHandler
         if ($feed === 'product') {
             if ($this->configService->get('HelretHelloRetail.config.advancedPricing')) {
                 // Backwards compatability
-                $entity->getPrice()->setExtensions([
+                $entity->getPrice()->addExtensions([
                     'calculatedPrices' => $entity->getCalculatedPrices(),
                     'calculatedPrice' => $entity->getCalculatedPrice()
                 ]);
@@ -150,7 +151,7 @@ class HelloRetailExportHandler extends AbstractMessageHandler
                 foreach ($entity->getProperties() as $property) {
                     $properties[$property->getGroup()->getName()][] = $property;
                 }
-                $entity->setExtensions(['properties' => $properties]);
+                $entity->addExtension("properties", new ArrayStruct($properties));
             }
         } elseif ($feed === 'category') {
             if ($entity->getProductStreamId()) {
