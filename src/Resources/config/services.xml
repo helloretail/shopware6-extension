@@ -94,10 +94,6 @@
             <tag name="helret.hello-retail.export-entity" key="order"/>
         </service>
 
-        <service id="Helret\HelloRetail\Core\Content\Feeds\Giftshop\GiftshopExport">
-            <tag name="helret.hello-retail.export-entity" key="wexo_gift_shop_list"/>
-        </service>
-
         <service id="Helret\HelloRetail\Service\ExportService">
             <argument type="tagged" tag="helret.hello-retail.export-entity" index-by="key"/>
         </service>
