@@ -2,6 +2,7 @@
 
 namespace Helret\HelloRetail\Export\Profiles;
 
+use Helret\HelloRetail\Service\ExportService;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -22,24 +23,20 @@ class ProfileExporter implements ProfileExporterInterface
     protected SerializerInterface $serializer;
     protected EntityRepositoryInterface $salesChannelRepository;
     protected HelloRetailService $helloRetailService;
+    protected ExportService $exportService;
 
-    /**
-     * ProfileExporter constructor.
-     * @param LoggerInterface $logger
-     * @param SerializerInterface $serializer
-     * @param EntityRepositoryInterface $salesChannelRepository
-     * @param HelloRetailService $helloRetailService
-     */
     public function __construct(
         LoggerInterface $logger,
         SerializerInterface $serializer,
         EntityRepositoryInterface $salesChannelRepository,
-        HelloRetailService $helloRetailService
+        HelloRetailService $helloRetailService,
+        ExportService $exportService
     ) {
         $this->logger = $logger;
         $this->serializer = $serializer;
         $this->salesChannelRepository = $salesChannelRepository;
         $this->helloRetailService = $helloRetailService;
+        $this->exportService = $exportService;
     }
 
     /**
@@ -61,8 +58,8 @@ class ProfileExporter implements ProfileExporterInterface
             ->deserialize(json_encode($salesChannelEntity->getConfiguration()), ExportEntity::class, 'json');
 
         $notExported = [];
-        foreach ($exportEntity->getFeeds() as $key => $feed) {
-            if ((!empty($feeds) && !in_array($key, $feeds)) || !$feed['file']) {
+        foreach ($this->exportService->getFeeds() as $key => $feed) {
+            if (!empty($feeds) && !in_array($key, $feeds)) {
                 $notExported[] = $key;
                 continue;
             }

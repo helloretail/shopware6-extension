@@ -61,7 +61,7 @@ class HelloRetailService
     protected SystemConfigService $configService;
     protected string $projectRoot;
     protected TwigVariableParser $twigVariableParser;
-    protected iterable $feeds;
+    protected ExportService $exportService;
 
     /**
      * HelloRetailService constructor.
@@ -79,7 +79,7 @@ class HelloRetailService
         SystemConfigService $configService,
         string $projectRoot,
         TwigVariableParser $twigVariableParser,
-        iterable $feeds
+        ExportService $exportService
     ) {
         $this->logEntryRepository = $logEntryRepository;
         $this->logger = $logger;
@@ -93,7 +93,7 @@ class HelloRetailService
         $this->configService = $configService;
         $this->projectRoot = $projectRoot;
         $this->twigVariableParser = $twigVariableParser;
-        $this->feeds = $feeds;
+        $this->exportService = $exportService;
 
         $fullPath = $this->getFeedDirectoryPath();
         $localFilesystemAdapter = new Local($fullPath);
@@ -137,29 +137,34 @@ class HelloRetailService
         ));
 
         /** @var FeedEntityInterface $feedEntity */
-        try {
-            $feedEntity = $this->serializer
-                ->deserialize(json_encode($exportEntity->getFeeds()[$feed]), FeedEntity::class, 'json');
-        } catch (Error|TypeError|NotEncodableValueException|Exception $e) {
-            $this->exportLogger(
-                HelretHelloRetail::EXPORT_ERROR,
-                [
-                    'feed' => $feed,
-                    'error' => $e->getMessage(),
-                    'errorTrace' => $e->getTraceAsString(),
-                    'errorType' => get_class($e)
-                ]
-            );
+        if (isset($exportEntity->getFeeds()[$feed])) {
+            try {
+                $feedEntity = $this->serializer
+                    ->deserialize(json_encode($exportEntity->getFeeds()[$feed]), FeedEntity::class, 'json');
+            } catch (Error|TypeError|NotEncodableValueException|Exception $e) {
+                $this->exportLogger(
+                    HelretHelloRetail::EXPORT_ERROR,
+                    [
+                        'feed' => $feed,
+                        'error' => $e->getMessage(),
+                        'errorTrace' => $e->getTraceAsString(),
+                        'errorType' => get_class($e)
+                    ]
+                );
 
-            return false;
+                return false;
+            }
+        } else {
+            $feedEntity = new FeedEntity();
         }
 
-        $exportFeed = $this->getFeed($feed);
+        $exportFeed = $this->exportService->getFeed($feed);
 
         $feedEntity->setFeedDirectory($exportEntity->getFeedDirectory());
         $feedEntity->setFeed($feed);
         $feedEntity->setDomain($salesChannelDomain);
         $feedEntity->setEntity($exportFeed->getEntity());
+        $feedEntity->setFile($exportFeed->getFile());
 
         $this->setInheritedTemplates($feedEntity, $exportFeed);
         if (!$feedEntity->getHeaderTemplate() || !$feedEntity->getBodyTemplate() || !$feedEntity->getFooterTemplate()) {
@@ -217,6 +222,7 @@ class HelloRetailService
 
         $content = $this->renderHeader($feedEntity, $salesChannelContext, [
             "{$feed}sTotal" => $entityIdsResult->getTotal(),
+            "total" => $entityIdsResult->getTotal(),
             "updatedAt" => date("Y-m-d H:i:s")
         ]);
 
@@ -397,17 +403,6 @@ class HelloRetailService
         if (!$feedEntity->getFooterTemplate()) {
             $feedEntity->setFooterTemplate($exportEntity->getFooterTemplate());
         }
-    }
-
-    protected function getFeed(string $feed): ?ExportEntity
-    {
-        foreach ($this->feeds as $feedEntity) {
-            if ($feedEntity instanceof ExportEntity && $feedEntity->getFeed() === $feed) {
-                return $feedEntity;
-            }
-        }
-
-        return null;
     }
 
     protected function extendCriteria(

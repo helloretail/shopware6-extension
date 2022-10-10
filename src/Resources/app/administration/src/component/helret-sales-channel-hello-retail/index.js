@@ -41,7 +41,8 @@ Component.register('helret-sales-channel-hello-retail', {
             originalFeedValues: null,
             storefrontDomainUrl: "",
             exportFeeds: null,
-            isEntitiesLoading: false
+            isEntitiesLoading: false,
+            feeds: []
         }
     },
 
@@ -82,9 +83,7 @@ Component.register('helret-sales-channel-hello-retail', {
         },
 
         feedsList() {
-            return Object.keys(this.salesChannel.configuration.feeds).sort((a, b) => {
-                return a.localeCompare(b);
-            })
+            return Object.keys(this.feeds).sort((a, b) => a.localeCompare(b));
         },
     },
 
@@ -127,6 +126,7 @@ Component.register('helret-sales-channel-hello-retail', {
                     feeds[key].footerTemplate = null;
                 });
             }
+            this.feeds = feeds;
 
             if (!this.salesChannel.configuration.feeds) {
                 this.$set(this.salesChannel.configuration, 'feeds', feeds);
@@ -224,8 +224,7 @@ Component.register('helret-sales-channel-hello-retail', {
         },
 
         feedUrl(feed) {
-            const _feed = this.salesChannel.configuration.feeds[feed] || false;
-
+            const _feed = this.exportFeeds[feed] || this.salesChannel.configuration.feeds[feed] || false;
             if (!_feed || _feed.file === null) {
                 return;
             }

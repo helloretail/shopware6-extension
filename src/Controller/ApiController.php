@@ -2,7 +2,7 @@
 
 namespace Helret\HelloRetail\Controller;
 
-use Helret\HelloRetail\Core\Content\Feeds\ExportEntity;
+use Helret\HelloRetail\Service\ExportService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,16 +17,19 @@ use Symfony\Component\Serializer\Serializer;
 class ApiController extends AbstractController
 {
     protected ProfileExporterInterface $profileExporter;
-    protected iterable $feeds;
+    protected ExportService $exportService;
     protected Serializer $serializer;
 
     /**
      * ApiController constructor.
      */
-    public function __construct(ProfileExporterInterface $profileExporter, iterable $feeds, Serializer $serializer)
-    {
+    public function __construct(
+        ProfileExporterInterface $profileExporter,
+        ExportService $exportService,
+        Serializer $serializer
+    ) {
         $this->profileExporter = $profileExporter;
-        $this->feeds = $feeds;
+        $this->exportService = $exportService;
         $this->serializer = $serializer;
     }
 
@@ -71,11 +74,10 @@ class ApiController extends AbstractController
     public function getExportEntities(): JsonResponse
     {
         $feeds = [];
-        foreach ($this->feeds as $key => $feed) {
-            if ($feed instanceof ExportEntity) {
-                $feeds[$key] = $this->serializer->normalize($feed);
-            }
+        foreach ($this->exportService->getFeeds() as $key => $feed) {
+            $feeds[$key] = $this->serializer->normalize($feed);
         }
+
         return new JsonResponse([
             "feeds" => $feeds
         ]);

@@ -7,7 +7,7 @@
     <services>
         <service id="Helret\HelloRetail\Controller\ApiController">
             <argument type="service" id="Helret\HelloRetail\Export\Profiles\ProfileExporter"/>
-            <argument type="tagged" tag="helret.hello-retail.export-entity" index-by="key"/>
+            <argument type="service" id="Helret\HelloRetail\Service\ExportService"/>
             <argument type="service" id="serializer"/>
             <tag name="controller.service_arguments"/>
             <call method="setContainer">
@@ -28,7 +28,7 @@
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument>%kernel.project_dir%</argument>
             <argument type="service" id="Shopware\Core\Framework\Adapter\Twig\TwigVariableParser"/>
-            <argument type="tagged" tag="helret.hello-retail.export-entity" index-by="key"/>
+            <argument type="service" id="Helret\HelloRetail\Service\ExportService"/>
         </service>
 
         <service id="Helret\HelloRetail\Export\Profiles\ProfileExporter" public="true">
@@ -36,6 +36,7 @@
             <argument type="service" id="serializer"/>
             <argument type="service" id="sales_channel.repository"/>
             <argument type="service" id="Helret\HelloRetail\Service\HelloRetailService"/>
+            <argument type="service" id="Helret\HelloRetail\Service\ExportService"/>
         </service>
 
         <service id="Helret\HelloRetail\Component\MessageQueue\HelloRetailExportHandler" public="true">
@@ -91,6 +92,14 @@
         </service>
         <service id="Helret\HelloRetail\Core\Content\Feeds\Order\OrderExportEntity">
             <tag name="helret.hello-retail.export-entity" key="order"/>
+        </service>
+
+        <service id="Helret\HelloRetail\Core\Content\Feeds\Giftshop\GiftshopExport">
+            <tag name="helret.hello-retail.export-entity" key="wexo_gift_shop_list"/>
+        </service>
+
+        <service id="Helret\HelloRetail\Service\ExportService">
+            <argument type="tagged" tag="helret.hello-retail.export-entity" index-by="key"/>
         </service>
     </services>
 </container>
