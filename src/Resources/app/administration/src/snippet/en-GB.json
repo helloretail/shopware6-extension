@@ -28,6 +28,15 @@
                 "orderTitle": "Orders",
                 "categoryTitle": "Categories"
             }
+        },
+        "comparison": {
+            "feed": {
+                "product": "Product",
+                "category": "Category",
+                "order": "Order"
+            },
+            "select": "Feed export type",
+            "exportTypesMissing": "Something went wrong loading Export type(s)"
         }
     }
 }

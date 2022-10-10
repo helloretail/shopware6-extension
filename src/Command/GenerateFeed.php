@@ -42,7 +42,8 @@ class GenerateFeed extends Command
     protected function configure(): void
     {
         $this->setDescription('Generates all configured Hello Retail feeds')
-            ->addOption('feed', 'f', InputOption::VALUE_REQUIRED, 'Specific feed to generate');
+            ->addOption('feed', 'f', InputOption::VALUE_REQUIRED, 'Specific feed to generate')
+            ->addOption("salesChannelId", "s", InputOption::VALUE_REQUIRED, "Generate for specific salesChannel");
     }
 
     /**
@@ -53,8 +54,7 @@ class GenerateFeed extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $feed = $input->getOption('feed');
-
-        $criteria = new Criteria();
+        $criteria = new Criteria($input->getOption("salesChannelId") ? [$input->getOption("salesChannelId")] : null);
         $criteria->addFilter(new EqualsFilter('typeId', HelretHelloRetail::SALES_CHANNEL_TYPE_HELLO_RETAIL));
 
         $salesChannelIds = $this->salesChannelRepository->searchIds(
@@ -65,12 +65,17 @@ class GenerateFeed extends Command
         foreach ($salesChannelIds as $salesChannelId) {
             try {
                 $this->profileExporter->generate($salesChannelId, $feed ? [$feed] : []);
-            } catch (\Error | \TypeError | \Exception | SalesChannelNotFoundException $exception) {
-                $output->writeln(
-                    "Could not find sales_channel with type ID: "
-                    . HelretHelloRetail::SALES_CHANNEL_TYPE_HELLO_RETAIL
-                );
+            } catch (\Error|\TypeError|\Exception|SalesChannelNotFoundException $exception) {
+                $msg = "Msg: {$exception->getMessage()}, ln: {$exception->getLine()}, File: {$exception->getFile()}";
+                $output->writeln($msg);
             }
+        }
+
+        if (!$salesChannelIds) {
+            $output->writeln(
+                "Could not find any sales_channel(s) with type ID: "
+                . HelretHelloRetail::SALES_CHANNEL_TYPE_HELLO_RETAIL
+            );
         }
 
         return 0;

@@ -39,20 +39,24 @@ Component.register('helret-sales-channel-hello-retail', {
             storefrontSalesChannelId: null,
             feedValues: [],
             originalFeedValues: null,
-            storefrontDomainUrl: ""
+            storefrontDomainUrl: "",
+            exportFeeds: null,
+            isEntitiesLoading: false,
+            feeds: []
         }
     },
 
     created() {
+        this.$emit("invalid-file-name", true);
         this.initChannel();
-    },
 
-    mounted() {
-        Promise.all([
-            this.fillSalesChannel()
-        ]).then(() => {
-            this.loading = false
-        });
+        // this.isLoading = true;
+        this.loadFeedEntities()
+            .then(() => this.setFeeds())
+            .finally(() => {
+                this.$emit("valid-file-name", true);
+                this.loading = false;
+            });
     },
 
     computed: {
@@ -79,9 +83,7 @@ Component.register('helret-sales-channel-hello-retail', {
         },
 
         feedsList() {
-            return Object.keys(this.salesChannel.configuration.feeds).sort((a, b) => {
-                return a.localeCompare(b);
-            })
+            return Object.keys(this.feeds).sort((a, b) => a.localeCompare(b));
         },
     },
 
@@ -89,34 +91,55 @@ Component.register('helret-sales-channel-hello-retail', {
         initChannel() {
             if (!this.salesChannel.configuration) {
                 this.$set(this.salesChannel, 'configuration', {
-                    feeds: this.helloRetailTemplateService.getExportTemplateRegistry(),
                     feedDirectory: Utils.createId()
                 });
-            }
-
-            if (!this.salesChannel.configuration.feeds) {
-                this.$set(this.salesChannel.configuration, 'feeds', this.helloRetailTemplateService.getExportTemplateRegistry());
             }
 
             if (!this.salesChannel.configuration.feedDirectory) {
                 this.$set(this.salesChannel.configuration, 'feedDirectory', Utils.createId());
             }
+
+            if (!this.salesChannel.configuration.storefrontSalesChannelId) {
+                this.$set(this.salesChannel.configuration, 'storefrontSalesChannelId', null);
+            }
+
             this.getStorefrontDomain();
+        },
+        setFeeds() {
+            let feeds = {};
+            if (this.exportFeeds && Object.keys(this.exportFeeds).length) {
+                for (const key in this.exportFeeds) {
+                    let feed = this.exportFeeds[key]
+                    feeds[key] = {
+                        file: feed.file,
+                        name: feed.feed,
+                        headerTemplate: null,
+                        bodyTemplate: null,
+                        footerTemplate: null
+                    };
+                }
+            } else {
+                feeds = this.helloRetailTemplateService.getExportTemplateRegistry();
+                Object.keys(feeds).forEach(key => {
+                    feeds[key].headerTemplate = null;
+                    feeds[key].bodyTemplate = null;
+                    feeds[key].footerTemplate = null;
+                });
+            }
+            this.feeds = feeds;
+
+            if (!this.salesChannel.configuration.feeds) {
+                this.$set(this.salesChannel.configuration, 'feeds', feeds);
+            }
+
             this.originalFeedValues = JSON.parse(JSON.stringify(this.salesChannel.configuration.feeds));
         },
 
-        fillSalesChannel() {
-            if (!this.salesChannel.configuration.storefrontSalesChannelId) {
-                return this.salesChannelRepository.search(this.storefrontSalesChannelCriteria, Shopware.Context.api)
-                    .then((storefrontChannels) => {
-                        if (storefrontChannels.total === 1) {
-                            const id = storefrontChannels.first().id;
-                            this.$set(this.salesChannel.configuration, 'storefrontSalesChannelId', id);
-                            this.$refs.storefrontSalesChannelId.$emit('change', id);
-                        }
-                        return Promise.resolve();
-                    })
-            }
+        loadFeedEntities() {
+            this.isEntitiesLoading = true;
+            return this.helloRetailService.getExportEntities()
+                .then(result => this.exportFeeds = result.feeds)
+                .finally(() => this.isEntitiesLoading = false);
         },
 
         onStorefrontSelectionChange(storefrontSalesChannelId) {
@@ -179,8 +202,8 @@ Component.register('helret-sales-channel-hello-retail', {
         },
 
         getStorefrontDomain() {
-            const { salesChannelDomainId } = this.salesChannel.configuration;
-            if(!salesChannelDomainId){
+            const {salesChannelDomainId} = this.salesChannel.configuration;
+            if (!salesChannelDomainId) {
                 return;
             }
 
@@ -200,14 +223,13 @@ Component.register('helret-sales-channel-hello-retail', {
             return regex.exec(domain)[0];
         },
 
-        feedUrl(feed){
-            const _feed = this.salesChannel.configuration.feeds[feed]||false;
-
-            if(!_feed || _feed.file === null){
+        feedUrl(feed) {
+            const _feed = this.exportFeeds[feed] || this.salesChannel.configuration.feeds[feed] || false;
+            if (!_feed || _feed.file === null) {
                 return;
             }
-            const { feedDirectory, salesChannelDomainId } = this.salesChannel.configuration;
-            if(!feedDirectory || !salesChannelDomainId){
+            const {feedDirectory, salesChannelDomainId} = this.salesChannel.configuration;
+            if (!feedDirectory || !salesChannelDomainId) {
                 return;
             }
             const criteria = new Criteria;
@@ -226,7 +248,7 @@ Component.register('helret-sales-channel-hello-retail', {
 
             this.$nextTick(() => {
                 this.deleteSalesChannel(this.salesChannel.id);
-                this.$router.push({ name: 'sw.dashboard.index' });
+                this.$router.push({name: 'sw.dashboard.index'});
             });
         },
         deleteSalesChannel(salesChannelId) {

@@ -1,0 +1,61 @@
+<product>
+    <url>{{ seoUrl('frontend.detail.page', {'productId': product.id}) }}</url>
+    <title>{% if product.name %}{{ product.name }}{% else %}{{ product.translated.name }}{% endif %}</title>
+    <ean>{{ product.ean }}</ean>
+    <sku>{{ product.productNumber }}</sku>
+    {% if product.cover %}
+        {% set thumbnail = product.cover.media.thumbnails.elements|filter(img => img.width == 400)|first %}
+        <imgurl>{% if thumbnail %}{{ thumbnail.url }}{% else %}{{ product.cover.media.url }}{% endif %}</imgurl>
+    {% else %}
+        <imgurl/>
+    {% endif %}
+
+    {# Price #}
+    {% set price = product.calculatedPrices.count > 0 ? product.calculatedPrices.last : product.calculatedPrice %}
+    {% set listPrice = price.listPrice %}
+    <price>{{ price.unitPrice }}</price>
+    <oldPrice>{% if listPrice %}{{ listPrice.price }}{% endif %}</oldPrice>
+    <displayFrom>{{ product.calculatedPrices.count > 1 }}</displayFrom>
+    {# Price end #}
+
+
+    <description>{{ product.description }}</description>
+    <brand>{% if product.manufacturer %}{{ product.manufacturer.name }}{% endif %}</brand>
+
+    <productnumber>{{ product.productNumber }}</productnumber>
+    <hierarchies>
+        {% if product.categories %}
+            {% for category in product.categories.elements %}
+                <hierarchy>
+                    {%- for breadCrumb in category.getBreadcrumb -%}
+                        <category>{{ breadCrumb }}</category>
+                    {%- endfor -%}
+                </hierarchy>
+            {% endfor %}
+        {% endif %}
+    </hierarchies>
+
+    {% if product.extensions.properties %}
+        <properties>
+            {% for key, value in product.extensions.properties %}
+                <property>
+                    <name>{{ key }}</name>
+                    <options>
+                        {%- for option in value -%}
+                            <option>{{ option.name }}</option>
+                        {%- endfor -%}
+                    </options>
+                </property>
+            {% endfor %}
+        </properties>
+    {% endif %}
+
+    <keywords>{% if product.searchKeywords %}{% for keyword in product.searchKeywords.elements %}{{ keyword.keyword }},{% endfor %}{% endif %}</keywords>
+
+    {% set color = product.properties.elements|filter(property => property.group.name == 'Color')|first %}
+    <color>{% if color %}{{ color.name }}{% endif %}</color>
+
+    {% set gender = product.properties.elements|filter(property => property.group.name == 'Gender')|first %}
+    <gender>{% if gender %}{{ gender.name }}{% endif %}</gender>
+    <instock>{% if product.availableStock > 0 %}true{% else %}false{% endif %}</instock>
+</product>

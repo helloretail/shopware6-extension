@@ -28,6 +28,15 @@
                 "orderTitle": "Aufträge",
                 "categoryTitle": "Kategorien"
             }
+        },
+        "comparison": {
+            "feed": {
+                "product": "Produkt",
+                "category": "Kategorie",
+                "order": "Bestellen"
+            },
+            "select": "Feed exporttyp",
+            "exportTypesMissing": "Beim Laden der Exporttypen ist ein Fehler aufgetreten"
         }
     }
 }

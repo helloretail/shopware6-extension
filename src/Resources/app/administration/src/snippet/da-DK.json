@@ -28,6 +28,15 @@
                 "orderTitle": "Ordre",
                 "categoryTitle": "Kategorier"
             }
+        },
+        "comparison": {
+            "feed": {
+                "product": "Produkt",
+                "category": "Kategori",
+                "order": "Ordre"
+            },
+            "select": "Feed export type",
+            "exportTypesMissing": "Noget gik galt ved indlæsning af Export type(r)"
         }
     }
 }

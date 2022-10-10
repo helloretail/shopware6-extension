@@ -7,12 +7,14 @@ use League\Flysystem\Adapter\Local;
 use League\Flysystem\FileNotFoundException;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Content\Category\CategoryEntity;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilderInterface;
-use Shopware\Core\Framework\Adapter\Translation\Translator;
-use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\SalesChannelRepositoryIterator;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\Adapter\Translation\AbstractTranslator;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\MessageQueue\Handler\AbstractMessageHandler;
+use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -35,34 +37,31 @@ class HelloRetailExportHandler extends AbstractMessageHandler
 
     protected LoggerInterface $logger;
     protected ContainerInterface $container;
-    protected Translator $translator;
+    protected AbstractTranslator $translator;
     protected Filesystem $filesystem;
     protected HelloRetailService $helloRetailService;
     protected MessageBusInterface $bus;
     private ProductStreamBuilderInterface $productStreamBuilder;
 
-    protected SalesChannelRepositoryInterface $salesChannelProductRepository;
     protected SystemConfigService $configService;
 
     /**
      * HelloRetailExportHandler constructor.
      * @param LoggerInterface $logger
      * @param ContainerInterface $container
-     * @param Translator $translator
+     * @param AbstractTranslator $translator
      * @param HelloRetailService $helloRetailService
      * @param MessageBusInterface $bus
      * @param ProductStreamBuilderInterface $productStreamBuilder
-     * @param SalesChannelRepositoryInterface $salesChannelProductRepository
      * @param SystemConfigService $configService
      */
     public function __construct(
         LoggerInterface $logger,
         ContainerInterface $container,
-        Translator $translator,
+        AbstractTranslator $translator,
         HelloRetailService $helloRetailService,
         MessageBusInterface $bus,
         ProductStreamBuilderInterface $productStreamBuilder,
-        SalesChannelRepositoryInterface $salesChannelProductRepository,
         SystemConfigService $configService
     ) {
         $this->logger = $logger;
@@ -70,11 +69,9 @@ class HelloRetailExportHandler extends AbstractMessageHandler
         $this->translator = $translator;
         $this->helloRetailService = $helloRetailService;
         $this->bus = $bus;
-        $this->salesChannelProductRepository = $salesChannelProductRepository;
 
         $fullPath = $helloRetailService->getFeedDirectoryPath();
-        $localFilesystemAdapter = new Local($fullPath);
-        $this->filesystem = new Filesystem($localFilesystemAdapter);
+        $this->filesystem = new Filesystem(new Local($fullPath));
 
         $this->productStreamBuilder = $productStreamBuilder;
         $this->configService = $configService;
@@ -94,9 +91,17 @@ class HelloRetailExportHandler extends AbstractMessageHandler
     public function handle($message): void
     {
         if ($message->getTemplateType() === TemplateType::FOOTER) {
+            /**
+             * Ugly fix/hack
+             * .... Occasionally the Hello Retail "footer"/ending message is rendered before all categories are rendered
+             * The "sleep", seems to be enough when generating/ending feed
+             */
+            sleep(10);
+
             $this->collectFiles($message);
             return;
         }
+
         $feedEntity = $message->getFeedEntity();
         $feed = $feedEntity->getFeed();
         $salesChannelContext = $message->getSalesChannelContext();
@@ -112,82 +117,64 @@ class HelloRetailExportHandler extends AbstractMessageHandler
             $context
         );
 
-        /** @var EntityRepositoryInterface $repository */
-        $repository = $this->container->get("$feed.repository");
-
         $criteria = new Criteria([$message->getId()]);
         foreach ($feedEntity->getAssociations() as $association) {
             $criteria->addAssociation($association);
         }
 
-        $entity = $repository->search($criteria, $context)->first();
 
-        try {
+        /** @var SalesChannelProductEntity|CategoryEntity|OrderEntity $entity */
+        $repository = $this->container->get(("{$feedEntity->getEntity()}.repository"));
+        if ($repository instanceof SalesChannelRepositoryInterface) {
+            // sales_channel.product throws an exception if the parent association is applied
+            if ($criteria->hasAssociation("parent")) {
+                $criteria->removeAssociation("parent");
+            }
+            $entity = $repository->search($criteria, $salesChannelContext)->first();
+        } else {
+            $entity = $repository->search($criteria, $salesChannelContext->getContext())->first();
+        }
+
+        $data = [$feed => $entity];
+        if ($feed === 'product') {
             if ($this->configService->get('HelretHelloRetail.config.advancedPricing')) {
-                if ($feed === 'product') {
-                    $criteria = new Criteria([$message->getId()]);
-                    $iterator = new SalesChannelRepositoryIterator(
-                        $this->salesChannelProductRepository,
-                        $salesChannelContext,
-                        $criteria
-                    );
-                    $productResult = $iterator->fetch();
-
-                    if ($productResult !== null) {
-                        $products = $productResult->getEntities();
-
-                        $calcutedPriceData = [];
-                        foreach ($products as $product) {
-                            $calculatedPrices = $product->getCalculatedPrices();
-                            $calculatedPrice = $product->getCalculatedPrice();
-                        }
-
-                        $calcutedPriceData = [
-                            'calculatedPrices' => $calculatedPrices,
-                            'calculatedPrice' => $calculatedPrice
-                        ];
-
-                        $entity->getPrice()->setExtensions($calcutedPriceData);
-                    }
-                }
+                // Backwards compatability
+                $entity->getPrice()->addExtensions([
+                    'calculatedPrices' => $entity->getCalculatedPrices(),
+                    'calculatedPrice' => $entity->getCalculatedPrice()
+                ]);
             }
 
-            if($feed == 'product' && $entity->getProperties()) {
-                /** @var ProductEntity $entity */
+            if ($entity->getProperties()) {
                 $properties = [];
                 foreach ($entity->getProperties() as $property) {
                     $properties[$property->getGroup()->getName()][] = $property;
                 }
-                $entity->setExtensions(['properties' => $properties]);
+                $entity->addExtension("properties", new ArrayStruct($properties));
             }
-            $data = [
-                "{$feed}" => $entity
-            ];
-
-            if ($feed === 'category') {
-                if ($entity->getProductStreamId()) {
-                    $filters = $this->productStreamBuilder->buildFilters(
-                        $entity->getProductStreamId(),
-                        $context
-                    );
-
-                    $productCriteria = new Criteria();
-                    $productCriteria->addFilter(...$filters);
-
-                    $productRepository = $this->container->get("product.repository");
-                    $products = $productRepository->search($productCriteria, $context)->getEntities();
-
-                    $data['products'] = $products;
-                } else {
-                    $data['products'] = $entity->getProducts();
-                }
+        } elseif ($feed === 'category') {
+            if ($entity->getProductStreamId()) {
+                $productRepository = $this->container->get("sales_channel.product.repository");
+                $data['products'] = $productRepository->search(
+                    (new Criteria())
+                        ->addFilter(...$this->productStreamBuilder->buildFilters(
+                            $entity->getProductStreamId(),
+                            $context
+                        )),
+                    $salesChannelContext
+                )->getEntities();
+            } else {
+                $data['products'] = $entity->getProducts();
             }
+        }
 
+        try {
             $output = $this->helloRetailService->renderBody(
                 $feedEntity,
                 $salesChannelContext,
                 $data
             );
+
             if (!$output) {
                 $this->translator->resetInjection();
                 $this->helloRetailService->exportLogger(
@@ -199,11 +186,12 @@ class HelloRetailExportHandler extends AbstractMessageHandler
                         'templateType' => $message->getTemplateType()
                     ]
                 );
+
                 return;
             }
+
             $this->filesystem->put($message->getDirectory() . DIRECTORY_SEPARATOR . $message->getId(), $output);
-            $this->translator->resetInjection();
-        } catch (\Error | \TypeError | \Exception $e) {
+        } catch (\Error|\TypeError|\Exception $e) {
             $this->helloRetailService->exportLogger(
                 HelretHelloRetail::EXPORT_ERROR,
                 [
@@ -217,6 +205,7 @@ class HelloRetailExportHandler extends AbstractMessageHandler
                 ]
             );
         }
+        $this->translator->resetInjection();
     }
 
     /**
@@ -248,7 +237,7 @@ class HelloRetailExportHandler extends AbstractMessageHandler
             try {
                 $header = $dir . DIRECTORY_SEPARATOR . array_splice($files, 0, 1)[0];
                 $feedContent .= $this->filesystem->read($header);
-            } catch (\Error | \TypeError | FileNotFoundException | \Exception $e) {
+            } catch (\Error|\TypeError|FileNotFoundException|\Exception $e) {
                 $this->helloRetailService->exportLogger(
                     HelretHelloRetail::EXPORT_ERROR,
                     [
@@ -300,7 +289,7 @@ class HelloRetailExportHandler extends AbstractMessageHandler
             $this->handleRetry(
                 $message,
                 $failures,
-                $successThreshold  ?? null,
+                $successThreshold ?? null,
                 $allIds,
                 $dir
             );

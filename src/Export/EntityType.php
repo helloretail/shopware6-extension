@@ -17,7 +17,7 @@ class EntityType
      * @param $entityType
      * @return string|null
      */
-    public static function getMatchingEntityType($entityType)
+    public static function getMatchingEntityType($entityType): ?string
     {
         switch (strtolower($entityType)) {
             case 'customer':
@@ -29,7 +29,7 @@ class EntityType
             case 'category':
                 return self::CATEGORY;
             default:
-                return null;
+                return "entity__$entityType";
         }
     }
 }

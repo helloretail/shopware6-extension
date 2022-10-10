@@ -89,4 +89,8 @@ interface FeedEntityInterface
      * @param string $template
      */
     public function setFooterTemplate(string $template): void;
+
+    public function getEntity(): string;
+
+    public function setEntity(?string $entity): void;
 }

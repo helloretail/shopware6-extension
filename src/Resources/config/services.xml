@@ -7,6 +7,8 @@
     <services>
         <service id="Helret\HelloRetail\Controller\ApiController">
             <argument type="service" id="Helret\HelloRetail\Export\Profiles\ProfileExporter"/>
+            <argument type="service" id="Helret\HelloRetail\Service\ExportService"/>
+            <argument type="service" id="serializer"/>
             <tag name="controller.service_arguments"/>
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
@@ -24,7 +26,9 @@
             <argument type="service" id="serializer"/>
             <argument type="service" id="sales_channel_domain.repository"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
-            <argument type="service" id="kernel"/>
+            <argument>%kernel.project_dir%</argument>
+            <argument type="service" id="Shopware\Core\Framework\Adapter\Twig\TwigVariableParser"/>
+            <argument type="service" id="Helret\HelloRetail\Service\ExportService"/>
         </service>
 
         <service id="Helret\HelloRetail\Export\Profiles\ProfileExporter" public="true">
@@ -32,6 +36,7 @@
             <argument type="service" id="serializer"/>
             <argument type="service" id="sales_channel.repository"/>
             <argument type="service" id="Helret\HelloRetail\Service\HelloRetailService"/>
+            <argument type="service" id="Helret\HelloRetail\Service\ExportService"/>
         </service>
 
         <service id="Helret\HelloRetail\Component\MessageQueue\HelloRetailExportHandler" public="true">
@@ -41,8 +46,7 @@
             <argument type="service" id="Helret\HelloRetail\Service\HelloRetailService"/>
             <argument type="service" id="messenger.bus.shopware"/>
             <argument type="service" id="Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder"/>
-            <argument type="service" id="sales_channel.product.repository"/>
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <tag name="messenger.message_handler"/>
         </service>
 
@@ -61,13 +65,37 @@
             <argument type="service" id="Helret\HelloRetail\Export\Profiles\ProfileExporter"/>
             <argument type="service" id="sales_channel.repository"/>
             <argument type="service" id="Helret\HelloRetail\Service\HelloRetailService"/>
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <tag name="messenger.message_handler"/>
         </service>
 
         <service id="Helret\HelloRetail\Subscriber\SalesChannelSubscriber" public="true">
-            <tag name="kernel.event_subscriber" />
-            <argument type="service" id="sales_channel.repository" />
+            <tag name="kernel.event_subscriber"/>
+            <argument type="service" id="sales_channel.repository"/>
+        </service>
+
+
+        <service id="Helret\HelloRetail\Core\Content\Export\SalesChannel\FileController" public="true">
+            <argument type="service" id="shopware.filesystem.public"/>
+            <tag name="controller.service_arguments"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+
+        <!-- Feeds -->
+        <service id="Helret\HelloRetail\Core\Content\Feeds\Product\ProductExportEntity">
+            <tag name="helret.hello-retail.export-entity" key="product"/>
+        </service>
+        <service id="Helret\HelloRetail\Core\Content\Feeds\Category\CategoryExportEntity">
+            <tag name="helret.hello-retail.export-entity" key="category"/>
+        </service>
+        <service id="Helret\HelloRetail\Core\Content\Feeds\Order\OrderExportEntity">
+            <tag name="helret.hello-retail.export-entity" key="order"/>
+        </service>
+
+        <service id="Helret\HelloRetail\Service\ExportService">
+            <argument type="tagged" tag="helret.hello-retail.export-entity" index-by="key"/>
         </service>
     </services>
 </container>

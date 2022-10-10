@@ -1,0 +1,95 @@
+{% block sw_sales_channel_detail_base %}
+    <div class="sw-sales-channel-detail-hello-retail-comparison">
+        <sw-card
+            key="edit"
+            position-identifier="sw-sales-channel-detail-hello-retail-comparison"
+            :is-loading="isLoading || isEntitiesLoading">
+
+            {# Type selection #}
+            <sw-single-select
+                :label="$tc('helret-hello-retail.comparison.select')"
+                :isLoading="isLoading"
+                :options="getFeedOptions()"
+                v-model="feedType"
+                :disabled="!getFeedOptions().length"
+            ></sw-single-select>
+
+            {# Header #}
+            <sw-container v-if="getFeedOptions().length">
+                {% block sw_sales_channel_detail_product_comparison_input_header %}
+                    <sw-inherit-wrapper
+                        v-model="getConfiguration.headerTemplate"
+                        :inherited-value="getInheritValue('headerTemplate')"
+                        :label="$tc('sw-sales-channel.detail.productComparison.inputHeaderLabel')">
+                        <template #content="{ currentValue, updateCurrentValue, isInherited }">
+                            <sw-code-editor
+                                :value="currentValue"
+                                :disabled="!acl.can('sales_channel.editor')"
+                                :completer-function="outerCompleterFunctionHeader"
+                                :editor-config="editorConfig"
+                                completion-mode="entity"
+                                mode="twig"
+                                :soft-wraps="true"
+                                :set-focus="false"
+                                @input="updateCurrentValue"
+                            ></sw-code-editor>
+                        </template>
+                    </sw-inherit-wrapper>
+                {% endblock %}
+
+                {# Body #}
+                {% block sw_sales_channel_detail_product_comparison_input_body %}
+                    <sw-inherit-wrapper
+                        v-model="getConfiguration.bodyTemplate"
+                        :inherited-value="getInheritValue('bodyTemplate')"
+                        :label="$tc('sw-sales-channel.detail.productComparison.inputBodyLabel')">
+                        <template #content="{ currentValue, updateCurrentValue, isInherited }">
+                            <sw-code-editor
+                                :value="currentValue"
+                                :disabled="!acl.can('sales_channel.editor')"
+                                :completer-function="outerCompleterFunctionBody"
+                                :editor-config="editorConfig"
+                                completion-mode="entity"
+                                mode="twig"
+                                :soft-wraps="true"
+                                :set-focus="false"
+                                @input="updateCurrentValue"
+                            ></sw-code-editor>
+                        </template>
+                    </sw-inherit-wrapper>
+                {% endblock %}
+
+                {# Footer #}
+                {% block sw_sales_channel_detail_product_comparison_input_footer %}
+                    <sw-inherit-wrapper
+                        v-model="getConfiguration.footerTemplate"
+                        :inherited-value="getInheritValue('footerTemplate')"
+                        :label="$tc('sw-sales-channel.detail.productComparison.inputFooterLabel')">
+                        <template #content="{ currentValue, updateCurrentValue, isInherited }">
+                            <sw-code-editor
+                                :value="currentValue"
+                                :disabled="!acl.can('sales_channel.editor')"
+                                :completer-function="outerCompleterFunctionFooter"
+                                :editor-config="editorConfig"
+                                completion-mode="entity"
+                                mode="twig"
+                                :soft-wraps="true"
+                                :set-focus="false"
+                                @input="updateCurrentValue"
+                            ></sw-code-editor>
+                        </template>
+                    </sw-inherit-wrapper>
+                {% endblock %}
+
+                <sw-text-field
+                    :value="(feed ? feed.file : null) || getConfiguration.file"
+                    :disabled="true"
+                ></sw-text-field>
+            </sw-container>
+
+            <sw-container v-else>
+                <p>{{ $tc('helret-hello-retail.comparison.exportTypesMissing') }}</p>
+            </sw-container>
+        </sw-card>
+    </div>
+{% endblock %}
