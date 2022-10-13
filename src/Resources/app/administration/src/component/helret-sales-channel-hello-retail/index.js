@@ -48,15 +48,17 @@ Component.register('helret-sales-channel-hello-retail', {
 
     created() {
         this.$emit("invalid-file-name", true);
-        this.initChannel();
+        this.loading = true;
 
-        // this.isLoading = true;
-        this.loadFeedEntities()
-            .then(() => this.setFeeds())
-            .finally(() => {
-                this.$emit("valid-file-name", true);
-                this.loading = false;
-            });
+        // Await, entities and salesChannel to be loaded
+        Promise.all([
+            this.initChannel(),
+            this.getStorefrontDomain(),
+            this.loadFeedEntities()
+        ]).finally(() => {
+            this.$emit("valid-file-name", true);
+            this.loading = false;
+        });
     },
 
     computed: {
@@ -89,21 +91,21 @@ Component.register('helret-sales-channel-hello-retail', {
 
     methods: {
         initChannel() {
-            if (!this.salesChannel.configuration) {
-                this.$set(this.salesChannel, 'configuration', {
-                    feedDirectory: Utils.createId()
-                });
-            }
+            return Promise.resolve(function () {
+                if (!this.salesChannel.configuration) {
+                    this.$set(this.salesChannel, 'configuration', {
+                        feedDirectory: Utils.createId()
+                    });
+                }
 
-            if (!this.salesChannel.configuration.feedDirectory) {
-                this.$set(this.salesChannel.configuration, 'feedDirectory', Utils.createId());
-            }
+                if (!this.salesChannel.configuration.feedDirectory) {
+                    this.$set(this.salesChannel.configuration, 'feedDirectory', Utils.createId());
+                }
 
-            if (!this.salesChannel.configuration.storefrontSalesChannelId) {
-                this.$set(this.salesChannel.configuration, 'storefrontSalesChannelId', null);
-            }
-
-            this.getStorefrontDomain();
+                if (!this.salesChannel.configuration.storefrontSalesChannelId) {
+                    this.$set(this.salesChannel.configuration, 'storefrontSalesChannelId', null);
+                }
+            });
         },
         setFeeds() {
             let feeds = {};
@@ -139,39 +141,39 @@ Component.register('helret-sales-channel-hello-retail', {
             this.isEntitiesLoading = true;
             return this.helloRetailService.getExportEntities()
                 .then(result => this.exportFeeds = result.feeds)
+                .then(() => this.setFeeds())
                 .finally(() => this.isEntitiesLoading = false);
         },
 
-        onStorefrontSelectionChange(storefrontSalesChannelId) {
-            if (!storefrontSalesChannelId) return;
+        onStorefrontSelectionChange(storefrontSalesChannelId, salesChannel) {
+            if (!storefrontSalesChannelId) {
+                return;
+            }
 
-            this.salesChannelRepository.get(storefrontSalesChannelId, Shopware.Context.api).then(
-                (entity) => {
-                    this.salesChannel.languageId = entity.languageId;
-                    this.salesChannel.languages = entity.languages;
-                    this.salesChannel.currencyId = entity.currencyId;
-                    this.salesChannel.paymentMethodId = entity.paymentMethodId;
-                    this.salesChannel.shippingMethodId = entity.shippingMethodId;
-                    this.salesChannel.countryId = entity.countryId;
-                    this.salesChannel.navigationCategoryId = entity.navigationCategoryId;
-                    this.salesChannel.navigationCategoryVersionId = entity.navigationCategoryVersionId;
-                    this.salesChannel.customerGroupId = entity.customerGroupId;
+            this.salesChannel.languageId = salesChannel.languageId;
+            this.salesChannel.languages = salesChannel.languages;
+            this.salesChannel.currencyId = salesChannel.currencyId;
+            this.salesChannel.paymentMethodId = salesChannel.paymentMethodId;
+            this.salesChannel.shippingMethodId = salesChannel.shippingMethodId;
+            this.salesChannel.countryId = salesChannel.countryId;
+            this.salesChannel.navigationCategoryId = salesChannel.navigationCategoryId;
+            this.salesChannel.navigationCategoryVersionId = salesChannel.navigationCategoryVersionId;
+            this.salesChannel.customerGroupId = salesChannel.customerGroupId;
 
-                    if (this.salesChannel.configuration.storefrontSalesChannelId) {
-                        this.globalDomainRepository.search(this.storefrontSalesChannelDomainCriteria, Shopware.Context.api)
-                            .then((domains) => {
-                                if (domains.total === 1) {
-                                    this.$set(this.salesChannel.configuration, 'salesChannelDomainId', domains.first().id)
-                                }
-                            })
-                    }
+            if (this.salesChannel.configuration.storefrontSalesChannelId) {
+                this.globalDomainRepository.search(this.storefrontSalesChannelDomainCriteria, Shopware.Context.api)
+                    .then((domains) => {
+                        if (domains.total === 1) {
+                            this.$set(this.salesChannel.configuration, 'salesChannelDomainId', domains.first().id)
+                        }
+                    });
+            }
 
-                    if (!this.salesChannel.accessKey) {
-                        this.generateKey();
-                    }
+            if (!this.salesChannel.accessKey) {
+                this.generateKey();
+            }
 
-                    this.forceUpdate();
-                });
+            this.forceUpdate();
         },
 
         generateKey() {
@@ -210,17 +212,11 @@ Component.register('helret-sales-channel-hello-retail', {
             const criteria = new Criteria;
             criteria.addFilter(Criteria.equals('id', salesChannelDomainId));
 
-            this.globalDomainRepository.search(criteria, Shopware.Context.api).then(r =>
+            return this.globalDomainRepository.search(criteria, Shopware.Context.api).then(r =>
                 r.first() ?
-                    this.storefrontDomainUrl = this.trimStorefrontDomainUrl(r.first().url) :
+                    this.storefrontDomainUrl = r.first().url :
                     null
             );
-        },
-
-        trimStorefrontDomainUrl(domain) {
-            // Strip everything after TLD
-            const regex = /(?:https?:\/\/)?(?:[^@/\n]+@)?(?:www.)?([^:/?\n]+)/gim
-            return regex.exec(domain)[0];
         },
 
         feedUrl(feed) {

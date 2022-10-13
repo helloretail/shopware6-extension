@@ -47,7 +47,8 @@ Component.register('sw-sales-channel-detail-hello-retail-comparison', {
             feedType: "product",
             feed: null,
             isEntitiesLoading: false,
-            entities: null
+            entities: null,
+            feedQueued: false
         };
     },
 
@@ -149,6 +150,20 @@ Component.register('sw-sales-channel-detail-hello-retail-comparison', {
             }
 
             return this.feed[template] || null;
+        },
+
+        generateFeed(feed) {
+            this.feedQueued = true;
+
+            this.helloRetailService.generateFeed(this.salesChannel.id, feed.feed)
+                .then(response => {
+                    if (response.error) {
+                        this.createNotificationError({message: response.message});
+                    } else {
+                        this.createNotificationSuccess({message: response.message})
+                    }
+                })
+                .finally(() => this.feedQueued = false);
         }
     },
 });
