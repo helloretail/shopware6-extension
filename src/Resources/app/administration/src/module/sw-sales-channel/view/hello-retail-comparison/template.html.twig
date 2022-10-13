@@ -87,7 +87,19 @@
                 ></sw-text-field>
             </sw-container>
 
-            <sw-container v-else>
+            <sw-button
+                v-if="feed"
+                variant="ghost"
+                size="small"
+                @click.prevent="generateFeed(feed)"
+                :isLoading="feedQueued"
+                :disabled="!getFeedOptions().length || feedQueued"
+            >Generate feed
+            </sw-button>
+        </sw-card>
+
+        <sw-card v-if="!getFeedOptions().length">
+            <sw-container>
                 <p>{{ $tc('helret-hello-retail.comparison.exportTypesMissing') }}</p>
             </sw-container>
         </sw-card>
