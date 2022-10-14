@@ -37,7 +37,7 @@
 
     {% if product.extensions.properties %}
         <properties>
-            {% for key, value in product.extensions.properties %}
+            {% for key, value in product.extensions.properties.all() %}
                 <property>
                     <name>{{ key }}</name>
                     <options>
