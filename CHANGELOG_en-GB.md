@@ -1,6 +1,6 @@
 # 3.0.1
 
-* Removed "product" association in to avoid missing association warning
+* Removed "product" association to avoid missing association warning in error log
 
 # 3.0.0
 
