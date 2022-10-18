@@ -130,6 +130,12 @@ class HelloRetailExportHandler extends AbstractMessageHandler
             if ($criteria->hasAssociation("parent")) {
                 $criteria->removeAssociation("parent");
             }
+            
+            // sales_channel.product.product isn't an association, otherwise a warning would be thrown every message.
+            if ($criteria->hasAssociation("product")) {
+                $criteria->removeAssociation("product");
+            }
+            
             $entity = $repository->search($criteria, $salesChannelContext)->first();
         } else {
             $entity = $repository->search($criteria, $salesChannelContext->getContext())->first();
