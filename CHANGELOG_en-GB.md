@@ -1,3 +1,7 @@
+# 3.0.1
+
+* Removed "product" association in to avoid missing association warning
+
 # 3.0.0
 
 * Added controller to ensure files can load cross sales channels using folder domain
