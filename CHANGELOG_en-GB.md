@@ -1,3 +1,7 @@
+# 3.0.2
+
+* Correction to "GET" request in administration
+
 # 3.0.1
 
 * Removed "product" association to avoid missing association warning in error log
