@@ -1,6 +1,6 @@
 # 3.0.2
 
-* Correction to "GET" request in admin
+* Correction to "GET" request in administration
 
 # 3.0.1
 
