@@ -20,7 +20,7 @@ class HelloRetailApiService extends ApiService {
 
     getExportEntities() {
         return this.httpClient
-            .get(`/${this.getApiBasePath()}/getExportEntities`, {}, {headers: this.getBasicHeaders()})
+            .get(`/${this.getApiBasePath()}/getExportEntities`, {headers: this.getBasicHeaders()})
             .then(response => ApiService.handleResponse(response));
     }
 }
