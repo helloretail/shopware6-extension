@@ -109,8 +109,7 @@ class HelretHelloRetail extends Plugin
     {
         parent::postUpdate($updateContext);
 
-        if (version_compare($updateContext->getCurrentPluginVersion(), "3.0.0", "<") &&
-            version_compare($updateContext->getUpdatePluginVersion(), "3.0.0", "==")) {
+        if (version_compare($updateContext->getUpdatePluginVersion(), "3.0.0", ">=")) {
             $salesChannelRepository = $this->container->get("sales_channel.repository");
 
             $updateTemplate = $this->getUpdateTemplatesV300();
