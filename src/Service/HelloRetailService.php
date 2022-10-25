@@ -234,19 +234,21 @@ class HelloRetailService
 
         $this->filesystem->put($tmpDir . DIRECTORY_SEPARATOR . TemplateType::HEADER, $content);
 
+        $config = $this->configService->get("HelretHelloRetail.config", $salesChannelContext->getSalesChannelId());
+        $config["includeCategoryProducts"] = false;
+
         foreach ($entityIds as $entityId) {
-            $this->bus->dispatch(
-                new Envelope(
-                    new ExportEntityElement(
-                        $salesChannelContext,
-                        $tmpDir,
-                        $entityId,
-                        $feedEntity,
-                        EntityType::getMatchingEntityType($feed),
-                        TemplateType::BODY
-                    )
-                )
+            $message = new ExportEntityElement(
+                $salesChannelContext,
+                $tmpDir,
+                $entityId,
+                $feedEntity,
+                EntityType::getMatchingEntityType($feed),
+                TemplateType::BODY
             );
+            $message->setExportConfig($config);
+
+            $this->bus->dispatch(new Envelope($message));
         }
 
         $footerElement = new ExportEntityElement(
@@ -257,6 +259,7 @@ class HelloRetailService
             EntityType::getMatchingEntityType($feed),
             TemplateType::FOOTER
         );
+        $footerElement->setExportConfig($config);
         $footerElement->setAllIds($entityIds);
 
         $this->bus->dispatch(new Envelope($footerElement));
