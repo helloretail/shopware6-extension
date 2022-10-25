@@ -1,3 +1,8 @@
+# 3.0.4
+
+* Made the option to include products in category feed default to ON / true for backwards compatibility
+* Remove test code hardcoding the include products in category feed to false
+
 # 3.0.3
 
 * Fixed category export feed to not load produc_stream products unless it's necessary
