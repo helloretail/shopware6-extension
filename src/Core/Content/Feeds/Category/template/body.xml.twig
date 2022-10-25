@@ -10,7 +10,7 @@
         {% endfor %}
     </hierarchy>
 
-    {% if products is defined and is not empty %}
+    {% if products is defined and products is not empty %}
         <categoryProducts>
             {% for product in products %}
                 {%- if product and product.productNumber is defined -%}
