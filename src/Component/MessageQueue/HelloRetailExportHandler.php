@@ -2,19 +2,25 @@
 
 namespace Helret\HelloRetail\Component\MessageQueue;
 
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\FileNotFoundException;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Content\Category\CategoryDefinition;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilderInterface;
 use Shopware\Core\Framework\Adapter\Translation\AbstractTranslator;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\MessageQueue\Handler\AbstractMessageHandler;
 use Shopware\Core\Framework\Struct\ArrayStruct;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -43,26 +49,13 @@ class HelloRetailExportHandler extends AbstractMessageHandler
     protected MessageBusInterface $bus;
     private ProductStreamBuilderInterface $productStreamBuilder;
 
-    protected SystemConfigService $configService;
-
-    /**
-     * HelloRetailExportHandler constructor.
-     * @param LoggerInterface $logger
-     * @param ContainerInterface $container
-     * @param AbstractTranslator $translator
-     * @param HelloRetailService $helloRetailService
-     * @param MessageBusInterface $bus
-     * @param ProductStreamBuilderInterface $productStreamBuilder
-     * @param SystemConfigService $configService
-     */
     public function __construct(
         LoggerInterface $logger,
         ContainerInterface $container,
         AbstractTranslator $translator,
         HelloRetailService $helloRetailService,
         MessageBusInterface $bus,
-        ProductStreamBuilderInterface $productStreamBuilder,
-        SystemConfigService $configService
+        ProductStreamBuilderInterface $productStreamBuilder
     ) {
         $this->logger = $logger;
         $this->container = $container;
@@ -74,7 +67,6 @@ class HelloRetailExportHandler extends AbstractMessageHandler
         $this->filesystem = new Filesystem(new Local($fullPath));
 
         $this->productStreamBuilder = $productStreamBuilder;
-        $this->configService = $configService;
     }
 
     /**
@@ -130,21 +122,44 @@ class HelloRetailExportHandler extends AbstractMessageHandler
             if ($criteria->hasAssociation("parent")) {
                 $criteria->removeAssociation("parent");
             }
-            
+
             // sales_channel.product.product isn't an association, otherwise a warning would be thrown every message.
             if ($criteria->hasAssociation("product")) {
                 $criteria->removeAssociation("product");
             }
-            
+
             $entity = $repository->search($criteria, $salesChannelContext)->first();
         } else {
+            if ($feedEntity->getEntity() === CategoryDefinition::ENTITY_NAME) {
+                // Remove products association for now.
+                $criteria->removeAssociation("products");
+                if ($message->getConfigValue("includeCategoryProducts")) {
+                    // Check assignment type, if == product add products association (Seems to have best performance)
+
+                    /** @var Connection $connection */
+                    $connection = $this->container->get(Connection::class);
+                    try {
+                        $type = $connection->fetchOne("SELECT product_assignment_type FROM category WHERE id = :id", [
+                            ":id" => Uuid::fromHexToBytes($message->getId())
+                        ]);
+                    } catch (Exception $e) {
+                        $type = "product";
+                    }
+
+                    // If the category assignment type is product_stream a stream will be loaded later on.
+                    if ($type === "product") {
+                        $criteria->addAssociation("products");
+                    }
+                }
+            }
+
             $entity = $repository->search($criteria, $salesChannelContext->getContext())->first();
         }
 
         $data = [$feed => $entity];
         if ($feed === 'product') {
-            if ($this->configService->get('HelretHelloRetail.config.advancedPricing')) {
-                // Backwards compatability
+            // Backwards compatability
+            if ($message->getConfigValue("advancedPricing")) {
                 $entity->getPrice()->addExtensions([
                     'calculatedPrices' => $entity->getCalculatedPrices(),
                     'calculatedPrice' => $entity->getCalculatedPrice()
@@ -158,16 +173,16 @@ class HelloRetailExportHandler extends AbstractMessageHandler
                 }
                 $entity->addExtension("properties", new ArrayStruct($properties));
             }
-        } elseif ($feed === 'category') {
-            if ($entity->getProductStreamId()) {
-                $productRepository = $this->container->get("sales_channel.product.repository");
+        } elseif ($feed === 'category' && $message->getConfigValue("includeCategoryProducts")) {
+            if ($entity->getProductAssignmentType() === "product_stream" && $entity->getProductStreamId()) {
+                $productRepository = $this->container->get("product.repository");
                 $data['products'] = $productRepository->search(
                     (new Criteria())
                         ->addFilter(...$this->productStreamBuilder->buildFilters(
                             $entity->getProductStreamId(),
                             $context
                         )),
-                    $salesChannelContext
+                    $context
                 )->getEntities();
             } else {
                 $data['products'] = $entity->getProducts();
