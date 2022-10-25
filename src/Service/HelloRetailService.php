@@ -235,7 +235,6 @@ class HelloRetailService
         $this->filesystem->put($tmpDir . DIRECTORY_SEPARATOR . TemplateType::HEADER, $content);
 
         $config = $this->configService->get("HelretHelloRetail.config", $salesChannelContext->getSalesChannelId());
-        $config["includeCategoryProducts"] = false;
 
         foreach ($entityIds as $entityId) {
             $message = new ExportEntityElement(

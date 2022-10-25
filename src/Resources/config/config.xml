@@ -59,7 +59,7 @@
             <label>Include product data in category feed</label>
             <label lang="de-DE">Fügen Sie Produktdaten in den Kategorie-Feed ein</label>
             <label lang="da-DK">Inkluder produkt data i kategori feed</label>
-            <defaultValue>false</defaultValue>
+            <defaultValue>true</defaultValue>
         </input-field>
     </card>
 
