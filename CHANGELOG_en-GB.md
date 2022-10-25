@@ -1,3 +1,7 @@
+# 3.0.3
+
+* Fixed category export feed, to look at type
+
 # 3.0.2
 
 * Correction to "GET" request in administration
