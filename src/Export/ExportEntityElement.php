@@ -20,6 +20,8 @@ class ExportEntityElement
     protected ?array $allIds;
     protected int $retryCount = 0;
 
+    protected array $exportConfig = [];
+
     /**
      * ExportEntityElement constructor.
      * @param SalesChannelContext $salesChannelContext
@@ -124,5 +126,34 @@ class ExportEntityElement
     public function setRetryCount(int $retryCount)
     {
         $this->retryCount = $retryCount;
+    }
+
+    public function setExportConfig(array $exportConfig): void
+    {
+        $this->exportConfig = $exportConfig;
+    }
+
+    public function getExportConfig(): array
+    {
+        return $this->exportConfig;
+    }
+
+    /***
+     * php 7.4 docs, "mixed class not found"
+     * @param mixed|null $default
+     * @return mixed
+     */
+    public function getConfigValue(string $key, $default = null)
+    {
+        return $this->exportConfig[$key] ?? $default;
+    }
+
+    /***
+     * php 7.4 docs, "mixed class not found"
+     * @param mixed $value
+     */
+    public function setConfigValue(string $key, $value): void
+    {
+        $this->exportConfig[$key] = $value;
     }
 }

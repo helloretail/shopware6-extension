@@ -1,3 +1,8 @@
+# 3.0.3
+
+* Fixed category export feed to not load produc_stream products unless it's necessary
+* Added option to include products in category feed (Default, false)
+
 # 3.0.2
 
 * Correction to "GET" request in administration
