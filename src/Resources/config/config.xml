@@ -40,11 +40,25 @@
         <input-field type="bool">
             <name>advancedPricing</name>
             <label>Advanced Pricing</label>
-            <label lang="de-DE">Adcanced Pricing</label>
+            <label lang="de-DE">Erweiterte Preise</label>
             <label lang="da-DK">Advanced Pricing</label>
             <helpText>Sync products with Advance pricing instead of List and Normal prices</helpText>
             <helpText lang="de-DE">Synchronisieren Sie Produkte mit Advance anstelle von Listen- und Normalpreisen</helpText>
             <helpText lang="da-DK">Synkroniser produkter med Advance priser i stedet for Liste og normale priser</helpText>
+            <defaultValue>false</defaultValue>
+        </input-field>
+    </card>
+
+    <card>
+        <title>Export feed</title>
+        <title lang="de-DE">Feed exportieren</title>
+        <title lang="da-DK">Eksport feed</title>
+
+        <input-field type="bool">
+            <name>includeCategoryProducts</name>
+            <label>Include product data in category feed</label>
+            <label lang="de-DE">Fügen Sie Produktdaten in den Kategorie-Feed ein</label>
+            <label lang="da-DK">Inkluder produkt data i kategori feed</label>
             <defaultValue>false</defaultValue>
         </input-field>
     </card>
