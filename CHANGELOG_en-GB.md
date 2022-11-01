@@ -1,3 +1,8 @@
+# 3.0.7
+
+* Fixed issue where administration broke when creating a new sales channel (Hello Retail)
+* Added info message on "saveFinish"
+
 # 3.0.6
 
 * Made the option to include products in category feed default to OFF / false
