@@ -1,3 +1,11 @@
+# 3.0.6
+
+* Made the option to include products in category feed default to OFF / false
+
+# 3.0.5
+
+* Fixed category body template error
+
 # 3.0.4
 
 * Made the option to include products in category feed default to ON / true for backwards compatibility
