@@ -37,6 +37,9 @@
             },
             "select": "Feed export type",
             "exportTypesMissing": "Noget gik galt ved indlæsning af Export type(r)"
+        },
+        "save": {
+            "info": "{feedCount} Feed(s) sættes i kø for generation"
         }
     }
 }

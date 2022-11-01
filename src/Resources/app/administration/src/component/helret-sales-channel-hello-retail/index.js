@@ -47,12 +47,14 @@ Component.register('helret-sales-channel-hello-retail', {
     },
 
     created() {
+        // Ensure salesChannel.configuration isset.
+        this.initChannel();
+
         this.$emit("invalid-file-name", true);
         this.loading = true;
 
         // Await, entities and salesChannel to be loaded
         Promise.all([
-            this.initChannel(),
             this.getStorefrontDomain(),
             this.loadFeedEntities()
         ]).finally(() => {
@@ -91,22 +93,19 @@ Component.register('helret-sales-channel-hello-retail', {
 
     methods: {
         initChannel() {
-            return Promise.resolve(function () {
-                if (!this.salesChannel.configuration) {
-                    this.$set(this.salesChannel, 'configuration', {
-                        feedDirectory: Utils.createId()
-                    });
-                }
+            if (!this.salesChannel.configuration) {
+                this.salesChannel.configuration = {};
+            }
 
-                if (!this.salesChannel.configuration.feedDirectory) {
-                    this.$set(this.salesChannel.configuration, 'feedDirectory', Utils.createId());
-                }
+            if (!this.salesChannel.configuration.feedDirectory) {
+                this.salesChannel.configuration.feedDirectory = Utils.createId()
+            }
 
-                if (!this.salesChannel.configuration.storefrontSalesChannelId) {
-                    this.$set(this.salesChannel.configuration, 'storefrontSalesChannelId', null);
-                }
-            });
+            if (!this.salesChannel.configuration.storefrontSalesChannelId) {
+                this.salesChannel.configuration.storefrontSalesChannelId = null;
+            }
         },
+
         setFeeds() {
             let feeds = {};
             if (this.exportFeeds && Object.keys(this.exportFeeds).length) {

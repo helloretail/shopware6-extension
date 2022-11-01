@@ -37,6 +37,9 @@
             },
             "select": "Feed export type",
             "exportTypesMissing": "Something went wrong loading Export type(s)"
+        },
+        "save": {
+            "info": "{feedCount} Feed(s) is getting queued for generation"
         }
     }
 }

@@ -12,6 +12,8 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Content\Category\CategoryDefinition;
 use Shopware\Core\Content\Category\CategoryEntity;
+use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
+use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilderInterface;
 use Shopware\Core\Framework\Adapter\Translation\AbstractTranslator;
@@ -181,6 +183,11 @@ class HelloRetailExportHandler extends AbstractMessageHandler
                         ->addFilter(...$this->productStreamBuilder->buildFilters(
                             $entity->getProductStreamId(),
                             $context
+                        ))
+                        // Ensure product's on this salesChannel and is active
+                        ->addFilter(new ProductAvailableFilter(
+                            $salesChannelContext->getSalesChannelId(),
+                            ProductVisibilityDefinition::VISIBILITY_LINK
                         )),
                     $context
                 )->getEntities();

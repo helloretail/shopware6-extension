@@ -37,6 +37,9 @@
             },
             "select": "Feed exporttyp",
             "exportTypesMissing": "Beim Laden der Exporttypen ist ein Fehler aufgetreten"
+        },
+        "save": {
+            "info": "{feedCount} Feed(s) werden zur Generierung in die Warteschlange gestellt"
         }
     }
 }
