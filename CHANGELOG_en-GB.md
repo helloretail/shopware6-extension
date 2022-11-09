@@ -1,3 +1,7 @@
+# 3.0.8
+
+* Fixed a bug in administration with saveFinish
+
 # 3.0.7
 
 * Fixed issue where administration broke when creating a new sales channel (Hello Retail)
