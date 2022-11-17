@@ -16,7 +16,7 @@ class HelloRetailApiService extends ApiService {
             `/${this.getApiBasePath()}/generateFeed/${salesChannelId}/${feed}`,
             {},
             {headers: this.getBasicHeaders()}
-        ).then(response => ApiService.handleResponse(response))
+        ).then(response => ApiService.handleResponse(response));
     }
 
     getExportEntities() {

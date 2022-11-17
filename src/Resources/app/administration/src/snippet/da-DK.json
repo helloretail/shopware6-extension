@@ -32,8 +32,10 @@
             "forceGenerateTooltip": "Påtving genering af alle Hello Retail feeds",
             "forceGenerate": {
                 "confirmTitle": "Påtvingelse af feed generation",
-                "confirmText": "Dette vil sætte Hello Retail feed(s) i kø til generation, ønsker du at fortsætte?"
-            }
+                "confirmText": "Dette vil sætte Hello Retail feed(s) i kø til generation, ønsker du at fortsætte?",
+                "noFeeds": "Generation kunne ikke startes da der ikke blev fundet nogle feeds"
+            },
+            "forceGenerateTooltipSave": "Knappen er deaktiveret grundet rettelser, gem dine rettelser"
         },
         "comparison": {
             "feed": {

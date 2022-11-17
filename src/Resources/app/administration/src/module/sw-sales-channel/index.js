@@ -1,11 +1,9 @@
-import './component/helret-sales-channel-hello-retail';
-
 import './page/sw-sales-channel-detail';
 
 import './view/sw-sales-channel-create-base';
 import './view/sw-sales-channel-detail-base';
 
-import "./view/hello-retail-comparison";
+import './view/hello-retail-comparison';
 
 Shopware.Module.register('hello-retail-tabs', {
     routeMiddleware(next, currentRoute) {

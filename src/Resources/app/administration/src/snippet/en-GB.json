@@ -22,18 +22,20 @@
           "placeholderFeedLocation": "The feed filename will be shown once the other fields are filled out and saved",
           "titleFeedCard": "Feeds",
           "labelGenerateFeedsBtn": "Generate Feed",
-          "generateTooltip": "Please save before generating",
-          "feeds": {
-            "productTitle": "Products",
-            "orderTitle": "Orders",
-            "categoryTitle": "Categories"
-          },
-          "buttonForceGenerate": "Force generation",
-          "forceGenerateTooltip": "Force generation of all Hello Retail feeds",
-          "forceGenerate": {
-            "confirmTitle": "Force feed generation",
-            "confirmText": "This will queue Hello Retail feed(s) for generation, do you wish to continue?"
-          }
+            "generateTooltip": "Please save before generating",
+            "feeds": {
+                "productTitle": "Products",
+                "orderTitle": "Orders",
+                "categoryTitle": "Categories"
+            },
+            "buttonForceGenerate": "Force generation",
+            "forceGenerateTooltip": "Force generation of all Hello Retail feeds",
+            "forceGenerate": {
+                "confirmTitle": "Force feed generation",
+                "confirmText": "This will queue Hello Retail feed(s) for generation, do you wish to continue?",
+                "noFeeds": "Generation weren't started since no feeds were found"
+            },
+            "forceGenerateTooltipSave": "The button is disabled due to corrections, save your corrections"
         },
         "comparison": {
             "feed": {

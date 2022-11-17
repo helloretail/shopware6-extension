@@ -3,7 +3,7 @@
         v-if="isHelloRetail"
         v-tooltip.bottom="tooltipForceGenerate"
         :isLoading="isLoading || isForceGenerating"
-        :disabled="!allowSaving || isLoading"
+        :disabled="forceGenerateDisabled || !allowSaving || isLoading"
         variant="ghost"
         v-model="forceSaveSuccessful"
         @click.prevent="forceGenerateFeedsModal = true">

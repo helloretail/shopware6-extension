@@ -2,7 +2,6 @@ import template from './template.html.twig';
 
 const {Component} = Shopware;
 
-
 Component.override('sw-sales-channel-detail', {
     template,
 
@@ -10,6 +9,14 @@ Component.override('sw-sales-channel-detail', {
         'helloRetailService',
         'salesChannelService',
     ],
+
+    data() {
+        return {
+            forceGenerateFeedsModal: false,
+            isForceGenerating: false,
+            forceSaveSuccessful: false,
+        };
+    },
 
     computed: {
         isHelloRetail() {
@@ -26,10 +33,17 @@ Component.override('sw-sales-channel-detail', {
             }
 
             return {
-                message: this.$tc('helret-hello-retail.detail.forceGenerateTooltip'),
+                message: !this.forceGenerateDisabled ?
+                    this.$tc('helret-hello-retail.detail.forceGenerateTooltip') :
+                    this.$tc('helret-hello-retail.detail.forceGenerateTooltipSave'),
                 appearance: 'light',
+                showOnDisabledElements: true,
             };
         },
+
+        forceGenerateDisabled() {
+            return this.salesChannelRepository.hasChanges(this.salesChannel);
+        }
     },
 
     methods: {
@@ -40,7 +54,9 @@ Component.override('sw-sales-channel-detail', {
             this.helloRetailService.getExportEntities()
                 .then(async result => {
                     if (!Object.keys(result.feeds).length) {
-                        this.forceSaveSuccessful = true;
+                        this.createNotificationInfo({
+                            message: this.$tc('helret-hello-retail.detail.forceGenerate.noFeeds'),
+                        });
                         return;
                     }
 
@@ -66,17 +82,13 @@ Component.override('sw-sales-channel-detail', {
                             });
                     });
 
-                    await Promise.all(promises).then(() => this.forceSaveSuccessful = true);
+                    await Promise.all(promises).then(() => {
+                        this.forceSaveSuccessful = true;
+                    });
                 })
-                .finally(() => this.isForceGenerating = false)
-        },
-    },
-
-    data() {
-        return {
-            forceGenerateFeedsModal: false,
-            isForceGenerating: false,
-            forceSaveSuccessful: false,
+                .finally(() => {
+                    this.isForceGenerating = false;
+                });
         }
-    },
+    }
 });
