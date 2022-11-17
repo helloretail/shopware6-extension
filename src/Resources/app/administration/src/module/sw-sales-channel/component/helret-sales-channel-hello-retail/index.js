@@ -1,6 +1,6 @@
 import template from './helret-sales-channel-hello-retail.html.twig';
 
-const {Component, Mixin, Utils} = Shopware;
+const {Component, Mixin} = Shopware;
 const {Criteria} = Shopware.Data;
 const {mapPropertyErrors} = Component.getComponentHelper();
 
@@ -47,9 +47,6 @@ Component.register('helret-sales-channel-hello-retail', {
     },
 
     created() {
-        // Ensure salesChannel.configuration isset.
-        this.initChannel();
-
         this.$emit("invalid-file-name", true);
         this.loading = true;
 
@@ -68,14 +65,17 @@ Component.register('helret-sales-channel-hello-retail', {
 
         storefrontSalesChannelCriteria() {
             const criteria = new Criteria();
+            criteria.addFilter(Criteria.equals('typeId', '8a243080f92e4c719546314b577cf82b'));
 
-            return criteria.addFilter(Criteria.equals('typeId', '8a243080f92e4c719546314b577cf82b'));
+            const domainPart = criteria.getAssociation('domains');
+            domainPart.setLimit(1); // Load first domain
+            return criteria;
         },
 
         storefrontSalesChannelDomainCriteria() {
             const criteria = new Criteria();
-
-            return criteria.addFilter(Criteria.equals('salesChannelId', this.salesChannel.configuration.storefrontSalesChannelId || null));
+            criteria.addFilter(Criteria.equals('salesChannelId', this.salesChannel.configuration.storefrontSalesChannelId));
+            return criteria;
         },
 
         globalDomainRepository() {
@@ -92,20 +92,6 @@ Component.register('helret-sales-channel-hello-retail', {
     },
 
     methods: {
-        initChannel() {
-            if (!this.salesChannel.configuration) {
-                this.salesChannel.configuration = {};
-            }
-
-            if (!this.salesChannel.configuration.feedDirectory) {
-                this.salesChannel.configuration.feedDirectory = Utils.createId()
-            }
-
-            if (!this.salesChannel.configuration.storefrontSalesChannelId) {
-                this.salesChannel.configuration.storefrontSalesChannelId = null;
-            }
-        },
-
         setFeeds() {
             let feeds = {};
             if (this.exportFeeds && Object.keys(this.exportFeeds).length) {
@@ -159,47 +145,26 @@ Component.register('helret-sales-channel-hello-retail', {
             this.salesChannel.navigationCategoryVersionId = salesChannel.navigationCategoryVersionId;
             this.salesChannel.customerGroupId = salesChannel.customerGroupId;
 
-            if (this.salesChannel.configuration.storefrontSalesChannelId) {
-                this.globalDomainRepository.search(this.storefrontSalesChannelDomainCriteria, Shopware.Context.api)
-                    .then((domains) => {
-                        if (domains.total === 1) {
-                            this.$set(this.salesChannel.configuration, 'salesChannelDomainId', domains.first().id)
-                        }
-                    });
-            }
+            this.storefrontDomainUrl = salesChannel.domains.first().url;
+            this.$set(this.salesChannel, 'configuration', {
+                ...this.salesChannel.configuration,
+                salesChannelDomainId: salesChannel.domains.first().id
+            });
 
             if (!this.salesChannel.accessKey) {
                 this.generateKey();
             }
-
-            this.forceUpdate();
         },
 
         generateKey() {
-            this.salesChannelService.generateKey().then(
-                (response) => {
-                    this.salesChannel.accessKey = response.accessKey;
-                }
-            ).catch(
-                () => {
-                    this.createNotificationError(
-                        {
-                            title: this.$tc('sw-sales-channel.detail.titleAPIError'),
-                            message: this.$tc('sw-sales-channel.detail.messageAPIError')
-                        }
-                    );
-                }
-            );
-        },
-
-        forceUpdate() {
-            this.$forceUpdate();
-        },
-
-        enableGenerateFeed(feed) {
-            const originalFile = this.originalFeedValues[feed].file;
-
-            return originalFile !== null && originalFile === this.salesChannel.configuration.feeds[feed].file;
+            this.salesChannelService.generateKey()
+                .then(response => this.salesChannel.accessKey = response.accessKey)
+                .catch(() => {
+                    this.createNotificationError({
+                        title: this.$tc('sw-sales-channel.detail.titleAPIError'),
+                        message: this.$tc('sw-sales-channel.detail.messageAPIError')
+                    });
+                });
         },
 
         getStorefrontDomain() {
@@ -223,13 +188,13 @@ Component.register('helret-sales-channel-hello-retail', {
             if (!_feed || _feed.file === null) {
                 return;
             }
+
             const {feedDirectory, salesChannelDomainId} = this.salesChannel.configuration;
             if (!feedDirectory || !salesChannelDomainId) {
                 return;
             }
-            const criteria = new Criteria;
-            criteria.addFilter(Criteria.equals('id', salesChannelDomainId));
-            let urlPath = `/hello-retail/${feedDirectory}/${_feed.file}`;
+
+            const urlPath = `/hello-retail/${feedDirectory}/${_feed.file}`;
             return this.storefrontDomainUrl + urlPath;
         },
 
@@ -246,11 +211,11 @@ Component.register('helret-sales-channel-hello-retail', {
                 this.$router.push({name: 'sw.dashboard.index'});
             });
         },
+
         deleteSalesChannel(salesChannelId) {
             this.salesChannelRepository.delete(salesChannelId, Shopware.Context.api).then(() => {
                 this.$root.$emit('sales-channel-change');
             });
         },
-
     }
 });

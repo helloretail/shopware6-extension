@@ -1,0 +1,13 @@
+{% block sw_sales_channel_detail_base %}
+    <helret-sales-channel-hello-retail
+        v-if="isHelloRetail"
+        :isLoading="isLoading"
+        :salesChannel="salesChannel"
+        @invalid-file-name="(v) => this.$emit('invalid-file-name', v)"
+        @valid-file-name="(v) => this.$emit('valid-file-name', v)">
+    </helret-sales-channel-hello-retail>
+
+    <span v-else>
+        {% parent %}
+    </span>
+{% endblock %}

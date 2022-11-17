@@ -1,4 +1,5 @@
-const {ApiService} = Shopware.Classes;
+const {Application, Classes} = Shopware;
+const ApiService = Classes.ApiService;
 
 class HelloRetailApiService extends ApiService {
     constructor(httpClient, loginService, apiEndpoint = 'helret/hello-retail') {
@@ -25,4 +26,7 @@ class HelloRetailApiService extends ApiService {
     }
 }
 
-export default HelloRetailApiService;
+Application.addServiceProvider('helloRetailService', (container) => {
+    const initContainer = Application.getContainer('init');
+    return new HelloRetailApiService(initContainer.httpClient, container.loginService);
+});

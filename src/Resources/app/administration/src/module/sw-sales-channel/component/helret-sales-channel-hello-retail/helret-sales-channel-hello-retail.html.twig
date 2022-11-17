@@ -1,6 +1,5 @@
 {% block sw_sales_channel_detail_base %}
     <div v-if="salesChannel" class="sw-sales-channel-detail-base">
-
         {% block sw_sales_channel_detail_base_general %}
             <sw-card :isLoading="loading"
                      :title="$tc('helret-hello-retail.sales-channel-types.base.titleGeneralSettings')">
@@ -49,46 +48,43 @@
                         labelProperty="url"
                         valueProperty="id"
                         entity="sales_channel_domain"
-                        :disabled="!salesChannel.configuration.salesChannelDomainId && !salesChannel.configuration.storefrontSalesChannelId"
-                        @input="forceUpdate">
-                    </sw-entity-single-select>
+                        :disabled="!salesChannel.configuration.storefrontSalesChannelId"
+                    ></sw-entity-single-select>
                 {% endblock %}
 
                 {% block sw_sales_channel_detail_base_general_feed_directory %}
                     <sw-text-field
                         :value="salesChannel.configuration.feedDirectory"
                         :label="$tc('helret-hello-retail.sales-channel-types.base.feedDirectory')"
-                        disabled>
-                        <template #suffix>
-                            <sw-field-copyable :copyableText="salesChannel.configuration.feedDirectory"></sw-field-copyable>
-                        </template>
-                    </sw-text-field>
+                        :copyable="true"
+                        disabled
+                    ></sw-text-field>
                 {% endblock %}
-
             </sw-card>
         {% endblock %}
 
-        <sw-card v-if="salesChannel.configuration.feeds" :isLoading="loading"
-                 :title="$tc('helret-hello-retail.detail.titleFeedCard')">
-            <sw-text-field v-for="feed in feedsList"
-                           :key="feed"
-                           :value="feedUrl(feed)"
-                           disabled
-                           type="text"
-                           :placeholder="placeholder(salesChannel, `configuration.feeds.${feed}.file`, $tc('helret-hello-retail.detail.placeholderFeedLocation'))"
-                           :label="$tc(`helret-hello-retail.detail.feeds.${feed}Title`)">
-                <template slot="suffix">
-                    <sw-field-copyable :copyableText="feedUrl(feed)"></sw-field-copyable>
-                </template>
+        <sw-card
+            v-if="salesChannel.configuration.feeds"
+            :isLoading="loading"
+            :title="$tc('helret-hello-retail.detail.titleFeedCard')">
+            <sw-text-field
+                v-for="feed in feedsList"
+                :key="feed"
+                :value="feedUrl(feed)"
+                disabled
+                :placeholder="placeholder(salesChannel, `configuration.feeds.${feed}.file`, $tc('helret-hello-retail.detail.placeholderFeedLocation'))"
+                :label="$tc(`helret-hello-retail.detail.feeds.${feed}Title`)"
+                :copyable="true">
             </sw-text-field>
         </sw-card>
-
 
         {% block sw_sales_channel_detail_base_options_delete %}
             <sw-card :title="$tc('sw-sales-channel.detail.deleteModalTitle')"
                      v-if="salesChannel && acl.can('sales_channel.deleter')"
                      :isLoading="isLoading">
-                <sw-container columns="1fr 175px" gap="0px 30px" class="sw-sales-channel-detail-base__delete-sales-channel">
+                <sw-container
+                    columns="1fr 175px" gap="0px 30px"
+                    class="sw-sales-channel-detail-base__delete-sales-channel">
                     <div class="sw-sales-channel-detail-base__description-text">
                         <strong>{{ $tc('global.default.warning') }}</strong>
                         {{ $tc('sw-sales-channel.detail.textDeleteSalesChannelWarning') }}
@@ -145,6 +141,5 @@
                 {% endblock %}
             </sw-card>
         {% endblock %}
-
     </div>
 {% endblock %}
