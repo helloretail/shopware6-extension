@@ -1,3 +1,8 @@
+# 3.0.9
+
+* Changed: "Save" button to not force generate feeds when Hello Retail sales channel is saved
+* Added: Button to force generate feeds Hello Retail sales channel(s) (Administration)
+
 # 3.0.8
 
 * Fixed a bug in administration with saveFinish
