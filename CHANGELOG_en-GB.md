@@ -2,6 +2,7 @@
 
 * Changed: "Save" button to not force generate feeds when Hello Retail sales channel is saved
 * Added: Button to force generate feeds Hello Retail sales channel(s) (Administration)
+* Category feed now only takes categories associated with the selected sales channel (Navigation, Footer & service menu)
 
 # 3.0.8
 
