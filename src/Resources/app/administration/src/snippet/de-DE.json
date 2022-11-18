@@ -44,7 +44,8 @@
                 "order": "Bestellen"
             },
             "select": "Feed exporttyp",
-            "exportTypesMissing": "Beim Laden der Exporttypen ist ein Fehler aufgetreten"
+            "exportTypesMissing": "Beim Laden der Exporttypen ist ein Fehler aufgetreten",
+            "generateFeed": "{feedName} Feed generieren"
         },
         "save": {
             "info": "{feedCount} Feed(s) werden zur Generierung in die Warteschlange gestellt"

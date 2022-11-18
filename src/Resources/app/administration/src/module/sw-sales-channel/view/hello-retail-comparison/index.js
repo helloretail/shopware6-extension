@@ -7,6 +7,7 @@ Component.register('sw-sales-channel-detail-hello-retail-comparison', {
     template,
 
     inject: [
+        'repositoryFactory',
         'helloRetailTemplateService',
         'helloRetailService',
         'entityMappingService',
@@ -39,6 +40,10 @@ Component.register('sw-sales-channel-detail-hello-retail-comparison', {
     },
 
     computed: {
+        salesChannelRepository() {
+            return this.repositoryFactory.create('sales_channel');
+        },
+
         editorConfig() {
             return {
                 enableBasicAutocompletion: true,
@@ -77,6 +82,32 @@ Component.register('sw-sales-channel-detail-hello-retail-comparison', {
             }
 
             return this.salesChannel.configuration.feeds[this.feedType];
+        },
+
+        feedName() {
+            if (this.entities && this.entities[this.feedType] && this.entities[this.feedType].snippetKey) {
+                return this.$tc(this.entities[this.feedType].snippetKey).toLowerCase();
+            }
+
+            if (['product', 'category', 'order'].includes(this.feedType)) {
+                return this.$tc((`helret-hello-retail.comparison.feed.${this.feedType}`)).toLowerCase();
+            }
+
+            // Unknown type just write btn text as: "Generate feed"
+            return '';
+        },
+
+        tooltipGenerate() {
+            return {
+                message: this.$tc('helret-hello-retail.detail.forceGenerateTooltipSave'),
+                appearance: 'light',
+                showOnDisabledElements: true,
+                disabled: !this.forceGenerateDisabled
+            };
+        },
+
+        forceGenerateDisabled() {
+            return this.salesChannelRepository.hasChanges(this.salesChannel);
         }
     },
 

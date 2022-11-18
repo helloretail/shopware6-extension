@@ -44,7 +44,8 @@
                 "order": "Order"
             },
             "select": "Feed export type",
-            "exportTypesMissing": "Something went wrong loading Export type(s)"
+            "exportTypesMissing": "Something went wrong loading Export type(s)",
+            "generateFeed": "Generate {feedName} feed"
         },
         "save": {
             "info": "{feedCount} Feed(s) is getting queued for generation"

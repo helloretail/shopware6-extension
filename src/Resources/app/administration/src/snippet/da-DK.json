@@ -44,7 +44,8 @@
                 "order": "Ordre"
             },
             "select": "Feed export type",
-            "exportTypesMissing": "Noget gik galt ved indlæsning af Export type(r)"
+            "exportTypesMissing": "Noget gik galt ved indlæsning af Export type(r)",
+            "generateFeed": "Generer {feedName} feed"
         },
         "save": {
             "info": "{feedCount} Feed(s) sættes i kø for generation"
