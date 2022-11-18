@@ -8,6 +8,8 @@ use Exception;
 use Helret\HelloRetail\Core\Content\Feeds\ExportEntity;
 use Shopware\Core\Framework\Adapter\Twig\TwigVariableParser;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\EntityDefinitionQueryHelper;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
@@ -25,7 +27,6 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -124,11 +125,10 @@ class HelloRetailService
         $salesChannelDomain = $this->salesChannelDomainRepository
             ->search($salesChannelDomainCriteria, Context::createDefaultContext())->first();
 
-        /*
+        /**
          * No token needed since we haven't generated one with any settings.
          * Implement when we need to pass currency.
-         * @see vendor/shopware/core/Content/ProductExport/ScheduledTask/ProductExportPartialGenerationHandler.php
-         * finalizeExport()
+         * @see ProductExportPartialGenerationHandler::finalizeExport
          */
         $salesChannelContext = $this->salesChannelContextService->get(new SalesChannelContextServiceParameters(
             $exportEntity->getStorefrontSalesChannelId(),
@@ -177,9 +177,28 @@ class HelloRetailService
             $criteria->addFilter(new EqualsFilter('product.active', true));
             $criteria->addFilter(new EqualsFilter(
                 'product.visibilities.salesChannelId',
-                $salesChannelContext->getSalesChannel()->getId()
+                $salesChannelContext->getSalesChannelId()
             ));
         } elseif (EntityType::getMatchingEntityType($feed) == EntityType::CATEGORY) {
+            $categoryIds = [
+                $salesChannelContext->getSalesChannel()->getNavigationCategoryId(),
+            ];
+
+            if ($salesChannelContext->getSalesChannel()->getServiceCategoryId()) {
+                $categoryIds[] = $salesChannelContext->getSalesChannel()->getServiceCategoryId();
+            }
+            if ($salesChannelContext->getSalesChannel()->getFooterCategoryId()) {
+                $categoryIds[] = $salesChannelContext->getSalesChannel()->getFooterCategoryId();
+            }
+
+            /**
+             * Categories by salesChannel category ids.
+             * @see CategoryBreadcrumbBuilder::getSalesChannelFilter
+             */
+            $criteria->addFilter(new OrFilter(array_map(
+                fn(string $id) => new ContainsFilter('path', '|' . $id . '|'),
+                $categoryIds
+            )));
             $criteria->addFilter(new EqualsFilter('category.active', true));
         } elseif (EntityType::getMatchingEntityType($feed) == EntityType::ORDER) {
             $salesChannelId = $salesChannelContext->getSalesChannelId();
@@ -226,9 +245,10 @@ class HelloRetailService
             "updatedAt" => date("Y-m-d H:i:s")
         ]);
 
-        // Create temp dir for all file parts
+        // Create temp dir for all file parts: {dir}/{salesChannelId}_{entityType}
+        // Change: Use same dir (salesChannelId) to ensure lots of folders aren't created in case of failure / staling
         $tmpDir = 'hello-retail-generation-content/'
-            . Uuid::randomHex()
+            . $salesChannelContext->getSalesChannelId()
             . HelretHelloRetail::FILE_TYPE_INDICATOR_SEPARATOR
             . $feed;
 
