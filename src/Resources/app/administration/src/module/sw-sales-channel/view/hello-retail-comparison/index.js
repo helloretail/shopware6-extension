@@ -7,8 +7,9 @@ Component.register('sw-sales-channel-detail-hello-retail-comparison', {
     template,
 
     inject: [
-        "helloRetailTemplateService",
-        "helloRetailService",
+        'repositoryFactory',
+        'helloRetailTemplateService',
+        'helloRetailService',
         'entityMappingService',
         'acl',
     ],
@@ -17,7 +18,7 @@ Component.register('sw-sales-channel-detail-hello-retail-comparison', {
 
     props: {
         // // FIXME: add type for salesChannel property
-        // // eslint-disable-next-line vue/require-prop-types
+        // eslint-disable-next-line vue/require-prop-types
         salesChannel: {
             required: true,
         },
@@ -28,23 +29,9 @@ Component.register('sw-sales-channel-detail-hello-retail-comparison', {
         },
     },
 
-    watch: {
-        feedType() {
-            this.setFeed();
-        },
-        entities() {
-            this.setFeed();
-        }
-    },
-
-    created() {
-        this.loadFeedEntities()
-            .then(() => this.setFeed());
-    },
-
     data() {
         return {
-            feedType: "product",
+            feedType: 'product',
             feed: null,
             isEntitiesLoading: false,
             entities: null,
@@ -53,6 +40,10 @@ Component.register('sw-sales-channel-detail-hello-retail-comparison', {
     },
 
     computed: {
+        salesChannelRepository() {
+            return this.repositoryFactory.create('sales_channel');
+        },
+
         editorConfig() {
             return {
                 enableBasicAutocompletion: true,
@@ -79,6 +70,7 @@ Component.register('sw-sales-channel-detail-hello-retail-comparison', {
 
         getConfiguration() {
             if (!this.salesChannel.configuration.feeds[this.feedType]) {
+                // eslint-disable-next-line vue/no-side-effects-in-computed-properties
                 this.salesChannel.configuration.feeds[this.feedType] = {
                     name: this.feedType,
                     headerTemplate: null,
@@ -86,19 +78,63 @@ Component.register('sw-sales-channel-detail-hello-retail-comparison', {
                     footerTemplate: null,
                     file: `${this.feedType}.xml`,
                     associations: []
-                }
+                };
             }
 
             return this.salesChannel.configuration.feeds[this.feedType];
+        },
+
+        feedName() {
+            if (this.entities && this.entities[this.feedType] && this.entities[this.feedType].snippetKey) {
+                return this.$tc(this.entities[this.feedType].snippetKey).toLowerCase();
+            }
+
+            if (['product', 'category', 'order'].includes(this.feedType)) {
+                return this.$tc((`helret-hello-retail.comparison.feed.${this.feedType}`)).toLowerCase();
+            }
+
+            // Unknown type just write btn text as: "Generate feed"
+            return '';
+        },
+
+        tooltipGenerate() {
+            return {
+                message: this.$tc('helret-hello-retail.detail.forceGenerateTooltipSave'),
+                appearance: 'light',
+                showOnDisabledElements: true,
+                disabled: !this.forceGenerateDisabled
+            };
+        },
+
+        forceGenerateDisabled() {
+            return this.salesChannelRepository.hasChanges(this.salesChannel);
         }
+    },
+
+    watch: {
+        feedType() {
+            this.setFeed();
+        },
+        entities() {
+            this.setFeed();
+        }
+    },
+
+    created() {
+        this.loadFeedEntities()
+            .then(() => this.setFeed());
     },
 
     methods: {
         loadFeedEntities() {
             this.isEntitiesLoading = true;
             return this.helloRetailService.getExportEntities()
-                .then(result => this.entities = result.feeds)
-                .finally(() => this.isEntitiesLoading = false);
+                .then(result => {
+                    this.entities = result.feeds;
+                })
+                .finally(() => {
+                    this.isEntitiesLoading = false;
+                });
         },
 
         setFeed() {
@@ -119,37 +155,37 @@ Component.register('sw-sales-channel-detail-hello-retail-comparison', {
 
         getFeedOptions() {
             if (this.entities && Object.keys(this.entities).length) {
-                return Object.keys(this.entities).map(function (key) {
+                return Object.keys(this.entities).map(key => {
                     return {
                         label: this.$tc(this.entities[key].snippetKey),
                         value: this.entities[key].feed
                     };
-                }.bind(this));
+                });
             }
 
             // Fallback
             return [
                 {
                     label: this.$tc('helret-hello-retail.comparison.feed.product'),
-                    value: "product"
+                    value: 'product'
                 },
                 {
                     label: this.$tc('helret-hello-retail.comparison.feed.category'),
-                    value: "category"
+                    value: 'category'
                 },
                 {
                     label: this.$tc('helret-hello-retail.comparison.feed.order'),
-                    value: "order"
+                    value: 'order'
                 }
             ];
         },
 
-        getInheritValue(template) {
+        getInheritValue(feedTemplate) {
             if (!this.feed) {
                 return null;
             }
 
-            return this.feed[template] || null;
+            return this.feed[feedTemplate] || null;
         },
 
         generateFeed(feed) {
@@ -160,10 +196,12 @@ Component.register('sw-sales-channel-detail-hello-retail-comparison', {
                     if (response.error) {
                         this.createNotificationError({message: response.message});
                     } else {
-                        this.createNotificationSuccess({message: response.message})
+                        this.createNotificationSuccess({message: response.message});
                     }
                 })
-                .finally(() => this.feedQueued = false);
+                .finally(() => {
+                    this.feedQueued = false;
+                });
         }
     },
 });

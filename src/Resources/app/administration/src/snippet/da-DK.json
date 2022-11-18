@@ -27,7 +27,15 @@
                 "productTitle": "Produkter",
                 "orderTitle": "Ordre",
                 "categoryTitle": "Kategorier"
-            }
+            },
+            "buttonForceGenerate": "Tving generering",
+            "forceGenerateTooltip": "Påtving genering af alle Hello Retail feeds",
+            "forceGenerate": {
+                "confirmTitle": "Påtvingelse af feed generation",
+                "confirmText": "Dette vil sætte Hello Retail feed(s) i kø til generation, ønsker du at fortsætte?",
+                "noFeeds": "Generation kunne ikke startes da der ikke blev fundet nogle feeds"
+            },
+            "forceGenerateTooltipSave": "Knappen er deaktiveret grundet rettelser, gem dine rettelser"
         },
         "comparison": {
             "feed": {
@@ -36,7 +44,8 @@
                 "order": "Ordre"
             },
             "select": "Feed export type",
-            "exportTypesMissing": "Noget gik galt ved indlæsning af Export type(r)"
+            "exportTypesMissing": "Noget gik galt ved indlæsning af Export type(r)",
+            "generateFeed": "Generer {feedName} feed"
         },
         "save": {
             "info": "{feedCount} Feed(s) sættes i kø for generation"

@@ -1,0 +1,34 @@
+{% block sw_sales_channel_detail_actions_save %}
+    <sw-button-process
+        v-if="isHelloRetail"
+        v-tooltip.bottom="tooltipForceGenerate"
+        :isLoading="isLoading || isForceGenerating"
+        :disabled="forceGenerateDisabled || !allowSaving || isLoading"
+        variant="ghost"
+        v-model="forceSaveSuccessful"
+        @click.prevent="forceGenerateFeedsModal = true">
+        {{ $tc('helret-hello-retail.detail.buttonForceGenerate') }}
+    </sw-button-process>
+    <sw-confirm-modal
+        v-if="forceGenerateFeedsModal"
+        @confirm="forceGenerateFeeds"
+        @close="forceGenerateFeedsModal = false"
+        @cancel="forceGenerateFeedsModal = false"
+        :title="$tc('helret-hello-retail.detail.forceGenerate.confirmTitle')"
+        :text="$tc('helret-hello-retail.detail.forceGenerate.confirmText')"
+        type="yesno"
+    ></sw-confirm-modal>
+
+    {% parent %}
+{% endblock %}
+
+{% block sw_sales_channel_detail_content_tab_product_comparison %}
+    {% parent %}
+
+    <sw-tabs-item
+        v-if="isHelloRetail && !isLoading"
+        :route="{ name: 'sw.sales.channel.detail.hello-retail-comparison', params: { id: $route.params.id } }"
+        :title="$tc('sw-sales-channel.detail.tabProductComparison')">
+        {{ $tc('sw-sales-channel.detail.tabProductComparison') }}
+    </sw-tabs-item>
+{% endblock %}
