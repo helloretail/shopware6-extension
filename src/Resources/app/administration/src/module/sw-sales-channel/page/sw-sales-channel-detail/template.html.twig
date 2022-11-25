@@ -1,6 +1,6 @@
 {% block sw_sales_channel_detail_actions_save %}
     <sw-button-process
-        v-if="isHelloRetail"
+        v-show="isHelloRetail"
         v-tooltip.bottom="tooltipForceGenerate"
         :isLoading="isLoading || isForceGenerating"
         :disabled="forceGenerateDisabled || !allowSaving || isLoading"

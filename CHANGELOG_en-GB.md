@@ -1,3 +1,7 @@
+# 3.0.10
+
+* Fixed issue where feeds were generated even if the sales channel is marked as inactive
+
 # 3.0.9
 
 * Changed: "Save" button to not force generate feeds when Hello Retail sales channel is saved

@@ -3,6 +3,9 @@
 namespace Helret\HelloRetail\Service;
 
 use Helret\HelloRetail\Core\Content\Feeds\ExportEntity;
+use Helret\HelloRetail\HelretHelloRetail;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 
 /**
  * Class ExportService
@@ -43,5 +46,12 @@ class ExportService
     public function getFeeds(): array
     {
         return $this->feeds;
+    }
+
+    public static function getSalesChannelCriteria(?array $salesChannelIds = null): Criteria
+    {
+        return (new Criteria($salesChannelIds ?: null))
+            ->addFilter(new EqualsFilter('typeId', HelretHelloRetail::SALES_CHANNEL_TYPE_HELLO_RETAIL))
+            ->addFilter(new EqualsFilter('active', true));
     }
 }

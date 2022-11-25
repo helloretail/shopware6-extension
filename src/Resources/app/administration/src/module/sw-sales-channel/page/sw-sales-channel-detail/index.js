@@ -35,13 +35,19 @@ Component.override('sw-sales-channel-detail', {
             return {
                 message: !this.forceGenerateDisabled ?
                     this.$tc('helret-hello-retail.detail.forceGenerateTooltip') :
-                    this.$tc('helret-hello-retail.detail.forceGenerateTooltipSave'),
+                    (!this.salesChannel || this.salesChannel.active ?
+                        this.$tc('helret-hello-retail.detail.forceGenerateTooltipSave') :
+                        this.$tc('helret-hello-retail.detail.forceGenerateTooltipActivate')),
                 appearance: 'light',
                 showOnDisabledElements: true,
             };
         },
 
         forceGenerateDisabled() {
+            if (!this.salesChannel || !this.salesChannel.active) {
+                return true;
+            }
+
             return this.salesChannelRepository.hasChanges(this.salesChannel);
         }
     },

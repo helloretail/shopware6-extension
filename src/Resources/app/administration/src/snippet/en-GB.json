@@ -35,7 +35,8 @@
                 "confirmText": "This will queue Hello Retail feed(s) for generation, do you wish to continue?",
                 "noFeeds": "Generation weren't started since no feeds were found"
             },
-            "forceGenerateTooltipSave": "The button is disabled due to corrections, save your corrections"
+            "forceGenerateTooltipSave": "The button is disabled due to corrections, save your corrections",
+          "forceGenerateTooltipActivate": "Force generation is disabled because the sales channel is inactive and possibly other corrections"
         },
         "comparison": {
             "feed": {

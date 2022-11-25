@@ -35,7 +35,8 @@
                 "confirmText": "Dette vil sætte Hello Retail feed(s) i kø til generation, ønsker du at fortsætte?",
                 "noFeeds": "Generation kunne ikke startes da der ikke blev fundet nogle feeds"
             },
-            "forceGenerateTooltipSave": "Knappen er deaktiveret grundet rettelser, gem dine rettelser"
+            "forceGenerateTooltipSave": "Knappen er deaktiveret grundet rettelser, gem dine rettelser",
+          "forceGenerateTooltipActivate": "Force generation er deaktiveret, grundet salgskanalen er inaktiv og evt. andre rettelser dertil"
         },
         "comparison": {
             "feed": {
