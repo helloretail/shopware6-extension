@@ -6,7 +6,6 @@ use Helret\HelloRetail\Service\ExportService;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Routing\Exception\SalesChannelNotFoundException;
 use Symfony\Component\Serializer\SerializerInterface;
 use Helret\HelloRetail\Export\ExportEntity;
@@ -45,7 +44,7 @@ class ProfileExporter implements ProfileExporterInterface
     public function generate(string $salesChannelId, array $feeds = [], bool $now = false): array
     {
         $salesChannelEntity = $this->salesChannelRepository->search(
-            new Criteria([$salesChannelId]),
+            ExportService::getSalesChannelCriteria([$salesChannelId]),
             Context::createDefaultContext()
         )->first();
 

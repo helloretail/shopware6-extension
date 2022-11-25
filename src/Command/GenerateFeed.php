@@ -2,6 +2,7 @@
 
 namespace Helret\HelloRetail\Command;
 
+use Helret\HelloRetail\Service\ExportService;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -54,17 +55,17 @@ class GenerateFeed extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $feed = $input->getOption('feed');
-        $criteria = new Criteria($input->getOption("salesChannelId") ? [$input->getOption("salesChannelId")] : null);
-        $criteria->addFilter(new EqualsFilter('typeId', HelretHelloRetail::SALES_CHANNEL_TYPE_HELLO_RETAIL));
 
+        $salesChannelId = $input->getOption('salesChannelId') ? [$input->getOption('salesChannelId')] : null;
         $salesChannelIds = $this->salesChannelRepository->searchIds(
-            $criteria,
+            ExportService::getSalesChannelCriteria($salesChannelId),
             Context::createDefaultContext()
         )->getIds();
 
         foreach ($salesChannelIds as $salesChannelId) {
             try {
                 $this->profileExporter->generate($salesChannelId, $feed ? [$feed] : []);
+                $output->writeln("Feed(s) for sales channel: $salesChannelId were queued for generation");
             } catch (\Error|\TypeError|\Exception|SalesChannelNotFoundException $exception) {
                 $msg = "Msg: {$exception->getMessage()}, ln: {$exception->getLine()}, File: {$exception->getFile()}";
                 $output->writeln($msg);
@@ -72,10 +73,11 @@ class GenerateFeed extends Command
         }
 
         if (!$salesChannelIds) {
-            $output->writeln(
-                "Could not find any sales_channel(s) with type ID: "
-                . HelretHelloRetail::SALES_CHANNEL_TYPE_HELLO_RETAIL
-            );
+            $output->writeln([
+                "No active sales channel(s) with type id: were found",
+                HelretHelloRetail::SALES_CHANNEL_TYPE_HELLO_RETAIL . PHP_EOL,
+                "Therefore skipping feed generation" . PHP_EOL
+            ]);
         }
 
         return 0;

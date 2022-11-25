@@ -4,6 +4,7 @@ namespace Helret\HelloRetail\ScheduledTask;
 
 use Helret\HelloRetail\Export\Profiles\ProfileExporterInterface;
 use Helret\HelloRetail\HelretHelloRetail;
+use Helret\HelloRetail\Service\ExportService;
 use Helret\HelloRetail\Service\HelloRetailService;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -56,31 +57,29 @@ class HelloRetailHandler extends ScheduledTaskHandler
 
     public function run(): void
     {
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('typeId', HelretHelloRetail::SALES_CHANNEL_TYPE_HELLO_RETAIL));
-
         $salesChannelIds = $this->salesChannelRepository->searchIds(
-            $criteria,
+            ExportService::getSalesChannelCriteria(),
             Context::createDefaultContext()
-        );
+        )->getIds();
 
-        try {
-            foreach ($salesChannelIds->getIds() as $salesChannelId) {
+        foreach ($salesChannelIds as $salesChannelId) {
+            try {
                 /* check settings for each */
                 $feeds = $this->getFeedsThatShouldRunNow($salesChannelId);
                 if (count($feeds) > 0) {
                     $this->profileExporter->generate($salesChannelId, $feeds);
                 }
+            } catch (\Error|\TypeError|\Exception $e) {
+                $this->helloRetailService->exportLogger(
+                    HelretHelloRetail::EXPORT_ERROR,
+                    [
+                        'error' => $e->getMessage(),
+                        'errorTrace' => $e->getTraceAsString(),
+                        'errorType' => get_class($e),
+                        'salesChannelId' => $salesChannelId
+                    ]
+                );
             }
-        } catch (\Error | \TypeError | \Exception $e) {
-            $this->helloRetailService->exportLogger(
-                HelretHelloRetail::EXPORT_ERROR,
-                [
-                    'error' => $e->getMessage(),
-                    'errorTrace' => $e->getTraceAsString(),
-                    'errorType' => get_class($e)
-                ]
-            );
         }
     }
 
@@ -161,7 +160,7 @@ class HelloRetailHandler extends ScheduledTaskHandler
                 $nextRun = min($intervals);
             } else {
                 /* else make sure it wont run, by setting a value above the run buffer */
-                $nextRun = HelloRetailTask::getDefaultInterval() +1;
+                $nextRun = HelloRetailTask::getDefaultInterval() + 1;
             }
 
             /* if within the interval of this task, its time to run */
