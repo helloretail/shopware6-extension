@@ -2,7 +2,8 @@
 
 namespace Helret\HelloRetail;
 
-use Shopware\Core\Framework\Context;
+use Helret\HelloRetail\Service\ExportService;
+use League\Flysystem\FilesystemInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -11,7 +12,6 @@ use Shopware\Core\Framework\Plugin\Context\DeactivateContext;
 use Shopware\Core\Framework\Plugin\Context\UninstallContext;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
-use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * Class HelretHelloRetail
@@ -43,65 +43,56 @@ class HelretHelloRetail extends Plugin
         ]
     ];
 
-    /**
-     * @param DeactivateContext $context
-     */
-    public function deactivate(DeactivateContext $context): void
+    public function deactivate(DeactivateContext $deactivateContext): void
     {
-        $defaultContext = Context::createDefaultContext();
-
         $salesChannelRepository = $this->container->get('sales_channel.repository');
 
-        $criteria = new Criteria();
-        $criteria
-            ->addFilter(
-                new EqualsFilter('typeId', self::SALES_CHANNEL_TYPE_HELLO_RETAIL),
-                new EqualsFilter('active', true)
+        $ids = $salesChannelRepository->searchIds(
+            ExportService::getSalesChannelCriteria(), // Get active salesChannels (HR)
+            $deactivateContext->getContext()
+        )->getIds();
+
+        if ($ids) {
+            $salesChannelRepository->update(
+                array_map(function (string $salesChannelId) {
+                    return [
+                        'id' => $salesChannelId,
+                        'active' => false
+                    ];
+                }, $ids),
+                $deactivateContext->getContext()
             );
-
-        $result = $salesChannelRepository->searchIds($criteria, $defaultContext);
-
-        $data = [];
-        foreach ($result->getIds() as $salesChannelId) {
-            $data[] = ['id' => $salesChannelId, 'active' => false];
-        }
-
-        if (\count($data) > 0) {
-            $salesChannelRepository->update($data, $defaultContext);
         }
     }
 
-    /**
-     * @param UninstallContext $uninstallContext
-     */
     public function uninstall(UninstallContext $uninstallContext): void
     {
-        $context = $uninstallContext->getContext();
+        if ($uninstallContext->keepUserData()) {
+            return;
+        }
 
-        if (!$uninstallContext->keepUserData()) {
-            // Remove all feeds and the base folder
-            $fileSystem = new Filesystem();
-            $projectDir = $this->container->get('kernel')->getProjectDir();
-            $dir = $projectDir
-                . DIRECTORY_SEPARATOR
-                . 'public'
-                . DIRECTORY_SEPARATOR
-                . self::STORAGE_PATH
-                . DIRECTORY_SEPARATOR;
-            $fileSystem->remove($dir);
+        /** @var FilesystemInterface $fs */
+        $fs = $this->container->get('shopware.filesystem.public');
+        if ($fs->has(self::STORAGE_PATH)) {
+            $fs->deleteDir(self::STORAGE_PATH);
+        }
 
-            /** @var EntityRepositoryInterface $salesChannelRepository */
-            $salesChannelRepository = $this->container->get('sales_channel.repository');
+        /** @var EntityRepositoryInterface $salesChannelRepository */
+        $salesChannelRepository = $this->container->get('sales_channel.repository');
 
-            $criteria = new Criteria();
-            $criteria->addFilter(new EqualsFilter('typeId', self::SALES_CHANNEL_TYPE_HELLO_RETAIL));
-            $ids = $salesChannelRepository->searchIds($criteria, $context);
+        $ids = $salesChannelRepository->searchIds(
+            (new Criteria())
+                ->addFilter(new EqualsFilter('typeId', self::SALES_CHANNEL_TYPE_HELLO_RETAIL)),
+            $uninstallContext->getContext()
+        )->getIds();
 
-            $deleteArray = array_map(function ($id) {
-                return ['id' => $id];
-            }, $ids->getIds());
-
-            $salesChannelRepository->delete($deleteArray, $context);
+        if ($ids) {
+            $salesChannelRepository->delete(
+                array_map(function ($id) {
+                    return ['id' => $id];
+                }, $ids),
+                $uninstallContext->getContext()
+            );
         }
     }
 
