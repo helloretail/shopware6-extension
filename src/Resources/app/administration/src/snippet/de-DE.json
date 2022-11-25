@@ -35,7 +35,8 @@
                 "confirmText": "Dadurch werden Hello Retail-Feed(s) zur Generierung in die Warteschlange gestellt. Möchten Sie fortfahren?",
                 "noFeeds": "Die Generierung wurde nicht gestartet, da keine Feeds gefunden wurden"
             },
-            "forceGenerateTooltipSave": "Die Schaltfläche ist aufgrund von Korrekturen deaktiviert, speichern Sie Ihre Korrekturen"
+            "forceGenerateTooltipSave": "Die Schaltfläche ist aufgrund von Korrekturen deaktiviert, speichern Sie Ihre Korrekturen",
+          "forceGenerateTooltipActivate": "Die Generierung erzwingen ist deaktiviert, da der Verkaufskanal inaktiv ist und möglicherweise andere Korrekturen"
         },
         "comparison": {
             "feed": {

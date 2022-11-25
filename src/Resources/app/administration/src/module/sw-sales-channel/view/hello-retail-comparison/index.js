@@ -99,7 +99,9 @@ Component.register('sw-sales-channel-detail-hello-retail-comparison', {
 
         tooltipGenerate() {
             return {
-                message: this.$tc('helret-hello-retail.detail.forceGenerateTooltipSave'),
+                message: !this.salesChannel || this.salesChannel.active ?
+                    this.$tc('helret-hello-retail.detail.forceGenerateTooltipSave') :
+                    this.$tc('helret-hello-retail.detail.forceGenerateTooltipActivate'),
                 appearance: 'light',
                 showOnDisabledElements: true,
                 disabled: !this.forceGenerateDisabled
@@ -107,6 +109,10 @@ Component.register('sw-sales-channel-detail-hello-retail-comparison', {
         },
 
         forceGenerateDisabled() {
+            if (!this.salesChannel || !this.salesChannel.active) {
+                return true;
+            }
+
             return this.salesChannelRepository.hasChanges(this.salesChannel);
         }
     },
