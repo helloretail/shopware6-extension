@@ -1,6 +1,6 @@
 # 3.0.10
 
-* Fixed issue where feeds were generated event if the sales channel is marked as inactive
+* Fixed issue where feeds were generated even if the sales channel is marked as inactive
 
 # 3.0.9
 
