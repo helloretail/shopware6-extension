@@ -240,10 +240,15 @@ class HelloRetailService
         $entityIds = $entityIdsResult->getIds();
 
         $content = $this->renderHeader($feedEntity, $salesChannelContext, [
-            "{$feed}sTotal" => $entityIdsResult->getTotal(),
-            "total" => $entityIdsResult->getTotal(),
-            "updatedAt" => date("Y-m-d H:i:s")
+             "{$feed}sTotal" => $entityIdsResult->getTotal(),
+             "total" => $entityIdsResult->getTotal(),
+             "updatedAt" => date("Y-m-d H:i:s")
         ]);
+        if (!$content) {
+            // If the header render failed, no need to continue.
+            // The error will already have been logged in the renderTemplate function
+            return false;
+        }
 
         // Create temp dir for all file parts: {dir}/{salesChannelId}_{entityType}
         // Change: Use same dir (salesChannelId) to ensure lots of folders aren't created in case of failure / staling
