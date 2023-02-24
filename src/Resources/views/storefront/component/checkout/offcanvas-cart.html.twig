@@ -3,9 +3,11 @@
 {% block component_offcanvas_cart_hidden_line_items_information %}
     {{ parent() }}
 
-    {# set cart by Javascript, since HelloRetail script isn't loaded agian to read html #}
-    {% sw_include '@HelretHelloRetail/storefront/component/helret/js-cart-tracker.html.twig' with {
-        cart: page.cart,
-        customer: context.customer
-    } %}
+    {% if config('HelretHelloRetail.config.partnerId') %}
+        {# set cart by Javascript, since HelloRetail script isn't loaded agian to read html #}
+        {% sw_include '@HelretHelloRetail/storefront/component/helret/js-cart-tracker.html.twig' with {
+            cart: page.cart,
+            customer: context.customer
+        } %}
+    {% endif %}
 {% endblock %}

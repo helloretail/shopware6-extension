@@ -7,6 +7,7 @@ use Helret\HelloRetail\HelretHelloRetail;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Checkout\Cart\SalesChannel\StorefrontCartFacade;
 use Shopware\Storefront\Page\GenericPageLoadedEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -21,15 +22,18 @@ class SalesChannelSubscriber implements EventSubscriberInterface
 {
     protected EntityRepositoryInterface $salesChannelRepository;
     protected StorefrontCartFacade $cartService;
+    protected SystemConfigService $configService;
     protected EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
         EntityRepositoryInterface $salesChannelRepository,
         StorefrontCartFacade $cartService,
+        SystemConfigService $configService,
         EventDispatcherInterface $eventDispatcher
     ) {
         $this->salesChannelRepository = $salesChannelRepository;
         $this->cartService = $cartService;
+        $this->configService = $configService;
         $this->eventDispatcher = $eventDispatcher;
     }
 
@@ -44,6 +48,11 @@ class SalesChannelSubscriber implements EventSubscriberInterface
 
     public function pageLoadedEvent(GenericPageLoadedEvent $event): void
     {
+        if (!$this->configService->get('HelretHelloRetail.config.partnerId')) {
+            // Missing partnerId, bail
+            return;
+        }
+
         /** @var HelretBeforeCartLoadEvent $beforeLoad */
         $beforeLoad = $this->eventDispatcher->dispatch(new HelretBeforeCartLoadEvent([
             'frontend.checkout', // Checkout pages has cart loaded.
@@ -54,7 +63,7 @@ class SalesChannelSubscriber implements EventSubscriberInterface
         ) {
             return;
         }
-
+        dd("s");
         foreach ($beforeLoad->getIgnored() as $name) {
             if (strpos($route, $name) === 0) {
                 return;
