@@ -1,3 +1,6 @@
+# 3.0.11
+* Improve cart tracker: Cart is now tracked on every page and offcanvas-cart open
+
 # 3.0.10
 
 * Fixed issue where feeds were generated even if the sales channel is marked as inactive
