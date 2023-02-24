@@ -72,7 +72,7 @@ class SalesChannelSubscriber implements EventSubscriberInterface
 
 
     /**
-     * @param EntityWrittenEvent $event
+     * @deprecated Will be removed in Shopware:v6.5
      */
     public function onRetailChannelWritten(EntityWrittenEvent $event): void
     {
