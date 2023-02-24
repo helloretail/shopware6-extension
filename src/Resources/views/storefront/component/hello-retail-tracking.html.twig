@@ -1,14 +1,19 @@
-<script type="text/javascript">
-    (function () {
-        window['ADDWISH_PARTNER_ID'] = "{{ config("HelretHelloRetail").config.partnerId }}"
-    })();
+{% block hello_retail_javascript %}
+    {% set addWishPartnerId = config('HelretHelloRetail.config.partnerId') %}
+    {% if addWishPartnerId %}
+        <script type="text/javascript">
+            window['ADDWISH_PARTNER_ID'] = "{{ addWishPartnerId }}";
 
-    (function() {
-        var aws = document.createElement('script');
-        aws.type = 'text/javascript';
-        if (typeof(aws.async) != "undefined") { aws.async = true; }
-        aws.src = 'https://d1pna5l3xsntoj.cloudfront.net/scripts/company/awAddGift.js#{{ config("HelretHelloRetail").config.partnerId }}';
-        var s = document.getElementsByTagName('script')[0];
-        s.parentNode.insertBefore(aws, s);
-    })();
-</script>
+            (function () {
+                var aws = document.createElement('script');
+                aws.type = 'text/javascript';
+                if (typeof (aws.async) != "undefined") {
+                    aws.async = true;
+                }
+                aws.src = 'https://d1pna5l3xsntoj.cloudfront.net/scripts/company/awAddGift.js#{{ addWishPartnerId }}';
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(aws, s);
+            })();
+        </script>
+    {% endif %}
+{% endblock %}
