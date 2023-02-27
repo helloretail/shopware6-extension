@@ -63,7 +63,7 @@ class SalesChannelSubscriber implements EventSubscriberInterface
         ) {
             return;
         }
-        dd("s");
+
         foreach ($beforeLoad->getIgnored() as $name) {
             if (strpos($route, $name) === 0) {
                 return;
