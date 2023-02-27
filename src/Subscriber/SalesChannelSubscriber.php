@@ -2,11 +2,15 @@
 
 namespace Helret\HelloRetail\Subscriber;
 
+use Helret\HelloRetail\Event\HelretBeforeCartLoadEvent;
 use Helret\HelloRetail\HelretHelloRetail;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Shopware\Storefront\Checkout\Cart\SalesChannel\StorefrontCartFacade;
+use Shopware\Storefront\Page\GenericPageLoadedEvent;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelEvents;
 
@@ -17,28 +21,67 @@ use Shopware\Core\System\SalesChannel\SalesChannelEvents;
 class SalesChannelSubscriber implements EventSubscriberInterface
 {
     protected EntityRepositoryInterface $salesChannelRepository;
+    protected StorefrontCartFacade $cartService;
+    protected SystemConfigService $configService;
+    protected EventDispatcherInterface $eventDispatcher;
 
-    /**
-     * SalesChannelSubscriber constructor.
-     * @param EntityRepositoryInterface $salesChannelRepository
-     */
-    public function __construct(EntityRepositoryInterface $salesChannelRepository)
-    {
+    public function __construct(
+        EntityRepositoryInterface $salesChannelRepository,
+        StorefrontCartFacade $cartService,
+        SystemConfigService $configService,
+        EventDispatcherInterface $eventDispatcher
+    ) {
         $this->salesChannelRepository = $salesChannelRepository;
+        $this->cartService = $cartService;
+        $this->configService = $configService;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
-    /**
-     * @return string[]
-     */
     public static function getSubscribedEvents(): array
     {
         return [
             SalesChannelEvents::SALES_CHANNEL_WRITTEN => "onRetailChannelWritten",
+
+            GenericPageLoadedEvent::class => 'pageLoadedEvent',
         ];
     }
 
+    public function pageLoadedEvent(GenericPageLoadedEvent $event): void
+    {
+        if (!$this->configService->get('HelretHelloRetail.config.partnerId')) {
+            // Missing partnerId, bail
+            return;
+        }
+
+        /** @var HelretBeforeCartLoadEvent $beforeLoad */
+        $beforeLoad = $this->eventDispatcher->dispatch(new HelretBeforeCartLoadEvent([
+            'frontend.checkout', // Checkout pages has cart loaded.
+        ], $event->getSalesChannelContext()));
+
+        if ($beforeLoad->shouldSkipCartLoad() ||
+            !($route = $event->getRequest()->attributes->get('_route'))
+        ) {
+            return;
+        }
+
+        foreach ($beforeLoad->getIgnored() as $name) {
+            if (strpos($route, $name) === 0) {
+                return;
+            }
+        }
+
+        $event->getPage()->addExtension(
+            'helretCart',
+            $this->cartService->get(
+                $event->getSalesChannelContext()->getToken(),
+                $event->getSalesChannelContext()
+            )
+        );
+    }
+
+
     /**
-     * @param EntityWrittenEvent $event
+     * @deprecated Will be removed in Shopware:v6.5
      */
     public function onRetailChannelWritten(EntityWrittenEvent $event): void
     {
@@ -69,7 +112,7 @@ class SalesChannelSubscriber implements EventSubscriberInterface
             }
             /* if changed */
             if (count($event->getPayloads()) > 0
-                && ! empty($updateStatement)
+                && !empty($updateStatement)
                 && $event->getPayloads()[0] != $updateStatement) {
                 $this->salesChannelRepository->update([$updateStatement], $event->getContext());
             }

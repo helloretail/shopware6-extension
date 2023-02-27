@@ -2,19 +2,28 @@
 
 {% block base_script_csrf %}
     {{ parent() }}
-    {% block hello_retail_javascript %}
-    <script type="text/javascript">
-        (function () {
-            window['ADDWISH_PARTNER_ID'] = "{{ config("HelretHelloRetail").config.partnerId }}"
-        })();
-        (function() {
-            var aws = document.createElement('script');
-            aws.type = 'text/javascript';
-            if (typeof(aws.async) != "undefined") { aws.async = true; }
-            aws.src = 'https://d1pna5l3xsntoj.cloudfront.net/scripts/company/awAddGift.js#{{ config("HelretHelloRetail").config.partnerId }}';
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(aws, s);
-        })();
-    </script>
-    {% endblock %}
+
+    {# @deprecated tag:v6.5.0 - Will be moved to `layout/meta.html.twig` - Added to `layout_head_javascript_csrf` #}
+    {% sw_include '@HelretHelloRetail/storefront/component/hello-retail-tracking.html.twig' %}
+{% endblock %}
+
+
+{% block base_main %}
+    {{ parent() }}
+
+    {#
+    Set cart tracking on every page where cart is available
+    Extension is a custom cartLoader
+    #}
+    {% set helretCart = page.cart ?? page.getExtensionOfType(
+        'helretCart',
+        'Shopware\\Core\\Checkout\\Cart\\Cart'
+    ) %}
+
+    {% if helretCart %}
+        {% sw_include '@HelretHelloRetail/storefront/component/helret/addwish-cart.html.twig' with {
+            cart: helretCart,
+            customer: context.customer
+        } %}
+    {% endif %}
 {% endblock %}

@@ -1,3 +1,6 @@
+# 3.0.11
+* Improve cart tracker: Cart is now tracked on every page and offcanvas-cart open
+
 # 3.0.10
 
 * Fixed issue where feeds were generated even if the sales channel is marked as inactive
@@ -45,5 +48,5 @@
 
 # 3.0.0
 
-* Added controller to ensure files can load cross sales channels using folder domain
+* Added controller to ensure files can load cross sales channels using subfolder domain
 * Changed administration to save default/new feed values as empty to allow overrides on default template

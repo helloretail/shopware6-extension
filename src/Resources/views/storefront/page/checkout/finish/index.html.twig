@@ -3,7 +3,7 @@
 {% block page_checkout_main_content %}
     {{ parent() }}
 
-    <span class="addwish-conversion" style="display:none;"
+    <span class="addwish-conversion d-none"
           data-ordernumber="{{ page.order.orderNumber }}"
           data-total="{{ page.order.amountTotal }}"
           data-email="{{ page.order.orderCustomer.email }}"
@@ -13,6 +13,7 @@
                   data-unit-price="{{ orderItem.unitPrice }}"
                   {% if orderItem.productId %}data-url="{{ seoUrl('frontend.detail.page', {'productId': orderItem.productId}) }}"{% endif %}
                   data-productnumber="{{ orderItem.payload.productNumber }}"
+                  data-quantity="{{ orderItem.quantity }}"
             ></span>
         {% endfor %}
     </span>

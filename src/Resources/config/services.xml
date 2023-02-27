@@ -69,8 +69,11 @@
         </service>
 
         <service id="Helret\HelloRetail\Subscriber\SalesChannelSubscriber" public="true">
-            <tag name="kernel.event_subscriber"/>
             <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="Shopware\Storefront\Checkout\Cart\SalesChannel\StorefrontCartFacade"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="event_dispatcher"/>
+            <tag name="kernel.event_subscriber"/>
         </service>
 
 

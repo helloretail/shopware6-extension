@@ -1,0 +1,8 @@
+{% block tracker %}
+    {% set productLines = cart.lineItems.filterFlatByType('product') %}
+    <span class="d-none" data-helret-cart-tracker data-helret-cart-tracker-options="{{ {
+        total: cart.price.totalPrice,
+        productNumbers: productLines|map(line => line.payload.productNumber),
+        email: customer.email,
+    }|json_encode }}"></span>
+{% endblock %}

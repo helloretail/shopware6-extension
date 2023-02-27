@@ -2,9 +2,12 @@
 
 {% block component_offcanvas_cart_hidden_line_items_information %}
     {{ parent() }}
-    <span class="addwish-cart" style="display:none" data-total="{{ page.cart.price.totalPrice }}">
-        {% for lineItem in page.cart.lineItems %}
-            <span class="addwish-product" data-productnumber="{{ lineItem.payload.productNumber }}"></span>
-        {% endfor %}
-    </span>
+
+    {% if config('HelretHelloRetail.config.partnerId') %}
+        {# set cart by Javascript, since HelloRetail script isn't loaded agian to read html #}
+        {% sw_include '@HelretHelloRetail/storefront/component/helret/js-cart-tracker.html.twig' with {
+            cart: page.cart,
+            customer: context.customer
+        } %}
+    {% endif %}
 {% endblock %}
