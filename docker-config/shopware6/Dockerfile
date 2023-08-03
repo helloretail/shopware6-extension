@@ -18,6 +18,7 @@ RUN ln -s /etc/apache2/sites-available/shopware.hrdev.test.conf /etc/apache2/sit
 RUN sed -i "s/;opcache.memory_consumption=128/opcache.memory_consumption=256/g" /etc/php/8.2/apache2/php.ini
 RUN sed -i "s/memory_limit = 128M/memory_limit = 512M/g" /etc/php/8.2/apache2/php.ini
 RUN chown -R www-data:www-data /usr/app/src && chown -R www-data:www-data /var/log/apache2 && chown -R www-data:www-data /var/run/apache2
+RUN touch /var/log/DEV.log && touch /var/log/PROD.log && chown www-data:www-data /var/log/PROD.log && chown www-data:www-data /var/log/DEV.log
 
 CMD ["apache2ctl", "-DFOREGROUND"]
 
@@ -26,11 +27,6 @@ FROM build
 COPY --chown=www-data:www-data exports/shopware /usr/app/src
 COPY --chown=www-data:www-data docker-config/shopware6/entrypoint.sh .
 RUN chown -R www-data:www-data /usr/app/src
-
-# COPY composer.json /usr/app/src/custom/plugins/HelloRetail/composer.json
-# COPY src /usr/app/src/custom/plugins/HelloRetail/src
-
-# RUN chown -R www-data:www-data /usr/app/src/custom/plugins/HelloRetail
 
 USER www-data:www-data
 

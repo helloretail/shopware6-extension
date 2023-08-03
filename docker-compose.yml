@@ -1,11 +1,8 @@
 version: "3.3"
 services:
   shopware:
-    image: ghcr.io/helloretail/shopware6-extension/shopware:1.2
+    image: ghcr.io/helloretail/shopware6-extension/shopware:1.4
     container_name: shopware
-    # ports:
-    # - 80:80
-    # - 443:443
     environment:
       APP_ENV: dev
     networks:
@@ -19,7 +16,7 @@ services:
     container_name: shopwaredb
     networks:
     - dev-env
-    image: ghcr.io/helloretail/shopware6-extension/shopwaredb:1.2
+    image: ghcr.io/helloretail/shopware6-extension/shopwaredb:1.4
     volumes:
     - db:/var/lib/mysql
     environment:
