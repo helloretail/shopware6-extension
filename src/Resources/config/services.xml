@@ -60,7 +60,6 @@
         </service>
 
         <service id="Helret\HelloRetail\ScheduledTask\HelloRetailHandler">
-            <argument type="service" id="scheduled_task.repository"/>
             <argument type="service" id="Helret\HelloRetail\Export\Profiles\ProfileExporter"/>
             <argument type="service" id="sales_channel.repository"/>
             <argument type="service" id="Helret\HelloRetail\Service\HelloRetailService"/>

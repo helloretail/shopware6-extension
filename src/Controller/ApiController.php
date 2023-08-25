@@ -9,44 +9,32 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Helret\HelloRetail\Export\Profiles\ProfileExporterInterface;
 use Helret\HelloRetail\HelretHelloRetail;
-use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\Encoder\DecoderInterface;
 
-/**
- * @Route(defaults={"_routeScope"={"api"}})
- */
+#[Route(defaults: ['_routeScope' => ['api']])]
 class ApiController extends AbstractController
 {
-    protected ProfileExporterInterface $profileExporter;
-    protected ExportService $exportService;
-    protected Serializer $serializer;
-
-    /**
-     * ApiController constructor.
-     */
     public function __construct(
-        ProfileExporterInterface $profileExporter,
-        ExportService $exportService,
-        Serializer $serializer
-    ) {
-        $this->profileExporter = $profileExporter;
-        $this->exportService = $exportService;
-        $this->serializer = $serializer;
-    }
+        protected ProfileExporterInterface $profileExporter,
+        protected ExportService $exportService,
+        protected DecoderInterface $serializer
+    ) {}
 
-    /**
-     * @Route("/api/helret/hello-retail/getTypeId", name="api.action.helret.hello-retail.getTypeId", methods={"GET"})
-     * @return Response
-     */
+    #[Route(
+        path: '/api/helret/hello-retail/getTypeId',
+        name: 'api.action.helret.hello-retail.getTypeId',
+        methods: ['GET']
+    )]
     public function getTypeId(): Response
     {
         return new Response(HelretHelloRetail::SALES_CHANNEL_TYPE_HELLO_RETAIL);
     }
 
-    /**
-     * @Route("/api/helret/hello-retail/generateFeed/{salesChannelId}/{feed}",
-     *     name="api.action.helret.hello-retail.generateFeed",
-     *     methods={"POST"})
-     */
+    #[Route(
+        path: '/api/helret/hello-retail/generateFeed/{salesChannelId}/{feed}',
+        name: 'api.action.helret.hello-retail.generateFeed',
+        methods: ['POST']
+    )]
     public function generateFeed(string $salesChannelId, string $feed): JsonResponse
     {
         try {
@@ -66,11 +54,11 @@ class ApiController extends AbstractController
         }
     }
 
-    /**
-     * @Route("/api/helret/hello-retail/getExportEntities",
-     *     name="api.action.helret.hello-retail.getExportEntities",
-     *     methods={"GET"})
-     */
+    #[Route(
+        path: '/api/helret/hello-retail/getExportEntities',
+        name: 'api.action.helret.hello-retail.getExportEntities',
+        methods: ['GET']
+    )]
     public function getExportEntities(): JsonResponse
     {
         $feeds = [];

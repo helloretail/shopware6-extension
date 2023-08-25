@@ -4,7 +4,7 @@ namespace Helret\HelloRetail\Subscriber;
 
 use Helret\HelloRetail\Event\HelretBeforeCartLoadEvent;
 use Helret\HelloRetail\HelretHelloRetail;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -14,19 +14,15 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelEvents;
 
-/**
- * Class SalesChannelSubscriber
- * @package Helret\HelloRetail\Subscriber
- */
 class SalesChannelSubscriber implements EventSubscriberInterface
 {
-    protected EntityRepositoryInterface $salesChannelRepository;
+    protected EntityRepository $salesChannelRepository;
     protected StorefrontCartFacade $cartService;
     protected SystemConfigService $configService;
     protected EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
-        EntityRepositoryInterface $salesChannelRepository,
+        EntityRepository $salesChannelRepository,
         StorefrontCartFacade $cartService,
         SystemConfigService $configService,
         EventDispatcherInterface $eventDispatcher
@@ -79,10 +75,6 @@ class SalesChannelSubscriber implements EventSubscriberInterface
         );
     }
 
-
-    /**
-     * @deprecated Will be removed in Shopware:v6.5
-     */
     public function onRetailChannelWritten(EntityWrittenEvent $event): void
     {
         /* try catch in case writeResults are empty */
@@ -119,10 +111,6 @@ class SalesChannelSubscriber implements EventSubscriberInterface
         }
     }
 
-    /**
-     * @param array $feed
-     * @return string
-     */
     private function getFeedFile(array $feed): string
     {
         if ($feed['file'] == null && isset($feed['name'])) {
@@ -138,10 +126,6 @@ class SalesChannelSubscriber implements EventSubscriberInterface
         return "unknown.xml";
     }
 
-    /**
-     * @param array $payload
-     * @return array
-     */
     private function updateFeed(array $payload): array
     {
         foreach ($payload['configuration']['feeds'] as $feed_key => $feed) {

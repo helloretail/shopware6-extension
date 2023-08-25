@@ -4,10 +4,6 @@ namespace Helret\HelloRetail\Core\Content\Feeds;
 
 use ReflectionClass;
 
-/**
- * Class ExportEntity
- * @package Helret\HelloRetail\Core\Content\Feeds
- */
 abstract class ExportEntity
 {
     protected string $feed;

@@ -7,20 +7,14 @@ use Shopware\Core\Framework\Event\NestedEvent;
 use Shopware\Core\Framework\Event\ShopwareSalesChannelEvent;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
-/**
- * Class HelretBeforeCartLoadEvent
- * @package Helret\HelloRetail\Event
- */
 class HelretBeforeCartLoadEvent extends NestedEvent implements ShopwareSalesChannelEvent
 {
     protected array $ignored = [];
-    protected SalesChannelContext $context;
     protected bool $shouldSkipCartLoad = false;
 
-    public function __construct(array $ignored, SalesChannelContext $context)
+    public function __construct(array $ignored, protected SalesChannelContext $context)
     {
         $this->ignored = $ignored;
-        $this->context = $context;
     }
 
     public function getIgnored(): array

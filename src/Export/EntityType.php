@@ -2,21 +2,13 @@
 
 namespace Helret\HelloRetail\Export;
 
-/**
- * Class EntityType
- * @package Helret\HelloRetail\Export
- */
+
 class EntityType
 {
     public const CUSTOMER = 'entity_type_customer';
     public const ORDER = 'entity_type_order';
     public const PRODUCT = 'entity_type_product';
     public const CATEGORY = 'entity_type_category';
-
-    /**
-     * @param $entityType
-     * @return string|null
-     */
     public static function getMatchingEntityType($entityType): ?string
     {
         switch (strtolower($entityType)) {

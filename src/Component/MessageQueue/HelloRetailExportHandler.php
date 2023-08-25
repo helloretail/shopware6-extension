@@ -5,8 +5,8 @@ namespace Helret\HelloRetail\Component\MessageQueue;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use League\Flysystem\Filesystem;
-use League\Flysystem\Adapter\Local;
-use League\Flysystem\FileNotFoundException;
+use League\Flysystem\FilesystemException;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\OrderEntity;
@@ -17,14 +17,11 @@ use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilderInterface;
 use Shopware\Core\Framework\Adapter\Translation\AbstractTranslator;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\MessageQueue\Handler\AbstractMessageHandler;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
-use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -33,56 +30,39 @@ use Helret\HelloRetail\Export\TemplateType;
 use Helret\HelloRetail\Service\HelloRetailService;
 use Helret\HelloRetail\HelretHelloRetail;
 
-/**
- * Class HelloRetailExportHandler
- * @package Helret\HelloRetail\Component\MessageQueue
- */
-class HelloRetailExportHandler extends AbstractMessageHandler
+
+#[AsMessageHandler]
+class HelloRetailExportHandler
 {
     // TODO: Should be settings
     private const RETRIES = 20;
     private const SLEEP_BETWEEN_RETRIES = 20; // Seconds
 
-    protected LoggerInterface $logger;
-    protected ContainerInterface $container;
-    protected AbstractTranslator $translator;
     protected Filesystem $filesystem;
-    protected HelloRetailService $helloRetailService;
-    protected MessageBusInterface $bus;
-    private ProductStreamBuilderInterface $productStreamBuilder;
+
 
     public function __construct(
-        LoggerInterface $logger,
-        ContainerInterface $container,
-        AbstractTranslator $translator,
-        HelloRetailService $helloRetailService,
-        MessageBusInterface $bus,
-        ProductStreamBuilderInterface $productStreamBuilder
+        protected LoggerInterface $logger,
+        protected ContainerInterface $container,
+        protected AbstractTranslator $translator,
+        protected HelloRetailService $helloRetailService,
+        protected MessageBusInterface $bus,
+        protected ProductStreamBuilderInterface $productStreamBuilder
     ) {
-        $this->logger = $logger;
-        $this->container = $container;
-        $this->translator = $translator;
-        $this->helloRetailService = $helloRetailService;
-        $this->bus = $bus;
-
         $fullPath = $helloRetailService->getFeedDirectoryPath();
-        $this->filesystem = new Filesystem(new Local($fullPath));
-
-        $this->productStreamBuilder = $productStreamBuilder;
+        $this->filesystem = new Filesystem(new LocalFilesystemAdapter($fullPath));
     }
 
-    /**
-     * @return iterable
-     */
+
     public static function getHandledMessages(): iterable
     {
         return [ExportEntityElement::class];
     }
 
     /**
-     * @param ExportEntityElement $message
+     * @throws FilesystemException
      */
-    public function handle($message): void
+    public function __invoke(ExportEntityElement $message): void
     {
         if ($message->getTemplateType() === TemplateType::FOOTER) {
             /**
@@ -119,7 +99,7 @@ class HelloRetailExportHandler extends AbstractMessageHandler
 
         /** @var SalesChannelProductEntity|CategoryEntity|OrderEntity $entity */
         $repository = $this->container->get(("{$feedEntity->getEntity()}.repository"));
-        if ($repository instanceof SalesChannelRepositoryInterface) {
+        if ($repository instanceof SalesChannelRepository) {
             // sales_channel.product throws an exception if the parent association is applied
             if ($criteria->hasAssociation("parent")) {
                 $criteria->removeAssociation("parent");
@@ -217,8 +197,7 @@ class HelloRetailExportHandler extends AbstractMessageHandler
 
                 return;
             }
-
-            $this->filesystem->put($message->getDirectory() . DIRECTORY_SEPARATOR . $message->getId(), $output);
+            $this->filesystem->write($message->getDirectory() . DIRECTORY_SEPARATOR . $message->getId(), $output);
         } catch (\Error|\TypeError|\Exception $e) {
             $this->helloRetailService->exportLogger(
                 HelretHelloRetail::EXPORT_ERROR,
@@ -237,15 +216,15 @@ class HelloRetailExportHandler extends AbstractMessageHandler
     }
 
     /**
-     * @param ExportEntityElement $message
+     * @throws FilesystemException
      */
-    private function collectFiles(ExportEntityElement $message)
+    private function collectFiles(ExportEntityElement $message): void
     {
         $dir = $message->getDirectory();
 
         $files = [];
         foreach ($this->filesystem->listContents($dir) as $file) {
-            $filename = $file['filename'] ?? null;
+            $filename = basename((string)$file->path()) ?? null;
             if ($filename == TemplateType::HEADER) {
                 // Insert at the beginning of the array
                 array_unshift($files, $filename);
@@ -265,7 +244,7 @@ class HelloRetailExportHandler extends AbstractMessageHandler
             try {
                 $header = $dir . DIRECTORY_SEPARATOR . array_splice($files, 0, 1)[0];
                 $feedContent .= $this->filesystem->read($header);
-            } catch (\Error|\TypeError|FileNotFoundException|\Exception $e) {
+            } catch (\Error|\TypeError|FilesystemException|\Exception $e) {
                 $this->helloRetailService->exportLogger(
                     HelretHelloRetail::EXPORT_ERROR,
                     [
@@ -283,7 +262,7 @@ class HelloRetailExportHandler extends AbstractMessageHandler
             foreach ($files as $file) {
                 try {
                     $feedContent .= $this->filesystem->read($dir . DIRECTORY_SEPARATOR . $file);
-                } catch (FileNotFoundException $e) {
+                } catch (FilesystemException $e) {
                     $failures++;
                     continue;
                 }
@@ -308,7 +287,7 @@ class HelloRetailExportHandler extends AbstractMessageHandler
 
                 return;
             } else {
-                $this->filesystem->put(
+                $this->filesystem->write(
                     $feedEntity->getFeedDirectory() . DIRECTORY_SEPARATOR . $feedEntity->getFile(),
                     $feedContent
                 );
@@ -333,15 +312,11 @@ class HelloRetailExportHandler extends AbstractMessageHandler
             Logger::INFO
         );
 
-        $this->filesystem->deleteDir($dir);
+        $this->filesystem->deleteDirectory($dir);
     }
 
     /**
-     * @param ExportEntityElement $message
-     * @param int $failures
-     * @param float|null $successThreshold
-     * @param array|null $allIds
-     * @param string $dir
+     * @throws FilesystemException
      */
     private function handleRetry(
         ExportEntityElement $message,
@@ -349,7 +324,8 @@ class HelloRetailExportHandler extends AbstractMessageHandler
         ?float $successThreshold,
         ?array $allIds,
         string $dir
-    ) {
+    ): void
+    {
         $retryCount = $message->getRetryCount();
         if ($retryCount < self::RETRIES) {
             sleep(self::SLEEP_BETWEEN_RETRIES);
@@ -369,7 +345,7 @@ class HelloRetailExportHandler extends AbstractMessageHandler
                 ]
             );
 
-            $this->filesystem->deleteDir($dir);
+            $this->filesystem->deleteDirectory($dir);
         }
     }
 }

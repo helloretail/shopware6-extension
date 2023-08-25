@@ -3,40 +3,37 @@
 namespace Helret\HelloRetail\Core\Content\Export\SalesChannel;
 
 use Helret\HelloRetail\HelretHelloRetail;
-use League\Flysystem\FilesystemInterface;
+use League\Flysystem\Filesystem;
+use League\Flysystem\FilesystemException;
 use Shopware\Core\Content\ProductExport\Exception\ExportNotGeneratedException;
-use Shopware\Core\Framework\Routing\Annotation\Since;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route(defaults={"_routeScope"={"storefront"}})
- */
+#[Route(defaults: ['_routeScope' => 'storefront'])]
 class FileController extends AbstractController
 {
-    /** @var FilesystemInterface $fileSystem Public fileSystem */
-    protected FilesystemInterface $fileSystem;
 
     public function __construct(
-        FilesystemInterface $fileSystem
+        protected Filesystem $fileSystem
     ) {
-        $this->fileSystem = $fileSystem;
     }
 
     /**
-     * @Since("6.4.14.0")
-     * @Route("/hello-retail/{feedDirectory}/{fileName}",
-     *     name="store.api.hello-retail.feed.export",
-     *     methods={"GET"},
-     *     defaults={"auth_required"=false})
+     * @throws FilesystemException
      */
+    #[Route(
+        path: "/hello-retail/{feedDirectory}/{fileName}",
+        name: "store.api.hello-retail.feed.export",
+        defaults: ['auth_required' => false],
+        methods: ['GET']
+    )]
     public function index(Request $request): Response
     {
         $path = HelretHelloRetail::STORAGE_PATH . "/{$request->get("feedDirectory")}";
 
-        if (!$this->fileSystem->has("$path/{$request->get("fileName")}")) {
+        if (!$this->fileSystem->fileExists("$path/{$request->get("fileName")}")) {
             // Generate
             throw new ExportNotGeneratedException();
         }

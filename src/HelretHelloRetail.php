@@ -3,8 +3,8 @@
 namespace Helret\HelloRetail;
 
 use Helret\HelloRetail\Service\ExportService;
-use League\Flysystem\FilesystemInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use League\Flysystem\FilesystemException;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Plugin;
@@ -13,10 +13,6 @@ use Shopware\Core\Framework\Plugin\Context\UninstallContext;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
-/**
- * Class HelretHelloRetail
- * @package Helret\HelloRetail
- */
 class HelretHelloRetail extends Plugin
 {
     public const LOG_CHANNEL = 'hello-retail';
@@ -65,24 +61,26 @@ class HelretHelloRetail extends Plugin
         }
     }
 
+    /**
+     * @throws FilesystemException
+     */
     public function uninstall(UninstallContext $uninstallContext): void
     {
         if ($uninstallContext->keepUserData()) {
             return;
         }
 
-        /** @var FilesystemInterface $fs */
         $fs = $this->container->get('shopware.filesystem.public');
-        if ($fs->has(self::STORAGE_PATH)) {
-            $fs->deleteDir(self::STORAGE_PATH);
+        if ($fs->directoryExists(self::STORAGE_PATH)) {
+            $fs->deleteDirectory(self::STORAGE_PATH);
         }
 
-        /** @var EntityRepositoryInterface $salesChannelRepository */
-        $salesChannelRepository = $this->container->get('sales_channel.repository');
+        /** @var EntityRepository $salesChannelRepository */
+        $salesChannelRepository = $this->container->get('sales_channel_type.repository');
 
         $ids = $salesChannelRepository->searchIds(
             (new Criteria())
-                ->addFilter(new EqualsFilter('typeId', self::SALES_CHANNEL_TYPE_HELLO_RETAIL)),
+                ->addFilter(new EqualsFilter('id', self::SALES_CHANNEL_TYPE_HELLO_RETAIL)),
             $uninstallContext->getContext()
         )->getIds();
 
@@ -152,10 +150,6 @@ class HelretHelloRetail extends Plugin
         }
     }
 
-    /**
-     * @return string[][]
-     * Get template before v3.0.0, now added using php
-     */
     private function getUpdateTemplatesV300(): array
     {
         // phpcs:disable Generic.Files.LineLength.TooLong
