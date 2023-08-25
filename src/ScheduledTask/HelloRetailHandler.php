@@ -7,49 +7,22 @@ use Helret\HelloRetail\HelretHelloRetail;
 use Helret\HelloRetail\Service\ExportService;
 use Helret\HelloRetail\Service\HelloRetailService;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
-/**
- * Class HelloRetailHandler
- * @package Helret\HelloRetail\ScheduledTask
- */
 class HelloRetailHandler extends ScheduledTaskHandler
 {
-    protected ProfileExporterInterface $profileExporter;
-    protected EntityRepositoryInterface $salesChannelRepository;
-    protected HelloRetailService $helloRetailService;
-    protected SystemConfigService $configService;
-
-    /**
-     * HelloRetailHandler constructor.
-     * @param EntityRepositoryInterface $scheduledTaskRepository
-     * @param ProfileExporterInterface $profileExporter
-     * @param EntityRepositoryInterface $salesChannelRepository
-     * @param HelloRetailService $helloRetailService
-     * @param SystemConfigService $configService
-     */
     public function __construct(
-        EntityRepositoryInterface $scheduledTaskRepository,
-        ProfileExporterInterface $profileExporter,
-        EntityRepositoryInterface $salesChannelRepository,
-        HelloRetailService $helloRetailService,
-        SystemConfigService $configService
+        protected EntityRepository $scheduledTaskRepository,
+        protected ProfileExporterInterface $profileExporter,
+        protected EntityRepository $salesChannelRepository,
+        protected HelloRetailService $helloRetailService,
+        protected SystemConfigService $configService
     ) {
-        $this->profileExporter = $profileExporter;
-        $this->salesChannelRepository = $salesChannelRepository;
-        $this->helloRetailService = $helloRetailService;
-        $this->configService = $configService;
-
         parent::__construct($scheduledTaskRepository);
     }
 
-    /**
-     * @return iterable
-     */
     public static function getHandledMessages(): iterable
     {
         return [HelloRetailTask::class];
@@ -83,11 +56,6 @@ class HelloRetailHandler extends ScheduledTaskHandler
         }
     }
 
-    /**
-     * @param string|null $type
-     * @param string $salesChannelId
-     * @return array
-     */
     private function getIntervalsInSeconds(?string $type, string $salesChannelId): array
     {
         /* returns intervals in seconds for order and product */
@@ -117,12 +85,6 @@ class HelloRetailHandler extends ScheduledTaskHandler
         return $intervals;
     }
 
-    /**
-     * @param string $type
-     * @param array|null $fields
-     * @param $salesChannelId
-     * @return array
-     */
     private function getSettingsFromSystemConfig(string $type, ?array $fields, $salesChannelId): array
     {
         $valueFields = [];
@@ -145,10 +107,6 @@ class HelloRetailHandler extends ScheduledTaskHandler
         return $valueFields;
     }
 
-    /**
-     * @param string $salesChannelId
-     * @return array
-     */
     private function getFeedsThatShouldRunNow(string $salesChannelId): array
     {
         $feeds = [];
@@ -172,11 +130,6 @@ class HelloRetailHandler extends ScheduledTaskHandler
         return $feeds;
     }
 
-
-    /**
-     * @param int $interval
-     * @return int
-     */
     private function getTimeTilNextRun(int $interval): int
     {
         /* return seconds until next run */

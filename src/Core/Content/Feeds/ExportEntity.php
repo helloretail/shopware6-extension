@@ -4,18 +4,12 @@ namespace Helret\HelloRetail\Core\Content\Feeds;
 
 use ReflectionClass;
 
-/**
- * Class ExportEntity
- * @package Helret\HelloRetail\Core\Content\Feeds
- */
 abstract class ExportEntity
 {
+    public array $associations = [];
     protected string $feed;
     protected string $file;
-    public array $associations = [];
-
     private ?string $baseDir = null;
-
 
     final protected function getBaseDir(): string
     {

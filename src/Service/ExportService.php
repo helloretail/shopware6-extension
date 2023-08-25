@@ -7,10 +7,6 @@ use Helret\HelloRetail\HelretHelloRetail;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 
-/**
- * Class ExportService
- * @package Helret\HelloRetail\Service
- */
 class ExportService
 {
     /** @var ExportEntity[] */
@@ -28,7 +24,6 @@ class ExportService
         $this->feeds = $exportFeeds;
     }
 
-
     public function getFeed(string $feed): ?ExportEntity
     {
         foreach ($this->feeds as $feedEntity) {
@@ -40,9 +35,6 @@ class ExportService
         return null;
     }
 
-    /**
-     * @return ExportEntity[]
-     */
     public function getFeeds(): array
     {
         return $this->feeds;
