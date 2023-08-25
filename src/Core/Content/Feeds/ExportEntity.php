@@ -6,12 +6,10 @@ use ReflectionClass;
 
 abstract class ExportEntity
 {
+    public array $associations = [];
     protected string $feed;
     protected string $file;
-    public array $associations = [];
-
     private ?string $baseDir = null;
-
 
     final protected function getBaseDir(): string
     {

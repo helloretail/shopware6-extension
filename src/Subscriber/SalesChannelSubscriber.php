@@ -16,21 +16,12 @@ use Shopware\Core\System\SalesChannel\SalesChannelEvents;
 
 class SalesChannelSubscriber implements EventSubscriberInterface
 {
-    protected EntityRepository $salesChannelRepository;
-    protected StorefrontCartFacade $cartService;
-    protected SystemConfigService $configService;
-    protected EventDispatcherInterface $eventDispatcher;
-
     public function __construct(
-        EntityRepository $salesChannelRepository,
-        StorefrontCartFacade $cartService,
-        SystemConfigService $configService,
-        EventDispatcherInterface $eventDispatcher
+        protected EntityRepository $salesChannelRepository,
+        protected StorefrontCartFacade $cartService,
+        protected SystemConfigService $configService,
+        protected EventDispatcherInterface $eventDispatcher
     ) {
-        $this->salesChannelRepository = $salesChannelRepository;
-        $this->cartService = $cartService;
-        $this->configService = $configService;
-        $this->eventDispatcher = $eventDispatcher;
     }
 
     public static function getSubscribedEvents(): array

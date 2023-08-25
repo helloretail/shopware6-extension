@@ -14,7 +14,6 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route(defaults: ['_routeScope' => 'storefront'])]
 class FileController extends AbstractController
 {
-
     public function __construct(
         protected Filesystem $fileSystem
     ) {

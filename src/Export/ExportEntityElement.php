@@ -8,8 +8,8 @@ class ExportEntityElement
 {
     protected ?array $allIds;
     protected int $retryCount = 0;
-
     protected array $exportConfig = [];
+
     public function __construct(
         protected SalesChannelContext $salesChannelContext,
         protected string $directory,

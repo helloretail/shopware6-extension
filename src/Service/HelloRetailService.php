@@ -16,7 +16,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
-use Symfony\Component\Messenger\Stamp\SerializerStamp;
 use TypeError;
 use League\Flysystem\Filesystem;
 use Monolog\Logger;
@@ -43,10 +42,6 @@ use Helret\HelloRetail\Export\FeedEntity;
 use Helret\HelloRetail\Export\FeedEntityInterface;
 use Helret\HelloRetail\Export\TemplateType;
 use Helret\HelloRetail\HelretHelloRetail;
-use Shopware\Core\Framework\Uuid\Uuid;
-
-
-
 
 class HelloRetailService
 {
@@ -137,7 +132,6 @@ class HelloRetailService
             return false;
         }
 
-
         $criteria = new Criteria();
         if (EntityType::getMatchingEntityType($feed) == EntityType::PRODUCT) {
             $criteria->addFilter(new EqualsFilter('product.active', true));
@@ -215,7 +209,6 @@ class HelloRetailService
             // The error will already have been logged in the renderTemplate function
             return false;
         }
-
 
         // Create temp dir for all file parts: {dir}/{salesChannelId}_{entityType}
         // Change: Use same dir (salesChannelId) to ensure lots of folders aren't created in case of failure / staling

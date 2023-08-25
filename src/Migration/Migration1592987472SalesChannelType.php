@@ -13,7 +13,7 @@ class Migration1592987472SalesChannelType extends MigrationStep
 {
     public function getCreationTimestamp(): int
     {
-        return 1592987472;
+        return 1_592_987_472;
     }
 
     /**

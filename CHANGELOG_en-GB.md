@@ -1,3 +1,6 @@
+# 4.0.0
+* Compatibility for Shopware 6.5
+
 # 3.0.11
 * Improve cart tracker: Cart is now tracked on every page and offcanvas-cart open
 

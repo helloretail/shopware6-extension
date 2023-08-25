@@ -2,7 +2,6 @@
 
 namespace Helret\HelloRetail\Export;
 
-
 class EntityType
 {
     public const CUSTOMER = 'entity_type_customer';

@@ -15,16 +15,13 @@ use Helret\HelloRetail\Service\HelloRetailService;
 
 class ProfileExporter implements ProfileExporterInterface
 {
-    protected SerializerInterface $serializer;
-
     public function __construct(
         protected LoggerInterface $logger,
-        SerializerInterface $serializer,
+        protected SerializerInterface $serializer,
         protected EntityRepository $salesChannelRepository,
         protected HelloRetailService $helloRetailService,
         protected ExportService $exportService
     ) {
-        $this->serializer = $serializer;
     }
 
     public function generate(string $salesChannelId, array $feeds = [], bool $now = false): array

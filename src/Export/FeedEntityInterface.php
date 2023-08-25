@@ -6,7 +6,6 @@ use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelD
 
 interface FeedEntityInterface
 {
-
     public function getFeed(): string;
 
     public function getFeedDirectory(): string;

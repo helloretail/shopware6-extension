@@ -30,16 +30,13 @@ use Helret\HelloRetail\Export\TemplateType;
 use Helret\HelloRetail\Service\HelloRetailService;
 use Helret\HelloRetail\HelretHelloRetail;
 
-
 #[AsMessageHandler]
 class HelloRetailExportHandler
 {
     // TODO: Should be settings
     private const RETRIES = 20;
     private const SLEEP_BETWEEN_RETRIES = 20; // Seconds
-
     protected Filesystem $filesystem;
-
 
     public function __construct(
         protected LoggerInterface $logger,
@@ -52,7 +49,6 @@ class HelloRetailExportHandler
         $fullPath = $helloRetailService->getFeedDirectoryPath();
         $this->filesystem = new Filesystem(new LocalFilesystemAdapter($fullPath));
     }
-
 
     public static function getHandledMessages(): iterable
     {
@@ -121,9 +117,10 @@ class HelloRetailExportHandler
                     /** @var Connection $connection */
                     $connection = $this->container->get(Connection::class);
                     try {
-                        $type = $connection->fetchOne("SELECT product_assignment_type FROM category WHERE id = :id", [
-                            ":id" => Uuid::fromHexToBytes($message->getId())
-                        ]);
+                        $type = $connection->fetchOne(
+                            "SELECT product_assignment_type FROM category WHERE id = :id",
+                            [ ":id" => Uuid::fromHexToBytes($message->getId()) ]
+                        );
                     } catch (Exception $e) {
                         $type = "product";
                     }
@@ -197,6 +194,7 @@ class HelloRetailExportHandler
 
                 return;
             }
+
             $this->filesystem->write($message->getDirectory() . DIRECTORY_SEPARATOR . $message->getId(), $output);
         } catch (\Error|\TypeError|\Exception $e) {
             $this->helloRetailService->exportLogger(
