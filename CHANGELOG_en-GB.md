@@ -1,3 +1,6 @@
+# 4.0.1
+* Added missing scheduled task parameter for scheduled task handler
+
 # 4.0.0
 * Compatibility for Shopware 6.5
 

@@ -1,3 +1,6 @@
+# 4.0.1
+* Fehlender Parameter für geplante Aufgaben für den Handler für geplante Aufgaben hinzugefügt
+
 # 4.0.0
 * Kompatibilität für Shopware 6.5
 
