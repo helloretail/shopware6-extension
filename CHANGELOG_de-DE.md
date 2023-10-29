@@ -1,3 +1,6 @@
+# 4.0.2
+* Korrigieren Sie die Nachverfolgung, indem Sie das Skript in den Block „layout_head_javascript_tracking“ verschieben
+
 # 4.0.1
 * Fehlender Parameter für geplante Aufgaben für den Handler für geplante Aufgaben hinzugefügt
 

@@ -1,3 +1,6 @@
+# 4.0.2
+* Fix tracking by moving script to the layout_head_javascript_tracking block
+
 # 4.0.1
 * Added missing scheduled task parameter for scheduled task handler
 
