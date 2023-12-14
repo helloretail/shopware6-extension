@@ -8,6 +8,8 @@ import './module/sw-sales-channel';
 
 import './module/helret-cms/blocks/commerce/helloretail';
 
+import './module/sw-cms';
+
 if (module.hot) {
     module.hot.accept();
 }
