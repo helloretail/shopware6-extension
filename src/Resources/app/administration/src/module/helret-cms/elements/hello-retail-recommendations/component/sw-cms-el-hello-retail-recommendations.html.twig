@@ -1,0 +1,84 @@
+<!-- eslint-disable-next-line sw-deprecation-rules/no-twigjs-blocks -->
+{% block sw_cms_element_product_slider %}
+    <div
+            class="sw-cms-el-hello-retail-recommendations"
+            :class="classes"
+            :style="verticalAlignStyle"
+    >
+        <!-- eslint-disable-next-line sw-deprecation-rules/no-twigjs-blocks -->
+        {% block sw_cms_element_product_slider_title %}
+            <div
+                    v-if="element.config.title.value"
+                    class="sw-cms-el-hello-retail-recommendations__title"
+            >
+                {{ element.config.title.value }}
+            </div>
+        {% endblock %}
+
+        <!-- eslint-disable-next-line sw-deprecation-rules/no-twigjs-blocks -->
+        {% block sw_cms_element_product_slider_content %}
+            <div class="sw-cms-el-hello-retail-recommendations__content">
+                <!-- eslint-disable-next-line sw-deprecation-rules/no-twigjs-blocks -->
+                {% block sw_cms_element_product_slider_arrow_left %}
+                    <div
+                            v-if="hasNavigation"
+                            class="sw-cms-el-hello-retail-recommendations__navigation"
+                    >
+                        <sw-icon
+                                class="sw-cms-el-hello-retail-recommendations__navigation-button"
+                                name="regular-chevron-left"
+                                size="24"
+                        />
+                    </div>
+                {% endblock %}
+
+                <!-- eslint-disable-next-line sw-deprecation-rules/no-twigjs-blocks -->
+                {% block sw_cms_element_product_slider_product_holder %}
+                    <div
+                            ref="productHolder"
+                            class="sw-cms-el-hello-retail-recommendations__product-holder"
+                            :style="sliderBoxMinWidth"
+                    >
+                        <template v-if="!element.data || !element.data.products">
+                            <!-- eslint-disable-next-line sw-deprecation-rules/no-twigjs-blocks -->
+                            {% block sw_cms_element_product_slider_demo_data %}
+                                <sw-cms-el-product-box
+                                        v-for="index in sliderBoxLimit"
+                                        :key="index"
+                                        :element="demoProductElement"
+                                />
+                            {% endblock %}
+                        </template>
+
+                        <template v-else>
+                            <!-- eslint-disable-next-line sw-deprecation-rules/no-twigjs-blocks -->
+                            {% block sw_cms_element_product_slider_products %}
+                                <!-- eslint-disable vue/no-use-v-if-with-v-for -->
+                                <sw-cms-el-product-box
+                                        v-for="(product, index) in element.data.products"
+                                        v-if="index < sliderBoxLimit"
+                                        :key="product.id"
+                                        :element="getProductEl(product)"
+                                />
+                            {% endblock %}
+                        </template>
+                    </div>
+                {% endblock %}
+
+                <!-- eslint-disable-next-line sw-deprecation-rules/no-twigjs-blocks -->
+                {% block sw_cms_element_product_slider_arrow_right %}
+                    <div
+                            v-if="hasNavigation"
+                            class="sw-cms-el-hello-retail-recommendations__navigation"
+                    >
+                        <sw-icon
+                                class="sw-cms-el-hello-retail-recommendations__navigation-button"
+                                name="regular-chevron-right"
+                                size="24"
+                        />
+                    </div>
+                {% endblock %}
+            </div>
+        {% endblock %}
+    </div>
+{% endblock %}

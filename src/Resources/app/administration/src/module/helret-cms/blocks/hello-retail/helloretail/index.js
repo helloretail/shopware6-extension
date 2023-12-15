@@ -4,7 +4,7 @@ import './preview';
 Shopware.Service('cmsService').registerCmsBlock({
     name: 'hello-retail',
     label: 'sw-cms.blocks.commerce.hello-retail.label',
-    category: 'helloRetail',
+    category: 'hello-retail',
     component: 'sw-cms-block-hello-retail',
     previewComponent: 'sw-cms-preview-hello-retail',
     defaultConfig: {
