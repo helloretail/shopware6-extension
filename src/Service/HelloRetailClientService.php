@@ -3,12 +3,14 @@
 namespace Helret\HelloRetail\Service;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Request;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class HelloRetailClientService
 {
     private const url = "https://core.helloretail.com/serve/";
+    private const userEndpoint = "trackingUser";
     private string|null $apiKey = null;
     private Client $client;
 
@@ -25,27 +27,44 @@ class HelloRetailClientService
         }
     }
 
-    public function getApiKey(): string|null
+    public function getApiKey(): ?string
     {
         return $this->apiKey;
     }
 
-    public function callApi(Mixed $request, string $endpoint): array
+    public function getUserId(): ?string
     {
-        if (!is_array($request)) {
+        $response = $this->callApi(self::userEndpoint);
+        if (!isset($response['id'])) {
+            return null;
+        }
+        return $response['id'];
+    }
+
+    public function callApi(string $endpoint, Mixed $request = []): array
+    {
+        if ($request && !is_array($request)) {
             $request = [$request];
         }
         $body = json_encode([
             "websiteUuid" => $this->apiKey,
             "requests" => $request
         ]);
-        $response = $this->client->send(new Request(
-            'POST',
-            self::url . $endpoint,
-            ['Content-Type' => 'application/json'],
-            $body
-        ));
+        try {
+            $response = $this->client->send(new Request(
+                'POST',
+                self::url . $endpoint,
+                ['Content-Type' => 'application/json'],
+                $body
+            ));
+        } catch (GuzzleException $e) {
+            return [];
+        }
 
+
+        if ($response->getStatusCode() != "200") {
+            return [];
+        }
         return json_decode($response->getBody()->getContents(), true);
     }
 

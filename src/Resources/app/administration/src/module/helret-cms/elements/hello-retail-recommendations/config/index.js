@@ -5,7 +5,11 @@ const { Component } = Shopware;
 Component.extend('sw-cms-el-config-hello-retail-recommendations', 'sw-cms-el-config-product-slider', {
     template,
 
-    created() {
-        this.$super.createdComponent();
+    methods: {
+        createdComponent() {
+            this.initElementConfig('hello-retail-recommendations');
+        },
     },
+    computed: {
+    }
 });

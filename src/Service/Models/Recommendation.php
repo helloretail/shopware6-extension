@@ -7,7 +7,7 @@ class Recommendation
     public string $key;
     public string $format;
     public array $fields = [];
-    public RecommendationContext|null $recommendationContext;
+    public RecommendationContext|null $context;
 
     /**
      * @param string $key
@@ -24,7 +24,7 @@ class Recommendation
         $this->key = $key;
         $this->format = $format;
         $this->fields = is_array($fields) ? $fields : [$fields];
-        $this->recommendationContext = $context;
+        $this->context = $context;
     }
 
     /**
@@ -78,16 +78,16 @@ class Recommendation
     /**
      * @return RecommendationContext
      */
-    public function getRecommendationContext(): RecommendationContext
+    public function getContext(): RecommendationContext
     {
-        return $this->recommendationContext;
+        return $this->context;
     }
 
     /**
-     * @param RecommendationContext $recommendationContext
+     * @param RecommendationContext $context
      */
-    public function setRecommendationContext(RecommendationContext $recommendationContext): void
+    public function setContext(RecommendationContext $context): void
     {
-        $this->recommendationContext = $recommendationContext;
+        $this->context = $context;
     }
 }
