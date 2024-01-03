@@ -41,6 +41,12 @@ class HelloRetailClientService
         return $response['id'];
     }
 
+    private function getCookieUserId(): ?string
+    {
+        //returns cookie, unless user has opted out
+        return $_COOKIE['hello_retail_id'] ?? null;
+    }
+
     public function callApi(string $endpoint, Mixed $request = []): array
     {
         if ($request && !is_array($request)) {
@@ -48,6 +54,7 @@ class HelloRetailClientService
         }
         $body = json_encode([
             "websiteUuid" => $this->apiKey,
+            "trackingUserId" => $this->getCookieUserId(),
             "requests" => $request
         ]);
         try {

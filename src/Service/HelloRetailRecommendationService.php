@@ -11,6 +11,9 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Struct\ArrayEntity;
+use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainCollection;
+use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Controller\CookieController;
 
 class HelloRetailRecommendationService
@@ -33,19 +36,25 @@ class HelloRetailRecommendationService
     public function getRecommendationsSearch(
         string $key,
         string $searchKey,
-        CategoryEntity $category = null
+        CategoryEntity $category = null,
+        SalesChannelContext $salesChannelContext = null
     ): ?CriteriaCollection {
         $collection = new CriteriaCollection();
         $hierarchies = [];
+        $urls = [];
         if ($category && $category->getBreadcrumb() > 0) {
             $hierarchies = $category->getBreadcrumb();
         }
-
-        $productData = $this->fetchRecommendations($key, $hierarchies);
+        if ($salesChannelContext) {
+            /** @var SalesChannelDomainEntity $domain */
+            foreach ($salesChannelContext->getSalesChannel()->getDomains() as $domain) {
+                $urls[] = $domain->getUrl();
+            }
+        }
+        $productData = $this->fetchRecommendations($key, [$hierarchies], $urls);
 
         $ids = $this->getIds($productData);
         if (!$ids) {
-            //TODO: error handling
             return $collection;
         }
 
@@ -65,15 +74,17 @@ class HelloRetailRecommendationService
         return $this->getProducts($productData);
     }
 
-    private function fetchRecommendations(string $key, array $hierarchies = []): array
+    private function fetchRecommendations(string $key, array $hierarchies = [], $urls = []): array
     {
         $productData = [];
-        $context = new RecommendationContext($hierarchies);
-        //$trackingUserId = CookieController
+        $context = new RecommendationContext($hierarchies, "", $urls);
         $request = new Models\Recommendation($key, [self::extraData], $context);
         $callback = $this->client->callApi(self::endpoint, $request);
 
         foreach ($callback['responses'] ?? [] as $response) {
+            if (!$response['success']) {
+                continue;
+            }
             $productData = array_merge($productData, $response['products']);
         }
         return $productData;
