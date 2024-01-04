@@ -7,7 +7,9 @@ use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Cms\DataResolver\CriteriaCollection;
 use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductCollection;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Struct\ArrayEntity;
@@ -36,15 +38,23 @@ class HelloRetailRecommendationService
     public function getRecommendationsSearch(
         string $key,
         string $searchKey,
-        CategoryEntity $category = null,
+        Entity $entity,
         SalesChannelContext $salesChannelContext = null
     ): ?CriteriaCollection {
         $collection = new CriteriaCollection();
         $hierarchies = [];
         $urls = [];
-        if ($category && $category->getBreadcrumb() > 0) {
+        $category = null;
+        if ($entity::class == CategoryEntity::class) {
+            $category = $entity;
+        } else if ($entity::class == SalesChannelProductEntity::class) {
+            $category = $entity->getSeoCategory();
+        }
+
+        if ($category && $category->getBreadcrumb()) {
             $hierarchies = $category->getBreadcrumb();
         }
+
         if ($salesChannelContext) {
             /** @var SalesChannelDomainEntity $domain */
             foreach ($salesChannelContext->getSalesChannel()->getDomains() as $domain) {

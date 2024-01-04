@@ -4,7 +4,6 @@ namespace Helret\HelloRetail\Subscriber;
 
 use Helret\HelloRetail\Event\HelretBeforeCartLoadEvent;
 use Helret\HelloRetail\HelretHelloRetail;
-use Helret\HelloRetail\Service\HelloRetailClientService;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -22,7 +21,6 @@ class SalesChannelSubscriber implements EventSubscriberInterface
         protected StorefrontCartFacade $cartService,
         protected SystemConfigService $configService,
         protected EventDispatcherInterface $eventDispatcher,
-        protected HelloRetailClientService $helloRetailClientService
     ) {
     }
 

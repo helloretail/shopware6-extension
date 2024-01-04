@@ -35,16 +35,10 @@ class HelloRetailRecommendationsResolver extends AbstractCmsElementResolver
     public function collect(CmsSlotEntity $slot, ResolverContext $resolverContext): ?CriteriaCollection
     {
         $config = $slot->getFieldConfig();
-        $category = null;
         $entity = null;
 
         if (method_exists($resolverContext, 'getEntity')) {
             $entity = $resolverContext->getEntity();
-        }
-
-
-        if ($entity::class == CategoryEntity::class) {
-            $category = $entity;
         }
 
         $key = $config->get('key');
@@ -57,7 +51,7 @@ class HelloRetailRecommendationsResolver extends AbstractCmsElementResolver
         $collection = $this->recommendationService->getRecommendationsSearch(
             $key->getValue(),
             self::STATIC_SEARCH_KEY . '_' . $slot->getUniqueIdentifier(),
-            $category,
+            $entity,
             $salesChannelContext
         );
 

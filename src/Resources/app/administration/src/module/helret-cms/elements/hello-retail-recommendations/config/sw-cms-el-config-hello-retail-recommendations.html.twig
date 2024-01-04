@@ -11,7 +11,7 @@
                 v-model="element.config.key.value"
             {% endif %}
             :label="$tc('helret-cms.elements.productSlider.config.label.key')"
-            :placeholder="$tc('helret-cms.elements.recommendations.config.placeholder.key')"
+            :placeholder="$tc('helret-cms.elements.productSlider.config.placeholder.key')"
     />
 
 {% endblock %}
@@ -27,67 +27,3 @@
 <!-- remove parent product preview -->
 {% block sw_cms_element_product_slider_config_content_product_stream_preview %}
 {% endblock %}
-
-{#
-    NEEDS SPECIFICATION
-{% block sw_cms_element_product_slider_config_content_type %}
-    <sw-select-field
-            {% if VUE3 %}
-                v-model:value="element.config.type.value"
-            {% else %}
-                v-model="element.config.type.value"
-            {% endif %}
-            :label="$tc(helret-cms.elements.recommendations.config.label.recommendationType')"
-    >
-        <option>
-            {{ $tc('helret-cms.elements.recommendations.config.label.noType') }}
-        </option>
-        <option value="TOP">
-            {{ $tc('helret-cms.elements.recommendations.config.top') }}
-        </option>
-        <option value="MOST_BOUGHT">
-            {{ $tc('helret-cms.elements.recommendations.config.mostBought') }}
-        </option>
-        <option value="MOST_VIEWED">
-            {{ $tc('helret-cms.elements.recommendations.config.mostViewed') }}
-        </option>
-        <option value="ALTERNATIVES">
-            {{ $tc('helret-cms.elements.recommendations.config.alternatives') }}
-        </option>
-        <option value="BOUGHT_TOGETHER">
-            {{ $tc('helret-cms.elements.recommendations.config.boughtTogether') }}
-        </option>
-        <option value="RETARGETED">
-            {{ $tc('helret-cms.elements.recommendations.config.retargeted') }}
-        </option>
-        <option value="RECENTLY_BOUGHT">
-            {{ $tc('helret-cms.elements.recommendations.config.recentlyBought') }}
-        </option>
-    </sw-select-field>
-{% endblock %}
-
-{% block sw_cms_element_product_slider_config_content_hierachies_filter %}
-    <sw-select-field
-            {% if VUE3 %}
-                v-model:value="element.config.hierarchiesFilter.value"
-            {% else %}
-                v-model="element.config.type.hierarchiesFilter"
-            {% endif %}
-            :label="$tc(helret-cms.elements.recommendations.config.label.hierarchiesFilter')"
-    >
-        <option>
-            {{ $tc('helret-cms.elements.recommendations.config.label.noType') }}
-        </option>
-        <option value="$eq">
-            {{ $tc('helret-cms.elements.recommendations.config.equal') }}
-        </option>
-        <option value="$in">
-            {{ $tc('helret-cms.elements.recommendations.config.in') }}
-        </option>
-        <option value="$all">
-            {{ $tc('helret-cms.elements.recommendations.config.all') }}
-        </option>
-    </sw-select-field>
-{% endblock %}
-
-#}
