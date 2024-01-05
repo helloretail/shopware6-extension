@@ -1,0 +1,14 @@
+
+{% block sw_cms_element_product_listing_config_info %}
+    <sw-text-field
+            {% if VUE3 %}
+                v-model:value="element.config.helloRetailKey.value"
+            {% else %}
+                v-model="element.config.helloRetailKey.value"
+            {% endif %}
+            :label="$tc('helret-cms.elements.productSlider.config.label.key')"
+            :placeholder="$tc('helret-cms.elements.productSlider.config.placeholder.key')"
+    />
+
+    {% parent %}
+{% endblock %}
