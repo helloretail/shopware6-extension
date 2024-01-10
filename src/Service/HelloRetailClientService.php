@@ -5,6 +5,8 @@ namespace Helret\HelloRetail\Service;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Request;
+use Helret\HelloRetail\Service\Models\Requests\PageRequest;
+use Helret\HelloRetail\Service\Models\Requests\RecommendationRequest;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class HelloRetailClientService
@@ -47,16 +49,17 @@ class HelloRetailClientService
         return $_COOKIE['hello_retail_id'] ?? null;
     }
 
-    public function callApi(string $endpoint, Mixed $request = []): array
+    protected function parseRequest(): array
     {
-        if ($request && !is_array($request)) {
-            $request = [$request];
-        }
-        $body = json_encode([
-            "websiteUuid" => $this->apiKey,
-            "trackingUserId" => $this->getCookieUserId(),
-            "requests" => $request
-        ]);
+
+    }
+
+    public function callApi(string $endpoint, RecommendationRequest|PageRequest $request): array
+    {
+        $request->setWebsiteUuid($this->apiKey);
+        $request->setTrackingUserId($this->getCookieUserId());
+
+        $body = json_encode($request);
         try {
             $response = $this->client->send(new Request(
                 'POST',

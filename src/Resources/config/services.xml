@@ -106,15 +106,32 @@
         <service id="Helret\HelloRetail\Service\HelloRetailClientService">
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
         </service>
-        <service id="Helret\HelloRetail\Service\HelloRetailRecommendationService">
+
+        <service id="Helret\HelloRetail\Service\HelloRetailApiService">
             <argument type="service" id="Helret\HelloRetail\Service\HelloRetailClientService"/>
             <argument type="service" id="product.repository"/>
         </service>
+        <service id="Helret\HelloRetail\Service\HelloRetailRecommendationService"
+                 parent="Helret\HelloRetail\Service\HelloRetailApiService"
+        />
+        <service id="Helret\HelloRetail\Service\HelloRetailPageService"
+                parent="Helret\HelloRetail\Service\HelloRetailApiService"
+        />
 
         <service id="Helret\HelloRetail\DataResolver\HelloRetailRecommendationsResolver">
             <argument type="service" id="Helret\HelloRetail\Service\HelloRetailRecommendationService"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <tag name="shopware.cms.data_resolver"/>
         </service>
+
+        <service id="Helret\HelloRetail\DataResolver\ProductListingCmsElementResolverDecorator"
+                 decorates="Shopware\Core\Content\Product\Cms\ProductListingCmsElementResolver"
+                 parent="Shopware\Core\Content\Product\Cms\ProductListingCmsElementResolver"
+        >
+            <argument type="service" id="Helret\HelloRetail\Service\HelloRetailPageService" />
+            <tag name="shopware.cms.data_resolver"/>
+        </service>
+
+
     </services>
 </container>

@@ -3,37 +3,22 @@
 namespace Helret\HelloRetail\Service;
 
 use Helret\HelloRetail\Service\Models\RecommendationContext;
+use Helret\HelloRetail\Service\Models\Requests\RecommendationRequest;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Cms\DataResolver\CriteriaCollection;
 use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductCollection;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Struct\ArrayEntity;
-use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainCollection;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Storefront\Controller\CookieController;
 
-class HelloRetailRecommendationService
+class HelloRetailRecommendationService extends HelloRetailApiService
 {
     private const STATIC_SEARCH_KEY = 'hello-retail-recommendations';
-
-    private const extraData = "extraData";
     private const endpoint = "recoms";
-
-    /**
-     * @param HelloRetailClientService $client
-     * @param EntityRepository $productRepository
-     */
-    public function __construct(
-        protected HelloRetailClientService $client,
-        protected EntityRepository $productRepository
-    ) {
-    }
 
     public function getRecommendationsSearch(
         string $key,
@@ -42,25 +27,8 @@ class HelloRetailRecommendationService
         SalesChannelContext $salesChannelContext = null
     ): ?CriteriaCollection {
         $collection = new CriteriaCollection();
-        $hierarchies = [];
-        $urls = [];
-        $category = null;
-        if ($entity::class == CategoryEntity::class) {
-            $category = $entity;
-        } else if ($entity::class == SalesChannelProductEntity::class) {
-            $category = $entity->getSeoCategory();
-        }
-
-        if ($category && $category->getBreadcrumb()) {
-            $hierarchies = $category->getBreadcrumb();
-        }
-
-        if ($salesChannelContext) {
-            /** @var SalesChannelDomainEntity $domain */
-            foreach ($salesChannelContext->getSalesChannel()->getDomains() as $domain) {
-                $urls[] = $domain->getUrl();
-            }
-        }
+        $hierarchies = $this->renderHierarchies($entity);
+        $urls = $this->renderUrls($salesChannelContext);
         $productData = $this->fetchRecommendations($key, [$hierarchies], $urls);
 
         $ids = $this->getIds($productData);
@@ -89,6 +57,8 @@ class HelloRetailRecommendationService
         $productData = [];
         $context = new RecommendationContext($hierarchies, "", $urls);
         $request = new Models\Recommendation($key, [self::extraData], $context);
+        $request = new RecommendationRequest([$request]);
+
         $callback = $this->client->callApi(self::endpoint, $request);
 
         foreach ($callback['responses'] ?? [] as $response) {
@@ -98,28 +68,5 @@ class HelloRetailRecommendationService
             $productData = array_merge($productData, $response['products']);
         }
         return $productData;
-    }
-
-    private function getProducts(array $productData): mixed
-    {
-        $ids = $this->getIds($productData);
-        if (!$ids) {
-            return null;
-        }
-
-        $criteria = new Criteria($ids);
-        return $this->productRepository->search($criteria, Context::createDefaultContext())->getEntities();
-    }
-
-    private function getIds(array $productData): array
-    {
-        $ids = [];
-        foreach ($productData as $data) {
-            if (isset($data[self::extraData]['id'])) {
-                $ids[] = $data[self::extraData]['id'];
-            }
-        }
-
-        return $ids;
     }
 }
