@@ -2,7 +2,11 @@
 
 namespace Helret\HelloRetail\Service;
 
+use Helret\HelloRetail\Service\Models\PageFilters;
+use Helret\HelloRetail\Service\Models\PageParams;
+use Helret\HelloRetail\Service\Models\PageProducts;
 use Helret\HelloRetail\Service\Models\RecommendationContext;
+use Helret\HelloRetail\Service\Models\Requests\PageRequest;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Cms\DataResolver\CriteriaCollection;
 use Shopware\Core\Content\Product\ProductDefinition;
@@ -23,28 +27,29 @@ class HelloRetailPageService extends HelloRetailApiService
     private const id = "extraData.id";
     private const endpoint = "pages";
 
-
-    public function getPage(string $key, Entity $entity, SalesChannelContext $salesChannelContext): salesChannelProductCollection
+    public function getPage(string $key, Entity $entity, SalesChannelContext $salesChannelContext): array
     {
         $hierarchies = $this->renderHierarchies($entity);
         $urls = $this->renderUrls($salesChannelContext);
-        $productData = $this->fetchPage($key, $hierarchies, $urls);
-        return $this->getProducts($productData);
+        return $this->fetchPage($key, $hierarchies, $urls);
     }
 
     private function fetchPage(string $key, array $hierarchies = [], $urls = []): array
     {
-        $productData = [];
-        $request = new Models\Recommendation($key, [self::extraData]);
+        $pageFilters = new PageFilters($hierarchies);
+        $pageParams = new PageParams($pageFilters);
+        //TODO
+        //add start and count. Calculate from pagination of slot
+        $pageProducts = new PageProducts(0, 20, [self::id]);
+        $request = new PageRequest($pageParams, $pageProducts, $urls[0]);
+        //$request = new PageRequest($key, [self::extraData]);
         $callback = $this->client->callApi($this->buildEndpoint($key), $request);
 
-        foreach ($callback['responses'] ?? [] as $response) {
-            if (!$response['success']) {
-                continue;
-            }
-            $productData = array_merge($productData, $response['products']);
+        if (!$callback['success'] || empty($callback['products'])) {
+            return [];
         }
-        return $productData;
+
+        return $callback['products'];
     }
 
     private function buildEndpoint(string $key)

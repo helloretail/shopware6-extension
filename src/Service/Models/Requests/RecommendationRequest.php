@@ -10,12 +10,14 @@ class RecommendationRequest extends Request
 
     /**
      * @param array $requests
-     * @param null $websiteUuid
-     * @param null $trackingUserId
+     * @param string|null $websiteUuid
+     * @param string|null $trackingUserId
      */
-    public function __construct(array $requests, $websiteUuid = null, $trackingUserId = null)
+    public function __construct(array $requests, ?string $websiteUuid = null, ?string $trackingUserId = null)
     {
         $this->requests = $requests;
+        $this->websiteUuid = $websiteUuid;
+        $this->trackingUserId = $trackingUserId;
 
         parent::__construct($websiteUuid, $trackingUserId);
     }

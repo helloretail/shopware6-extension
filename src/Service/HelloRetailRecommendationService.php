@@ -12,7 +12,6 @@ use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Struct\ArrayEntity;
-use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class HelloRetailRecommendationService extends HelloRetailApiService
@@ -25,7 +24,7 @@ class HelloRetailRecommendationService extends HelloRetailApiService
         string $searchKey,
         Entity $entity,
         SalesChannelContext $salesChannelContext = null
-    ): ?CriteriaCollection {
+    ): CriteriaCollection {
         $collection = new CriteriaCollection();
         $hierarchies = $this->renderHierarchies($entity);
         $urls = $this->renderUrls($salesChannelContext);

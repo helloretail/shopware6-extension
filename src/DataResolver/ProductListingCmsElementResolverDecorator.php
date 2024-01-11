@@ -31,8 +31,8 @@ class ProductListingCmsElementResolverDecorator extends ProductListingCmsElement
 
     public function enrich(CmsSlotEntity $slot, ResolverContext $resolverContext, ElementDataCollection $result): void
     {
-        parent::enrich($slot, $resolverContext, $result);
-        return;
+//        parent::enrich($slot, $resolverContext, $result);
+//        return;
         $config = $slot->getFieldConfig();
         $entity = null;
 
@@ -45,19 +45,20 @@ class ProductListingCmsElementResolverDecorator extends ProductListingCmsElement
             parent::enrich($slot, $resolverContext, $result);
         }
 
-        $navigationId = $this->getNavigationId($resolverContext->getRequest(), $resolverContext->getSalesChannelContext());
-
         $productIds = $this->pageService->getPage(
             $key->getValue(),
             $entity,
             $resolverContext->getSalesChannelContext()
         );
 
+        if (!$productIds) {
+            parent::enrich($slot, $resolverContext, $result);
+        }
+        $navigationId = $this->getNavigationId($resolverContext->getRequest(), $resolverContext->getSalesChannelContext());
+
 
         //TODO PORT OVER FROM PARENT
         //$this->restrictSortings($request, $slot);
-
-
 
     }
 
