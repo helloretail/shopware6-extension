@@ -4,29 +4,29 @@ namespace Helret\HelloRetail\Service\Models;
 
 class PageParams
 {
-    public PageFilters $pageFilters;
+    public PageFilters $filters;
 
     /**
      * @param PageFilters $pageFilters
      */
     public function __construct(PageFilters $pageFilters)
     {
-        $this->pageFilters = $pageFilters;
+        $this->filters = $pageFilters;
     }
 
     /**
      * @return PageFilters
      */
-    public function getPageFilters(): PageFilters
+    public function getFilters(): PageFilters
     {
-        return $this->pageFilters;
+        return $this->filters;
     }
 
     /**
-     * @param PageFilters $pageFilters
+     * @param PageFilters $filters
      */
-    public function setPageFilters(PageFilters $pageFilters): void
+    public function setFilters(PageFilters $filters): void
     {
-        $this->pageFilters = $pageFilters;
+        $this->filters = $filters;
     }
 }

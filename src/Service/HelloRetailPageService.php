@@ -5,19 +5,9 @@ namespace Helret\HelloRetail\Service;
 use Helret\HelloRetail\Service\Models\PageFilters;
 use Helret\HelloRetail\Service\Models\PageParams;
 use Helret\HelloRetail\Service\Models\PageProducts;
-use Helret\HelloRetail\Service\Models\RecommendationContext;
+use Helret\HelloRetail\Service\Models\PageProductsResult;
 use Helret\HelloRetail\Service\Models\Requests\PageRequest;
-use Shopware\Core\Content\Category\CategoryEntity;
-use Shopware\Core\Content\Cms\DataResolver\CriteriaCollection;
-use Shopware\Core\Content\Product\ProductDefinition;
-use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductCollection;
-use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\Struct\ArrayEntity;
-use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class HelloRetailPageService extends HelloRetailApiService
@@ -27,11 +17,17 @@ class HelloRetailPageService extends HelloRetailApiService
     private const id = "extraData.id";
     private const endpoint = "pages";
 
-    public function getPage(string $key, Entity $entity, SalesChannelContext $salesChannelContext): array
+    public function getPage(string $key, array $hierarchies, SalesChannelContext $salesChannelContext): PageProductsResult
     {
-        $hierarchies = $this->renderHierarchies($entity);
         $urls = $this->renderUrls($salesChannelContext);
-        return $this->fetchPage($key, $hierarchies, $urls);
+        $productData = $this->fetchPage($key, $hierarchies, $urls);
+        $ids = $this->getIds($productData['result'] ?? []);
+        return new PageProductsResult(
+            $productData['start'],
+            $productData['count'],
+            $productData['total'],
+            $ids
+        );
     }
 
     private function fetchPage(string $key, array $hierarchies = [], $urls = []): array
@@ -40,7 +36,7 @@ class HelloRetailPageService extends HelloRetailApiService
         $pageParams = new PageParams($pageFilters);
         //TODO
         //add start and count. Calculate from pagination of slot
-        $pageProducts = new PageProducts(0, 20, [self::id]);
+        $pageProducts = new PageProducts(0, 100, [self::id]);
         $request = new PageRequest($pageParams, $pageProducts, $urls[0]);
         //$request = new PageRequest($key, [self::extraData]);
         $callback = $this->client->callApi($this->buildEndpoint($key), $request);
@@ -52,7 +48,7 @@ class HelloRetailPageService extends HelloRetailApiService
         return $callback['products'];
     }
 
-    private function buildEndpoint(string $key)
+    private function buildEndpoint(string $key): string
     {
         return self::endpoint . '/' . $key;
     }

@@ -48,7 +48,7 @@ class HelloRetailApiService
         return $ids;
     }
 
-    protected function renderHierarchies(Entity $entity): array
+    public function renderHierarchies(Entity $entity): array
     {
         $category = null;
         if ($entity::class == CategoryEntity::class) {

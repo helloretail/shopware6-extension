@@ -80,6 +80,12 @@
             <tag name="kernel.event_subscriber"/>
         </service>
 
+        <service id="Helret\HelloRetail\Subscriber\ProductListingSubscriber" public="true">
+            <argument type="service" id="Helret\HelloRetail\Service\HelloRetailPageService" />
+            <argument type="service" id="product.repository" />
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
 
         <service id="Helret\HelloRetail\Core\Content\Export\SalesChannel\FileController" public="true">
             <argument type="service" id="shopware.filesystem.public"/>

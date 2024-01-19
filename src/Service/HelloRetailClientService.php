@@ -34,15 +34,6 @@ class HelloRetailClientService
         return $this->apiKey;
     }
 
-    public function getUserId(): ?string
-    {
-        $response = $this->callApi(self::userEndpoint);
-        if (!isset($response['id'])) {
-            return null;
-        }
-        return $response['id'];
-    }
-
     private function getCookieUserId(): ?string
     {
         //returns cookie, unless user has opted out
