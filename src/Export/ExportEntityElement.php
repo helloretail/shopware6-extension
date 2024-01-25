@@ -16,7 +16,8 @@ class ExportEntityElement
         protected string $id,
         protected FeedEntityInterface $feedEntity,
         protected string $entityType,
-        protected string $templateType
+        protected string $templateType,
+        protected bool $groupDisplay = false
     ) {
     }
 
@@ -88,5 +89,21 @@ class ExportEntityElement
     public function setConfigValue(string $key, $value): void
     {
         $this->exportConfig[$key] = $value;
+    }
+
+    /**
+     * @return bool
+     */
+    public function groupDisplay(): bool
+    {
+        return $this->groupDisplay;
+    }
+
+    /**
+     * @param bool $groupDisplay
+     */
+    public function setGroupDisplay(bool $groupDisplay): void
+    {
+        $this->groupDisplay = $groupDisplay;
     }
 }

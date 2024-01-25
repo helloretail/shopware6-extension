@@ -12,8 +12,10 @@ use Shopware\Core\Framework\Adapter\Twig\TwigVariableParser;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\EntityDefinitionQueryHelper;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Grouping\FieldGrouping;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use TypeError;
@@ -221,6 +223,20 @@ class HelloRetailService
 
         $config = $this->configService->get("HelretHelloRetail.config", $salesChannelContext->getSalesChannelId());
 
+        $groupedIds = null;
+
+        if ($feed == "product") {
+            $criteria->addGroupField(new FieldGrouping('displayGroup'));
+
+            $criteria->addFilter(
+                new NotFilter(
+                    NotFilter::CONNECTION_AND,
+                    [new EqualsFilter('displayGroup', null)]
+                )
+            );
+            $groupedIds = $repository->searchIds($criteria, $salesChannelContext);
+        }
+
         foreach ($entityIds as $entityId) {
             $message = new ExportEntityElement(
                 $salesChannelContext,
@@ -228,7 +244,8 @@ class HelloRetailService
                 $entityId,
                 $feedEntity,
                 EntityType::getMatchingEntityType($feed),
-                TemplateType::BODY
+                TemplateType::BODY,
+                ($groupedIds ? $groupedIds->has($entityId) : false)
             );
             $message->setExportConfig($config);
 

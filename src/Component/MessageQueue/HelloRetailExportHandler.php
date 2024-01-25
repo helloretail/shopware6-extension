@@ -152,6 +152,8 @@ class HelloRetailExportHandler
                 }
                 $entity->addExtension("properties", new ArrayStruct($properties));
             }
+
+            $entity->addExtension('groupDisplay', new ArrayStruct(['value' => $message->groupDisplay()]));
         } elseif ($feed === 'category' && $message->getConfigValue("includeCategoryProducts")) {
             if ($entity->getProductAssignmentType() === "product_stream" && $entity->getProductStreamId()) {
                 $productRepository = $this->container->get("product.repository");

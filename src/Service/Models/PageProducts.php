@@ -7,17 +7,20 @@ class PageProducts
     public int $start;
     public int $count;
     public array $fields;
+    public array $filters;
 
     /**
      * @param int $start
      * @param int $count
      * @param array $fields
+     * @param array $filters
      */
-    public function __construct(int $start, int $count, array $fields)
+    public function __construct(int $start, int $count, array $fields, array $filters)
     {
         $this->start = $start;
         $this->count = $count;
         $this->fields = $fields;
+        $this->filters = $filters;
     }
 
     /**
@@ -66,5 +69,21 @@ class PageProducts
     public function setFields(array $fields): void
     {
         $this->fields = $fields;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFilters(): array
+    {
+        return $this->filters;
+    }
+
+    /**
+     * @param array $filters
+     */
+    public function setFilters(array $filters): void
+    {
+        $this->filters = $filters;
     }
 }

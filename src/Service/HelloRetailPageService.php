@@ -16,6 +16,8 @@ class HelloRetailPageService extends HelloRetailApiService
 
     private const id = "extraData.id";
     private const endpoint = "pages";
+    private const displayFilter = "extraData.display:true";
+    private const displayGroup = 'extraData.displayGroup';
 
     public function getPage(string $key, array $hierarchies, SalesChannelContext $salesChannelContext): PageProductsResult
     {
@@ -36,7 +38,7 @@ class HelloRetailPageService extends HelloRetailApiService
         $pageParams = new PageParams($pageFilters);
         //TODO
         //add start and count. Calculate from pagination of slot
-        $pageProducts = new PageProducts(0, 100, [self::id]);
+        $pageProducts = new PageProducts(0, 100, [self::id, self::displayGroup], [self::displayFilter]);
         $request = new PageRequest($pageParams, $pageProducts, $urls[0]);
         //$request = new PageRequest($key, [self::extraData]);
         $callback = $this->client->callApi($this->buildEndpoint($key), $request);

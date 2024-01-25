@@ -37,12 +37,19 @@ class HelloRetailApiService
         return $this->productRepository->search($criteria, Context::createDefaultContext())->getEntities();
     }
 
-    protected function getIds(array $productData): array
+    protected function getIds(array $productData, bool $group = true): array
     {
         $ids = [];
+        $filteredGroups = [];
         foreach ($productData as $data) {
+            if (isset($data[self::extraData]['displayGroup']) && isset($filteredGroups[$data[self::extraData]['displayGroup']])) {
+                continue;
+            }
             if (isset($data[self::extraData]['id'])) {
                 $ids[] = $data[self::extraData]['id'];
+                if (isset($data[self::extraData]['displayGroup'])) {
+                    $filteredGroups[$data[self::extraData]['displayGroup']] = $data[self::extraData]['displayGroup'];
+                }
             }
         }
         return $ids;

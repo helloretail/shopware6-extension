@@ -83,6 +83,7 @@
         <service id="Helret\HelloRetail\Subscriber\ProductListingSubscriber" public="true">
             <argument type="service" id="Helret\HelloRetail\Service\HelloRetailPageService" />
             <argument type="service" id="product.repository" />
+            <argument type="service" id="cache.app" />
             <tag name="kernel.event_subscriber"/>
         </service>
 
@@ -138,6 +139,16 @@
             <tag name="shopware.cms.data_resolver"/>
         </service>
 
+        <service id="Helret\HelloRetail\Content\Product\SalesChannel\Listing\ResolveCriteriaHelloRetailListingRoute"
+                 decorates="Shopware\Core\Content\Product\SalesChannel\Listing\ResolveCriteriaProductListingRoute"
+                 parent="Shopware\Core\Content\Product\SalesChannel\Listing\ResolveCriteriaProductListingRoute"
+                 public="true"
+        />
+        <service id="Helret\HelloRetail\Content\Product\SalesChannel\Listing\HelRetProductListingLoader"
+                 decorates="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader"
+                 parent="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader"
+                 public="true"
+        />
 
     </services>
 </container>
