@@ -2,8 +2,6 @@
 
 namespace Helret\HelloRetail\Export;
 
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
-
 class ExportEntityElement
 {
     protected ?array $allIds;
@@ -11,18 +9,12 @@ class ExportEntityElement
     protected array $exportConfig = [];
 
     public function __construct(
-        protected SalesChannelContext $salesChannelContext,
         protected string $directory,
         protected string $id,
         protected FeedEntityInterface $feedEntity,
         protected string $entityType,
         protected string $templateType
     ) {
-    }
-
-    public function getSalesChannelContext(): SalesChannelContext
-    {
-        return $this->salesChannelContext;
     }
 
     public function getDirectory(): string
