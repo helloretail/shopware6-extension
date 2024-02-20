@@ -1,3 +1,6 @@
+# 4.1.0
+* Fixed some message queue serialization errors that could occur on Shopware 6.5.x
+
 # 4.0.2
 * Fix tracking by moving script to the layout_head_javascript_tracking block
 
