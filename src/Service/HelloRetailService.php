@@ -16,6 +16,13 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Mapping\ClassDiscriminatorFromClassMetadata;
+use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
+use Symfony\Component\Serializer\Mapping\Loader\AttributeLoader;
+use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 use TypeError;
 use League\Flysystem\Filesystem;
 use Monolog\Logger;
@@ -100,8 +107,20 @@ class HelloRetailService
         /** @var FeedEntityInterface $feedEntity */
         if (isset($exportEntity->getFeeds()[$feed])) {
             try {
-                $feedEntity = $this->serializer
-                    ->deserialize(json_encode($exportEntity->getFeeds()[$feed]), FeedEntity::class, 'json');
+
+                $classMetadataFactory = new ClassMetadataFactory(new AttributeLoader());
+                $discriminator = new ClassDiscriminatorFromClassMetadata($classMetadataFactory);
+
+                $normalizers = [
+                    new ObjectNormalizer($classMetadataFactory, null, null, null, $discriminator),
+                    new ArrayDenormalizer()
+                ];
+                $serializer = new Serializer($normalizers, [new JsonEncoder()]);
+
+                $serialized = $serializer->serialize(json_encode($exportEntity->getFeeds()[$feed]), 'json');
+                $feedEntity = $serializer->deserialize($serialized, FeedEntity::class, 'json');
+
+                //$feedEntity = $this->serializer->deserialize(json_encode($exportEntity->getFeeds()[$feed]), FeedEntity::class, 'json');
             } catch (Error|TypeError|NotEncodableValueException|Exception $e) {
                 $this->exportLogger(
                     HelretHelloRetail::EXPORT_ERROR,
@@ -223,7 +242,6 @@ class HelloRetailService
 
         foreach ($entityIds as $entityId) {
             $message = new ExportEntityElement(
-                $salesChannelContext,
                 $tmpDir,
                 $entityId,
                 $feedEntity,
@@ -236,7 +254,6 @@ class HelloRetailService
         }
 
         $footerElement = new ExportEntityElement(
-                $salesChannelContext,
                 $tmpDir,
                 TemplateType::FOOTER,
                 $feedEntity,
