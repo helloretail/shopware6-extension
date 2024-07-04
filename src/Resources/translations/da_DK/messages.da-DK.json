@@ -1,0 +1,45 @@
+{
+    "sw-cms": {
+        "blocks": {
+            "commerce": {
+                "hello-retail": {
+                    "label": "Hello Retail Integration"
+                }
+            }
+        }
+    },
+    "helret-hello-retail": {
+        "sales-channel-types": {
+            "base": {
+                "titleOptions": "Options",
+                "storefront": "Storefront",
+                "storefrontDomain": "Storefront domain",
+                "storefrontDomainCurrency": "Storefront currency",
+                "productStream": "Dynamic product group",
+                "noDynamicProductGroupFound": "You need to create a dynamic product group in order to use the social shopping sales channel. Please create a dynamic product group.",
+                "createDynamicProductGroup": "Create dynamic product group",
+                "tabErrors": "Unpublished products"
+            },
+            "helloRetail": {
+                "titlePinterestSettings": "Additional settings",
+                "titlePinterestGuide": "Integration guide",
+                "validationButtonTitle": "Validate on Pinterest",
+                "name": "Hello Retail",
+                "description": "Sell products via Pinterest",
+                "integrationStep1": "This sales channel generates metadata that allows you to display your products as a pin on Pinterest. You can find more information about this topic in our documentation.",
+                "manufacturer": "shopware AG",
+                "descriptionLong": "Create a Sales Channel to sell your products on Pinterest."
+            }
+        },
+        "detail": {
+            "placeholderFeedLocation": "Enter Feed Location...",
+            "titleFeedCard": "Feeds",
+            "labelGenerateFeedsBtn": "Generate Feed",
+            "feeds": {
+                "productTitle": "Products",
+                "customerTitle": "Customers",
+                "orderTitle": "Orders"
+            }
+        }
+    }
+}

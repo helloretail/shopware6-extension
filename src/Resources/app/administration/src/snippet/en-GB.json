@@ -1,0 +1,55 @@
+{
+    "sw-cms": {
+        "blocks": {
+            "commerce": {
+                "hello-retail": {
+                    "label": "Hello Retail Integration"
+                }
+            }
+        }
+    },
+    "helret-hello-retail": {
+        "sales-channel-types": {
+            "base": {
+                "titleGeneralSettings": "General settings",
+                "storefront": "Storefront",
+                "storefrontDomain": "Storefront domain",
+                "storefrontDomainCurrency": "Storefront currency",
+                "feedDirectory": "Feed directory"
+            }
+        },
+        "detail": {
+          "placeholderFeedLocation": "The feed filename will be shown once the other fields are filled out and saved",
+          "titleFeedCard": "Feeds",
+          "labelGenerateFeedsBtn": "Generate Feed",
+            "generateTooltip": "Please save before generating",
+            "feeds": {
+                "productTitle": "Products",
+                "orderTitle": "Orders",
+                "categoryTitle": "Categories"
+            },
+            "buttonForceGenerate": "Force generation",
+            "forceGenerateTooltip": "Force generation of all Hello Retail feeds",
+            "forceGenerate": {
+                "confirmTitle": "Force feed generation",
+                "confirmText": "This will queue Hello Retail feed(s) for generation, do you wish to continue?",
+                "noFeeds": "Generation weren't started since no feeds were found"
+            },
+            "forceGenerateTooltipSave": "The button is disabled due to corrections, save your corrections",
+          "forceGenerateTooltipActivate": "Force generation is disabled because the sales channel is inactive and possibly other corrections"
+        },
+        "comparison": {
+            "feed": {
+                "product": "Product",
+                "category": "Category",
+                "order": "Order"
+            },
+            "select": "Feed export type",
+            "exportTypesMissing": "Something went wrong loading Export type(s)",
+            "generateFeed": "Generate {feedName} feed"
+        },
+        "save": {
+            "info": "{feedCount} Feed(s) is getting queued for generation"
+        }
+    }
+}

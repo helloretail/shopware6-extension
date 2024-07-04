@@ -1,0 +1,35 @@
+version: "3.3"
+services:
+  shopware:
+    image: ghcr.io/helloretail/shopware6-extension/shopware:1.4
+    container_name: shopware
+    environment:
+      APP_ENV: dev
+    networks:
+    - dev-env
+    restart: unless-stopped
+    volumes:
+    - shopware:/usr/app/src
+    - ./docker-config/shopware6/virtualhosts.conf:/etc/apache2/sites-available/shopware.hrdev.test.conf 
+  shopwaredb:
+    restart: unless-stopped
+    container_name: shopwaredb
+    networks:
+    - dev-env
+    image: ghcr.io/helloretail/shopware6-extension/shopwaredb:1.4
+    volumes:
+    - db:/var/lib/mysql
+    environment:
+    - MARIADB_ROOT_PASSWORD=addwishdev
+    - MARIADB_USER=addwish
+    - MARIADB_PASSWORD=addwishdev
+    - MARIADB_ALLOW_EMPTY_PASSWORD=true
+    - MYSQL_DATABASE=shopware
+volumes:
+  shopware:
+  db:
+
+networks:
+  dev-env:
+    external: true
+  

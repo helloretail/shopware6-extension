@@ -1,0 +1,29 @@
+{% sw_extends '@Storefront/storefront/base.html.twig' %}
+
+{% block base_script_csrf %}
+    {{ parent() }}
+
+    {# @deprecated tag:v6.5.0 - Will be moved to `layout/meta.html.twig` - Added to `layout_head_javascript_csrf` #}
+    {% sw_include '@HelretHelloRetail/storefront/component/hello-retail-tracking.html.twig' %}
+{% endblock %}
+
+
+{% block base_main %}
+    {{ parent() }}
+
+    {#
+    Set cart tracking on every page where cart is available
+    Extension is a custom cartLoader
+    #}
+    {% set helretCart = page.cart ?? page.getExtensionOfType(
+        'helretCart',
+        'Shopware\\Core\\Checkout\\Cart\\Cart'
+    ) %}
+
+    {% if helretCart %}
+        {% sw_include '@HelretHelloRetail/storefront/component/helret/addwish-cart.html.twig' with {
+            cart: helretCart,
+            customer: context.customer
+        } %}
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,55 @@
+{
+    "sw-cms": {
+        "blocks": {
+            "commerce": {
+                "hello-retail": {
+                    "label": "Hello Retail Integration"
+                }
+            }
+        }
+    },
+    "helret-hello-retail": {
+        "sales-channel-types": {
+            "base": {
+                "titleGeneralSettings": "Allgemeine Einstellungen",
+                "storefront": "Schaufenster",
+                "storefrontDomain": "Storefront-Domain",
+                "storefrontDomainCurrency": "Schaufensterwährung",
+                "feedDirectory": "Feed-Verzeichnis"
+            }
+        },
+        "detail": {
+          "placeholderFeedLocation": "Der Feed-Dateiname wird angezeigt, sobald die anderen Felder ausgefüllt und gespeichert sind",
+          "titleFeedCard": "Einspeisungen",
+          "labelGenerateFeedsBtn": "Feed generieren",
+            "generateTooltip": "Bitte speichern Sie vor dem Generieren",
+            "feeds": {
+                "productTitle": "Produkte",
+                "orderTitle": "Aufträge",
+                "categoryTitle": "Kategorien"
+            },
+            "buttonForceGenerate": "Krafterzeugung",
+            "forceGenerateTooltip": "Erzwingen Sie die Generierung aller Hello Retail-Feeds",
+            "forceGenerate": {
+                "confirmTitle": "Feed-Generierung erzwingen",
+                "confirmText": "Dadurch werden Hello Retail-Feed(s) zur Generierung in die Warteschlange gestellt. Möchten Sie fortfahren?",
+                "noFeeds": "Die Generierung wurde nicht gestartet, da keine Feeds gefunden wurden"
+            },
+            "forceGenerateTooltipSave": "Die Schaltfläche ist aufgrund von Korrekturen deaktiviert, speichern Sie Ihre Korrekturen",
+          "forceGenerateTooltipActivate": "Die Generierung erzwingen ist deaktiviert, da der Verkaufskanal inaktiv ist und möglicherweise andere Korrekturen"
+        },
+        "comparison": {
+            "feed": {
+                "product": "Produkt",
+                "category": "Kategorie",
+                "order": "Bestellen"
+            },
+            "select": "Feed exporttyp",
+            "exportTypesMissing": "Beim Laden der Exporttypen ist ein Fehler aufgetreten",
+            "generateFeed": "{feedName} Feed generieren"
+        },
+        "save": {
+            "info": "{feedCount} Feed(s) werden zur Generierung in die Warteschlange gestellt"
+        }
+    }
+}

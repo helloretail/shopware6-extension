@@ -1,0 +1,52 @@
+<order>
+    <id>{{ order.id }}</id>
+    <orderNumber>{{ order.orderNumber }}</orderNumber>
+    <paymentStatus>
+        {% if order.transactions.last.stateMachineState.translated is defined %}
+            {{ order.transactions.last.stateMachineState.translated.name }}
+        {% endif %}
+    </paymentStatus>
+    <deliveryStatus>
+        {% if order.deliveries.first.stateMachineState.translated is defined %}
+            {{ order.deliveries.first.stateMachineState.translated.name }}
+        {% endif %}
+    </deliveryStatus>
+    <orderStatus>
+        {% if order.stateMachineState.translated is defined %}
+            {{ order.stateMachineState.translated.name }}
+        {% endif %}
+    </orderStatus>
+    {% if order.lineItems %}
+        <orderProducts>
+            {% for lineItem in order.lineItems.elements %}
+                {% if lineItem.product and lineItem.payload.productNumber is defined %}
+                    <product>
+                        <id>{{ lineItem.productId }}</id>
+                        <url>{{ seoUrl('frontend.detail.page', {'productId': lineItem.productId}) }}</url>
+                        <productNumber>{{ lineItem.payload.productNumber }}</productNumber>
+                        <quantity>{{ lineItem.quantity }}</quantity>
+                        <price>{{ lineItem.unitPrice }}</price>
+                        {% if lineItem.price.calculatedTaxes is not empty %}
+                            <priceNoTax>{{ lineItem.unitPrice - lineItem.price.calculatedTaxes.first.tax }}</priceNoTax>
+                        {% endif %}
+                    </product>
+                {% endif %}
+            {% endfor %}
+        </orderProducts>
+    {% endif %}
+    <shippingPrice>{{ order.shippingTotal }}</shippingPrice>
+    <createdDate>{{ order.orderDateTime|date('Y-m-d H:i:s') }}</createdDate>
+    <CreatedDateWithoutTime>{{ order.orderDateTime|date('Y-m-d') }}</CreatedDateWithoutTime>
+    <total>{{ order.amountTotal }}</total>
+    <email>{{ order.orderCustomer.email }}</email>
+    <paymentMethod>
+        {% if order.transactions.last.paymentMethod.translated is defined %}
+            {{ order.transactions.last.paymentMethod.translated.name }}
+        {%  endif %}
+    </paymentMethod>
+    <shippingMethod>
+        {% if order.deliveries.first.shippingMethod.translated is defined %}
+            {{ order.deliveries.first.shippingMethod.translated.name }}
+        {%  endif %}
+    </shippingMethod>
+</order>

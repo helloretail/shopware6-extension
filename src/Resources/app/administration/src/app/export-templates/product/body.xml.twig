@@ -1,0 +1,69 @@
+<product>
+    <url>{{ seoUrl('frontend.detail.page', {'productId': product.id}) }}</url>
+    <title>{% if product.name %}{{ product.name }}{% else %}{{ product.translated.name }}{% endif %}</title>
+    <ean>{{ product.ean }}</ean>
+    <sku>{{ product.productNumber }}</sku>
+    {% if product.cover %}
+        {% set thumbnail = product.cover.media.thumbnails.elements|filter(img => img.width == 400)|first %}
+        <imgurl>{% if thumbnail %}{{ thumbnail.url }}{% else %}{{ product.cover.media.url }}{% endif %}</imgurl>
+    {% else %}
+        <imgurl/>
+    {% endif %}
+    {% if product.price.extensions is not empty %}
+        {% if product.price.extensions.calculatedPrice %}
+            {% set price = product.price.extensions.calculatedPrice %}
+        {% endif %}
+        {% if product.price.extensions is not empty %}
+            {% if product.price.extensions.calculatedPrices %}
+                {% if product.price.extensions.calculatedPrices.count > 0 %}
+                    {% set price = product.price.extensions.calculatedPrices.first %}
+                {% endif %}
+            {% endif %}
+        {% endif %}
+        <price>{{ price.unitPrice }}</price>
+    {% else %}
+        {% set prices = product.prices.elements|first %}
+        <price>{% if prices %}{{ prices.price.elements|first.gross }}{% else %}{{ product.price.elements|first.gross }}{% endif %}</price>
+    {% endif %}
+    {% if product.cheapestPrice is not empty %}
+        <oldPrice>{% if product.cheapestPrice %}{% if product.cheapestPrice.price.elements|first.listPrice is not null %}{{ product.cheapestPrice.price.elements|first.listPrice.gross|round(2, 'ceil') }}{% else %}{{ product.cheapestPrice.price.elements|first.gross }}{% endif %}{% else %}{{ product.price.elements|first.gross }}{% endif %}</oldPrice>
+    {% else %}
+        <oldPrice>{% if product.price.elements|first.listPrice %}{{ product.price.elements|first.listPrice.gross }}{% endif %}</oldPrice>
+    {% endif %}
+    <productnumber>{{ product.productNumber }}</productnumber>
+    <hierarchies>
+        {% if product.categories %}
+            {% for category in product.categories.elements %}
+                <hierarchy>
+                    {% for breadCrumb in category.getBreadCrumb %}
+                        <category>{{ breadCrumb }}</category>
+                    {% endfor %}
+                </hierarchy>
+            {% endfor %}
+        {% endif %}
+    </hierarchies>
+
+    {% if product.extensions.properties %}
+        <properties>
+            {% for key, value in product.extensions.properties %}
+                <property>
+                    <name>{{ key }}</name>
+                    <options>
+                        {% for option in value %}
+                            <option>{{ option.name }}</option>
+                        {% endfor %}
+                    </options>
+                </property>
+            {% endfor %}
+        </properties>
+    {% endif %}
+
+    <keywords>{% if product.searchKeywords %}{% for keyword in product.searchKeywords.elements %}{{ keyword.keyword }},{% endfor %}{% endif %}</keywords>
+    {% set color = product.properties.elements|filter(property => property.group.name == 'Color')|first %}
+    <color>{% if color %}{{ color.name }}{% endif %}</color>
+    {% set gender = product.properties.elements|filter(property => property.group.name == 'Gender')|first %}
+    <gender>{% if gender %}{{ gender.name }}{% endif %}</gender>
+    <instock>{% if product.availableStock > 0 %}true{% else %}false{% endif %}</instock>
+    <description>{{ product.description }}</description>
+    <brand>{% if product.manufacturer %}{{ product.manufacturer.name }}{% endif %}</brand>
+</product>

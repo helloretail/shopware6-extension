@@ -1,0 +1,10 @@
+{% block addwish_cart %}
+    <span class="addwish-cart d-none"
+          data-total="{{ cart.price.totalPrice }}"
+          {% if customer %}data-email="{{ customer.email }}"{% endif %}
+    >
+        {% for item in cart.lineItems.filterFlatByType('product') %}
+            <span class="addwish-product" data-productnumber="{{ item.payload.productNumber }}"></span>
+        {% endfor %}
+    </span>
+{% endblock %}

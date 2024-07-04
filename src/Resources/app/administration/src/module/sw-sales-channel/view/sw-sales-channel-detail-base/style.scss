@@ -1,0 +1,7 @@
+@media screen and (max-width: 960px) {
+    .hello-retail-detail-general {
+        .storefront-container {
+            grid-template-columns: 1fr !important;
+        }
+    }
+}
