@@ -4,10 +4,9 @@ namespace Helret\HelloRetail\Command;
 
 use Helret\HelloRetail\Service\ExportService;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Routing\Exception\SalesChannelNotFoundException;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -15,24 +14,18 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Helret\HelloRetail\Export\Profiles\ProfileExporterInterface;
 use Helret\HelloRetail\HelretHelloRetail;
 
-/**
- * Class GenerateFeed
- * @package Helret\HelloRetail\Command
- */
+#[AsCommand(
+    name: 'hello-retail:generate-feed',
+    description: 'Generates all configured Hello Retail feeds'
+)]
 class GenerateFeed extends Command
 {
-    protected static $defaultName = 'hello-retail:generate-feed';
     protected ProfileExporterInterface $profileExporter;
-    protected EntityRepositoryInterface $salesChannelRepository;
+    protected EntityRepository $salesChannelRepository;
 
-    /**
-     * GenerateFeed constructor.
-     * @param ProfileExporterInterface $profileExporter
-     * @param EntityRepositoryInterface $salesChannelRepository
-     */
     public function __construct(
         ProfileExporterInterface $profileExporter,
-        EntityRepositoryInterface $salesChannelRepository
+        EntityRepository $salesChannelRepository
     ) {
         $this->profileExporter = $profileExporter;
         $this->salesChannelRepository = $salesChannelRepository;
@@ -42,16 +35,11 @@ class GenerateFeed extends Command
 
     protected function configure(): void
     {
-        $this->setDescription('Generates all configured Hello Retail feeds')
+        $this
             ->addOption('feed', 'f', InputOption::VALUE_REQUIRED, 'Specific feed to generate')
             ->addOption("salesChannelId", "s", InputOption::VALUE_REQUIRED, "Generate for specific salesChannel");
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $feed = $input->getOption('feed');

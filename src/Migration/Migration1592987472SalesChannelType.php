@@ -3,34 +3,27 @@
 namespace Helret\HelloRetail\Migration;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Migration\MigrationStep;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Helret\HelloRetail\HelretHelloRetail;
 
-/**
- * Class Migration1592987472SalesChannelType
- * @package Helret\HelloRetail\Migration
- */
 class Migration1592987472SalesChannelType extends MigrationStep
 {
-    /**
-     * @return int
-     */
     public function getCreationTimestamp(): int
     {
-        return 1592987472;
+        return 1_592_987_472;
     }
 
     /**
-     * @param Connection $connection
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws Exception
      */
     public function update(Connection $connection): void
     {
         $helloRetail = Uuid::fromHexToBytes(HelretHelloRetail::SALES_CHANNEL_TYPE_HELLO_RETAIL);
 
-        $idExists = $connection->fetchColumn(
+        $idExists = $connection->fetchOne(
             'SELECT `id` FROM `sales_channel_type` WHERE `id` = :id',
             [
                 'id' => $helloRetail,
@@ -68,19 +61,13 @@ class Migration1592987472SalesChannelType extends MigrationStep
         );
     }
 
-    /**
-     * @param Connection $connection
-     */
     public function updateDestructive(Connection $connection): void
     {
         // implement update destructive
     }
 
     /**
-     * @param Connection $connection
-     * @param string $locale
-     * @return string
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws Exception
      */
     private function getLanguageIdByLocale(Connection $connection, string $locale): string
     {
@@ -91,7 +78,7 @@ INNER JOIN `locale` ON `locale`.`id` = `language`.`locale_id`
 WHERE `locale`.`code` = :code
 SQL;
 
-        $languageId = $connection->executeQuery($sql, ['code' => $locale])->fetchColumn();
+        $languageId = $connection->executeQuery($sql, ['code' => $locale])->fetchOne();
 
         if ($languageId === false) {
             throw new \RuntimeException(sprintf('Language for locale "%s" not found.', $locale));

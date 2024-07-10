@@ -46,6 +46,7 @@
             <argument type="service" id="Helret\HelloRetail\Service\HelloRetailService"/>
             <argument type="service" id="messenger.bus.shopware"/>
             <argument type="service" id="Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder"/>
+            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextService"/>
             <tag name="messenger.message_handler"/>
         </service>
 

@@ -1,3 +1,15 @@
+# 4.1.0
+* Fixed some message queue serialization errors that could occur on Shopware 6.5.x
+
+# 4.0.2
+* Fix tracking by moving script to the layout_head_javascript_tracking block
+
+# 4.0.1
+* Added missing scheduled task parameter for scheduled task handler
+
+# 4.0.0
+* Compatibility for Shopware 6.5
+
 # 3.0.11
 * Improve cart tracker: Cart is now tracked on every page and offcanvas-cart open
 
