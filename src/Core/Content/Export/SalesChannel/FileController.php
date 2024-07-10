@@ -2,13 +2,17 @@
 
 namespace Helret\HelloRetail\Core\Content\Export\SalesChannel;
 
+use Doctrine\DBAL\Connection;
 use Helret\HelloRetail\HelretHelloRetail;
 use League\Flysystem\FilesystemInterface;
 use Shopware\Core\Content\ProductExport\Exception\ExportNotGeneratedException;
 use Shopware\Core\Framework\Routing\Annotation\Since;
+use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -20,7 +24,8 @@ class FileController extends AbstractController
     protected FilesystemInterface $fileSystem;
 
     public function __construct(
-        FilesystemInterface $fileSystem
+        FilesystemInterface $fileSystem,
+        protected Connection $connection
     ) {
         $this->fileSystem = $fileSystem;
     }
@@ -34,6 +39,8 @@ class FileController extends AbstractController
      */
     public function index(Request $request): Response
     {
+        $this->checkAuthorization($request);
+
         $path = HelretHelloRetail::STORAGE_PATH . "/{$request->get("feedDirectory")}";
 
         if (!$this->fileSystem->has("$path/{$request->get("fileName")}")) {
@@ -49,5 +56,54 @@ class FileController extends AbstractController
             200,
             ['Content-Type' => "text/xml;charset=$encoding"]
         ))->setCharset($encoding);
+    }
+
+    protected function checkAuthorization(Request $request): void
+    {
+        $feedDirectory = $request->get("feedDirectory");
+        $expectedToken = $this->getAuthToken($feedDirectory);
+
+        $authHeader = $request->headers->get('Authorization');
+
+        if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+            throw new UnauthorizedHttpException('Bearer', 'Missing or invalid Authorization header.');
+        }
+
+        $token = substr($authHeader, 7);
+
+        if ($token !== $expectedToken) {
+            throw new UnauthorizedHttpException('Bearer', 'Invalid token.');
+        }
+    }
+
+    protected function getAuthToken(string $feedDirectory): ?string
+    {
+        if (!$feedDirectory) {
+            return null;
+        }
+
+        $salesChannelsConfigurations = $this->connection->fetchAllAssociative(<<<SQL
+            SELECT
+                configuration
+            FROM
+                `sales_channel`
+            WHERE
+                sales_channel.type_id = :salesChannelTypeId;
+        SQL, [
+            'salesChannelTypeId' => Uuid::fromHexToBytes(HelretHelloRetail::SALES_CHANNEL_TYPE_HELLO_RETAIL)
+        ]);
+
+        foreach ($salesChannelsConfigurations as $config) {
+            $configuration = json_decode($config['configuration'], true);
+
+            if (json_last_error() === JSON_ERROR_NONE) {
+                if (isset($configuration['feedDirectory']) && $configuration['feedDirectory'] === $feedDirectory) {
+                    return $configuration['authToken'] ?? null;
+                }
+            }
+        }
+
+        return null;
+
     }
 }
