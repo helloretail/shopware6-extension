@@ -3,12 +3,12 @@
 namespace Helret\HelloRetail\Core\Content\Export\SalesChannel;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 use Helret\HelloRetail\HelretHelloRetail;
 use League\Flysystem\FilesystemInterface;
 use Shopware\Core\Content\ProductExport\Exception\ExportNotGeneratedException;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -58,6 +58,10 @@ class FileController extends AbstractController
         ))->setCharset($encoding);
     }
 
+    /**
+     * @throws Exception
+     * @throws UnauthorizedHttpException
+     */
     protected function checkAuthorization(Request $request): void
     {
         $feedDirectory = $request->get("feedDirectory");
@@ -76,6 +80,9 @@ class FileController extends AbstractController
         }
     }
 
+    /**
+     * @throws Exception
+     */
     protected function getAuthToken(string $feedDirectory): ?string
     {
         if (!$feedDirectory) {
