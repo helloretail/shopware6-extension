@@ -195,7 +195,7 @@ Component.override('sw-sales-channel-detail-base', {
                 salesChannelDomainId: salesChannel.domains.first().id
             });
 
-            if (!this.salesChannel.onGenerateKeys) {
+            if (!this.salesChannel.accessKey) {
                 this.onGenerateKeys();
             }
         },
