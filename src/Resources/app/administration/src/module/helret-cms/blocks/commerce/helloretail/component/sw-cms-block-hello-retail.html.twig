@@ -1,6 +1,9 @@
 {% block sw_cms_block_hello_retail %}
     <div class="sw-cms-block-hello-retail">
-        <img :src="'helrethelloretail/static/img/HR_logo_primary1_no-payoff.png' | asset">
+        <img
+            :src="assetFilter('helrethelloretail/administration/static/img/cms/HR_logo_primary1_no-payoff.png')"
+            alt=""
+        >
         <slot name="content">{% block sw_cms_block_hello_retail_slot_content %}{% endblock %}</slot>
     </div>
 {% endblock %}

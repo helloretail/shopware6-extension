@@ -1,14 +1,11 @@
 const { Component } = Shopware;
 
-
-Component.override('sw-icon', {
+Component.override('sw-icon-deprecated', {
     beforeMount() {
-        if(this.name !== 'brand-hello-retail') {
-            this.iconSvgData = `<svg id="meteor-icon-kit__${this.name}"></svg>`
-        } else {
+        if (this.name === 'svg-hello-retail') {
             this.iconSvgData = `<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
                                  width="24.000000pt" height="24.000000pt" viewBox="0 0 24.000000 24.000000">
-                                
+
                                 <g transform="translate(0.000000,24.000000) scale(0.100000,-0.100000)"
                                 fill="#758CA3" fill-rule="evenodd" stroke="none">
                                 <path d="M75 231 c-45 -20 -70 -60 -70 -112 0 -42 5 -53 33 -81 28 -28 39 -33
@@ -19,5 +16,4 @@ Component.override('sw-icon', {
                                 </svg>`
         }
     },
-
 })

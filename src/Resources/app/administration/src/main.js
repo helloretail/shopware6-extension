@@ -8,6 +8,12 @@ import './module/sw-sales-channel';
 
 import './module/helret-cms/blocks/commerce/helloretail';
 
+import iconComponents from './app/assets/icons/icons';
+
+iconComponents.map((component) => {
+    return Shopware.Component.register(component.name, component);
+});
+
 if (module.hot) {
     module.hot.accept();
 }

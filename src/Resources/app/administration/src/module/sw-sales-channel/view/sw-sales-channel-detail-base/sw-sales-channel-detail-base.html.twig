@@ -10,7 +10,7 @@
             <sw-container columns="2fr 1fr" gap="0px 15px">
                 {% block sw_sales_channel_detail_base_general_name %}
                     <sw-text-field
-                        v-model="salesChannel.name"
+                        v-model:value="salesChannel.name"
                         type="text"
                         validation="required"
                         required
@@ -22,7 +22,7 @@
 
                 {% block sw_sales_channel_detail_base_general_input_active %}
                     <sw-switch-field
-                        v-model="salesChannel.active"
+                        v-model:value="salesChannel.active"
                         :label="$tc('sw-sales-channel.detail.labelInputActive')"
                         bordered>
                     </sw-switch-field>
@@ -32,21 +32,20 @@
             <sw-container columns="1fr 1fr" gap="0px 15px" class="storefront-container">
                 {% block sw_sales_channel_detail_base_general_storefront %}
                     <sw-entity-single-select
-                        ref="storefrontSalesChannelId"
-                        v-model="salesChannel.configuration.storefrontSalesChannelId"
-                        :label="$tc('helret-hello-retail.sales-channel-types.base.storefront')"
-                        :criteria="salesChannelCriteria"
-                        labelProperty="name"
-                        valueProperty="id"
-                        entity="sales_channel"
-                        required
-                        @change="onStorefrontSelectionChange">
-                    </sw-entity-single-select>
+                            ref="storefrontSalesChannelId"
+                            v-model:value="salesChannel.configuration.storefrontSalesChannelId"
+                            :label="$tc('helret-hello-retail.sales-channel-types.base.storefront')"
+                            :criteria="salesChannelCriteria"
+                            labelProperty="name"
+                            valueProperty="id"
+                            entity="sales_channel"
+                            required
+                            @update:value="onStorefrontSelectionChange"></sw-entity-single-select>
                 {% endblock %}
 
                 {% block sw_sales_channel_detail_base_general_storefront_domain %}
                     <sw-entity-single-select
-                        v-model="salesChannel.configuration.salesChannelDomainId"
+                        v-model:value="salesChannel.configuration.salesChannelDomainId"
                         required
                         :label="$tc('helret-hello-retail.sales-channel-types.base.storefrontDomain')"
                         :criteria="storefrontSalesChannelDomainCriteria"
@@ -56,14 +55,37 @@
                         :disabled="!salesChannel.configuration.storefrontSalesChannelId"
                     ></sw-entity-single-select>
                 {% endblock %}
+            </sw-container>
 
+            <sw-container>
                 {% block sw_sales_channel_detail_base_general_feed_directory %}
                     <sw-text-field
-                        :value="salesChannel.configuration.feedDirectory"
-                        :label="$tc('helret-hello-retail.sales-channel-types.base.feedDirectory')"
-                        :copyable="true"
-                        disabled
+                            :value="salesChannel.configuration.feedDirectory"
+                            :label="$tc('helret-hello-retail.sales-channel-types.base.feedDirectory')"
+                            :copyable="true"
+                            disabled
                     ></sw-text-field>
+                {% endblock %}
+            </sw-container>
+
+            <sw-container columns="2fr 1fr" gap="0px 15px">
+                {% block sw_sales_channel_detail_base_general_auth %}
+                    <sw-text-field
+                            v-model:value="salesChannel.configuration.authToken"
+                            :label="$tc('helret-hello-retail.sales-channel-types.base.authToken')"
+                            :copyable="true"
+                            disabled
+                    ></sw-text-field>
+                {% endblock %}
+
+                {% block sw_sales_channel_detail_base_general_generate %}
+                    <sw-button-process
+                            class="custom-btn-auth-gen"
+                            variant="primary"
+                            @click="generateAuthToken"
+                    >
+                        {{ $tc('helret-hello-retail.sales-channel-types.base.buttonGenerateAuthToken') }}
+                    </sw-button-process>
                 {% endblock %}
             </sw-container>
         {% endblock %}
@@ -78,15 +100,17 @@
         :isLoading="isLoading || isEntitiesLoading"
         :title="$tc('helret-hello-retail.detail.titleFeedCard')">
         {% block hello_retail_detail_feeds %}
-            <sw-text-field
-                v-for="feed in getFeedList"
-                :key="feed"
-                :value="getFeedUrl(feed)"
-                disabled
-                :placeholder="placeholder(salesChannel, `configuration.feeds.${feed}.file`, $tc('helret-hello-retail.detail.placeholderFeedLocation'))"
-                :label="$tc(`helret-hello-retail.detail.feeds.${feed}Title`)"
-                :copyable="true">
-            </sw-text-field>
+            <template
+                    v-for="feed in getFeedList"
+                    :key="feed">
+                <sw-text-field
+                        :value="getFeedUrl(feed)"
+                        disabled
+                        :placeholder="placeholder(salesChannel, `configuration.feeds.${feed}.file`, $tc('helret-hello-retail.detail.placeholderFeedLocation'))"
+                        :label="$tc(`helret-hello-retail.detail.feeds.${feed}Title`)"
+                        :copyable="true">
+                </sw-text-field>
+            </template>
         {% endblock %}
     </sw-card>
 {% endblock %}
