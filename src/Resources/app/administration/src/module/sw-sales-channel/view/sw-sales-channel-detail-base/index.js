@@ -72,6 +72,10 @@ Component.override('sw-sales-channel-detail-base', {
             // Categories aren't needed (HR Admin)
         },
 
+        generateAuthToken() {
+            this.salesChannel.configuration.authToken = Utils.createId();
+        },
+
         // HR:
         initHelloRetailConfiguration() {
             // Ensure salesChannel.configuration isset.
@@ -89,6 +93,10 @@ Component.override('sw-sales-channel-detail-base', {
 
             if (!this.salesChannel.configuration.salesChannelDomainId) {
                 this.salesChannel.configuration.salesChannelDomainId = null;
+            }
+
+            if (!this.salesChannel.configuration.authToken) {
+                this.salesChannel.configuration.authToken = Utils.createId();
             }
         },
 
