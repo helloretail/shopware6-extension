@@ -1,3 +1,6 @@
+# 3.1.0
+* Added authorization token to all feeds. Go to Hello Retail sales channels and generate token
+
 # 3.0.11
 * Improve cart tracker: Cart is now tracked on every page and offcanvas-cart open
 
