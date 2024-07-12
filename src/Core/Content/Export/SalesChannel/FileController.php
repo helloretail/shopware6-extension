@@ -17,8 +17,6 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route(defaults: ['_routeScope' => ['storefront']])]
 class FileController extends AbstractController
 {
-    private const string TOKEN_PREFIX = 'tok_sw_';
-
     public function __construct(
         protected Filesystem $fileSystem,
         protected Connection $connection,
