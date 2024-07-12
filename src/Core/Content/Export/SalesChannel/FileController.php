@@ -20,8 +20,6 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class FileController extends AbstractController
 {
-    private const TOKEN_PREFIX = 'tok_sw_';
-
     /** @var FilesystemInterface $fileSystem Public fileSystem */
     protected FilesystemInterface $fileSystem;
 
