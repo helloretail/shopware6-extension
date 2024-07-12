@@ -32,15 +32,15 @@
             <sw-container columns="1fr 1fr" gap="0px 15px" class="storefront-container">
                 {% block sw_sales_channel_detail_base_general_storefront %}
                     <sw-entity-single-select
-                            ref="storefrontSalesChannelId"
-                            v-model:value="salesChannel.configuration.storefrontSalesChannelId"
-                            :label="$tc('helret-hello-retail.sales-channel-types.base.storefront')"
-                            :criteria="salesChannelCriteria"
-                            labelProperty="name"
-                            valueProperty="id"
-                            entity="sales_channel"
-                            required
-                            @update:value="onStorefrontSelectionChange"></sw-entity-single-select>
+                        ref="storefrontSalesChannelId"
+                        v-model:value="salesChannel.configuration.storefrontSalesChannelId"
+                        :label="$tc('helret-hello-retail.sales-channel-types.base.storefront')"
+                        :criteria="salesChannelCriteria"
+                        labelProperty="name"
+                        valueProperty="id"
+                        entity="sales_channel"
+                        required
+                        @update:value="onStorefrontSelectionChange"></sw-entity-single-select>
                 {% endblock %}
 
                 {% block sw_sales_channel_detail_base_general_storefront_domain %}
@@ -60,10 +60,10 @@
             <sw-container>
                 {% block sw_sales_channel_detail_base_general_feed_directory %}
                     <sw-text-field
-                            :value="salesChannel.configuration.feedDirectory"
-                            :label="$tc('helret-hello-retail.sales-channel-types.base.feedDirectory')"
-                            :copyable="true"
-                            disabled
+                        :value="salesChannel.configuration.feedDirectory"
+                        :label="$tc('helret-hello-retail.sales-channel-types.base.feedDirectory')"
+                        :copyable="true"
+                        disabled
                     ></sw-text-field>
                 {% endblock %}
             </sw-container>

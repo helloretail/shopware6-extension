@@ -30,7 +30,7 @@ class FileController extends AbstractController
     #[Route(
         path: "/hello-retail/{feedDirectory}/{fileName}",
         name: "store.api.hello-retail.feed.export",
-        defaults: ['auth_required' => true, 'XmlHttpRequest' => true, '_httpCache' => false],
+        defaults: ['auth_required' => false, 'XmlHttpRequest' => true, '_httpCache' => false],
         methods: ['GET']
     )]
     public function index(Request $request): Response
