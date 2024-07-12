@@ -23,7 +23,6 @@ class FileController extends AbstractController
     /** @var FilesystemInterface $fileSystem Public fileSystem */
     protected FilesystemInterface $fileSystem;
 
-
     public function __construct(
         FilesystemInterface $fileSystem,
         protected Connection $connection,
@@ -37,7 +36,7 @@ class FileController extends AbstractController
      * @Route("/hello-retail/{feedDirectory}/{fileName}",
      *     name="store.api.hello-retail.feed.export",
      *     methods={"GET"},
-     *     defaults={"auth_required"=false, , "XmlHttpRequest"=true, "_httpCache"=false})
+     *     defaults={"auth_required"=false, "XmlHttpRequest"=true, "_httpCache"=false})
      */
     public function index(Request $request): Response
     {
