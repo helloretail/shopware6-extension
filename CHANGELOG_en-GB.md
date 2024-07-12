@@ -1,3 +1,6 @@
+# 4.2.0
+* Added authorization token to all feeds. Go to Hello Retail sales channels and generate token
+
 # 4.1.0
 * Fixed some message queue serialization errors that could occur on Shopware 6.5.x
 
