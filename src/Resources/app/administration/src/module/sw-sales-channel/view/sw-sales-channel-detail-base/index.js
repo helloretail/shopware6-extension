@@ -73,7 +73,7 @@ Component.override('sw-sales-channel-detail-base', {
         },
 
         generateAuthToken() {
-            this.salesChannel.configuration.authToken = Utils.createId();
+            this.salesChannel.configuration.authToken = 'tok_sw_' + Utils.createId();
         },
 
         // HR:
@@ -96,7 +96,7 @@ Component.override('sw-sales-channel-detail-base', {
             }
 
             if (!this.salesChannel.configuration.authToken) {
-                this.salesChannel.configuration.authToken = Utils.createId();
+                this.salesChannel.configuration.authToken = 'tok_sw_' + Utils.createId();
             }
         },
 

@@ -20,12 +20,16 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class FileController extends AbstractController
 {
+    private const TOKEN_PREFIX = 'tok_sw_';
+
     /** @var FilesystemInterface $fileSystem Public fileSystem */
     protected FilesystemInterface $fileSystem;
 
+
     public function __construct(
         FilesystemInterface $fileSystem,
-        protected Connection $connection
+        protected Connection $connection,
+        protected string $projectRoot
     ) {
         $this->fileSystem = $fileSystem;
     }
@@ -35,27 +39,36 @@ class FileController extends AbstractController
      * @Route("/hello-retail/{feedDirectory}/{fileName}",
      *     name="store.api.hello-retail.feed.export",
      *     methods={"GET"},
-     *     defaults={"auth_required"=false})
+     *     defaults={"auth_required"=false, , "XmlHttpRequest"=true, "_httpCache"=false})
      */
     public function index(Request $request): Response
     {
         $this->checkAuthorization($request);
 
-        $path = HelretHelloRetail::STORAGE_PATH . "/{$request->get("feedDirectory")}";
+        $path = $this->getFeedDirectoryPath() . DIRECTORY_SEPARATOR . "{$request->get("feedDirectory")}";
+        $file = $path . DIRECTORY_SEPARATOR . $request->get("fileName");
 
-        if (!$this->fileSystem->has("$path/{$request->get("fileName")}")) {
+        if (!file_exists($file)) {
             // Generate
             throw new ExportNotGeneratedException();
         }
 
         $encoding = "UTF-8";
-
-        $content = $this->fileSystem->read("$path/{$request->get("fileName")}");
+        $content = file_get_contents($file);
+        if ($content === false) {
+            throw new \RuntimeException("Failed to read the file content.");
+        }
         return (new Response(
             $content ?: null,
             200,
             ['Content-Type' => "text/xml;charset=$encoding"]
         ))->setCharset($encoding);
+    }
+
+    protected function getFeedDirectoryPath(): string
+    {
+        $filesDir = DIRECTORY_SEPARATOR . $this->projectRoot . DIRECTORY_SEPARATOR . "files";
+        return $filesDir . DIRECTORY_SEPARATOR . HelretHelloRetail::STORAGE_PATH;
     }
 
     /**
@@ -109,8 +122,6 @@ class FileController extends AbstractController
                 }
             }
         }
-
         return null;
-
     }
 }
