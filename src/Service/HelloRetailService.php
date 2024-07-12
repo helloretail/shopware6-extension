@@ -74,8 +74,8 @@ class HelloRetailService
 
     public function getFeedDirectoryPath(): string
     {
-        $publicDir = $this->projectRoot . DIRECTORY_SEPARATOR . 'public';
-        return $publicDir . DIRECTORY_SEPARATOR . HelretHelloRetail::STORAGE_PATH;
+        $filesDir = $this->projectRoot . DIRECTORY_SEPARATOR . 'files';
+        return $filesDir . DIRECTORY_SEPARATOR . HelretHelloRetail::STORAGE_PATH;
     }
 
     /**

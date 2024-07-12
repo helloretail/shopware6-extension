@@ -17,9 +17,12 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route(defaults: ['_routeScope' => ['storefront']])]
 class FileController extends AbstractController
 {
+    private const string TOKEN_PREFIX = 'tok_sw_';
+
     public function __construct(
         protected Filesystem $fileSystem,
-        protected Connection $connection
+        protected Connection $connection,
+        protected string $projectRoot
     ) {
     }
 
@@ -29,28 +32,38 @@ class FileController extends AbstractController
     #[Route(
         path: "/hello-retail/{feedDirectory}/{fileName}",
         name: "store.api.hello-retail.feed.export",
-        defaults: ['auth_required' => false],
+        defaults: ['auth_required' => true, 'XmlHttpRequest' => true, '_httpCache' => false],
         methods: ['GET']
     )]
     public function index(Request $request): Response
     {
         $this->checkAuthorization($request);
 
-        $path = HelretHelloRetail::STORAGE_PATH . "/{$request->get("feedDirectory")}";
+        $path = $this->getFeedDirectoryPath() . DIRECTORY_SEPARATOR . "{$request->get("feedDirectory")}";
+        $file = $path . DIRECTORY_SEPARATOR . $request->get("fileName");
 
-        if (!$this->fileSystem->fileExists("$path/{$request->get("fileName")}")) {
-            // Generate
+        if (!file_exists($file)) {
             throw new ExportNotGeneratedException();
         }
 
         $encoding = "UTF-8";
 
-        $content = $this->fileSystem->read("$path/{$request->get("fileName")}");
+        $content = file_get_contents($file);
+        if ($content === false) {
+            throw new \RuntimeException("Failed to read the file content.");
+        }
+
         return (new Response(
             $content ?: null,
             200,
             ['Content-Type' => "text/xml;charset=$encoding"]
         ))->setCharset($encoding);
+    }
+
+    protected function getFeedDirectoryPath(): string
+    {
+        $filesDir = DIRECTORY_SEPARATOR . $this->projectRoot . DIRECTORY_SEPARATOR . "files";
+        return $filesDir . DIRECTORY_SEPARATOR . HelretHelloRetail::STORAGE_PATH;
     }
 
     protected function checkAuthorization(Request $request): void
@@ -60,6 +73,7 @@ class FileController extends AbstractController
         $expectedToken = $this->getAuthToken($feedDirectory);
 
         $authHeader = $request->headers->get('Authorization');
+
 
         if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
             throw new UnauthorizedHttpException('Bearer', 'Missing or invalid Authorization header.');
