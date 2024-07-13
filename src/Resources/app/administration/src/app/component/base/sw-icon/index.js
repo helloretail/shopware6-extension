@@ -2,7 +2,7 @@ const { Component } = Shopware;
 
 Component.override('sw-icon-deprecated', {
     beforeMount() {
-        if (this.name === 'svg-hello-retail') {
+        if (this.name === 'brand-hello-retail') {
             this.iconSvgData = `<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
                                  width="24.000000pt" height="24.000000pt" viewBox="0 0 24.000000 24.000000">
 
