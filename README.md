@@ -1,3 +1,5 @@
+*Generate Plugin Zip*
+
 git clone git@github.com:helloretail/shopware6-extension.git
 
 mkdir HelretHelloRetail
