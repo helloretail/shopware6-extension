@@ -16,13 +16,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Mapping\ClassDiscriminatorFromClassMetadata;
-use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
-use Symfony\Component\Serializer\Mapping\Loader\AttributeLoader;
-use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
 use TypeError;
 use League\Flysystem\Filesystem;
 use Monolog\Logger;
@@ -38,7 +31,6 @@ use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelD
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -134,7 +126,7 @@ class HelloRetailService
 
         $feedEntity->setFeedDirectory($exportEntity->getFeedDirectory());
         $feedEntity->setFeed($feed);
-        $feedEntity->setDomain($salesChannelDomain);
+        $feedEntity->setDomain($salesChannelDomain->getId());
         $feedEntity->setEntity($exportFeed->getEntity());
         $feedEntity->setFile($exportFeed->getFile());
 
@@ -241,7 +233,7 @@ class HelloRetailService
             );
             $message->setExportConfig($config);
 
-            $this->bus->dispatch(new Envelope($message));
+            $this->bus->dispatch($message);
         }
 
         $footerElement = new ExportEntityElement(
@@ -255,7 +247,7 @@ class HelloRetailService
         $footerElement->setExportConfig($config);
         $footerElement->setAllIds($entityIds);
 
-        $this->bus->dispatch(new Envelope($footerElement));
+        $this->bus->dispatch($footerElement);
 
         return true;
     }
@@ -271,11 +263,12 @@ class HelloRetailService
     public function renderBody(
         FeedEntityInterface $feedEntity,
         SalesChannelContext $salesChannelContext,
+        SalesChannelDomainEntity $salesChannelDomain,
         array $data = []
     ): string {
         return $this->replaceSeoUrlPlaceholder(
             $this->renderTemplate($feedEntity->getBodyTemplate(), $data, $salesChannelContext->getContext()),
-            $feedEntity->getDomain(),
+            $salesChannelDomain,
             $salesChannelContext
         );
     }

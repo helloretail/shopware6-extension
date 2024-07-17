@@ -2,15 +2,15 @@
 
 namespace Helret\HelloRetail\Export;
 
-use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
+use Shopware\Core\Framework\MessageQueue\AsyncMessageInterface;
 
-class FeedEntity implements FeedEntityInterface
+class FeedEntity implements FeedEntityInterface, AsyncMessageInterface
 {
     private string $feed;
     private ?string $entity = null;
     private string $feedDirectory;
     private string $file;
-    private SalesChannelDomainEntity $salesChannelDomainEntity;
+    private string $salesChannelDomainId;
     private array $associations = [];
     private ?string $headerTemplate = null;
     private ?string $bodyTemplate = null;
@@ -31,9 +31,9 @@ class FeedEntity implements FeedEntityInterface
         return $this->file;
     }
 
-    public function getDomain(): SalesChannelDomainEntity
+    public function getDomain(): string
     {
-        return $this->salesChannelDomainEntity;
+        return $this->salesChannelDomainId;
     }
 
     public function getAssociations(): array
@@ -71,9 +71,9 @@ class FeedEntity implements FeedEntityInterface
         $this->file = $file;
     }
 
-    public function setDomain(SalesChannelDomainEntity $salesChannelDomainEntity): void
+    public function setDomain(string $salesChannelDomainId): void
     {
-        $this->salesChannelDomainEntity = $salesChannelDomainEntity;
+        $this->salesChannelDomainId = $salesChannelDomainId;
     }
 
     public function setAssociations($associations): void
