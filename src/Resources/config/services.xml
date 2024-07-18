@@ -47,6 +47,7 @@
             <argument type="service" id="messenger.bus.shopware"/>
             <argument type="service" id="Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextService"/>
+            <argument type="service" id="sales_channel_domain.repository"/>
             <tag name="messenger.message_handler"/>
         </service>
 

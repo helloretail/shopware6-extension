@@ -18,10 +18,11 @@ use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilderInterface;
 use Shopware\Core\Framework\Adapter\Translation\AbstractTranslator;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -48,7 +49,8 @@ class HelloRetailExportHandler
         protected HelloRetailService $helloRetailService,
         protected MessageBusInterface $bus,
         protected ProductStreamBuilderInterface $productStreamBuilder,
-        protected SalesChannelContextService $salesChannelContextService
+        protected SalesChannelContextService $salesChannelContextService,
+        protected EntityRepository $salesChannelDomainRepository
     ) {
         $fullPath = $helloRetailService->getFeedDirectoryPath();
         $this->filesystem = new Filesystem(new LocalFilesystemAdapter($fullPath));
@@ -65,7 +67,14 @@ class HelloRetailExportHandler
     public function __invoke(ExportEntityElement $message): void
     {
         $feedEntity = $message->getFeedEntity();
-        $salesChannelDomain = $feedEntity->getDomain();
+        $salesChannelDomainId = $feedEntity->getDomain();
+
+        $salesChannelDomainCriteria = new Criteria([$salesChannelDomainId]);
+        $salesChannelDomainCriteria->addAssociation('language');
+
+        /** @var SalesChannelDomainEntity $salesChannelDomain */
+        $salesChannelDomain = $this->salesChannelDomainRepository
+            ->search($salesChannelDomainCriteria, Context::createDefaultContext())->first();
 
         $salesChannelId = $salesChannelDomain->getSalesChannelId();
         $salesChannelContext = $this->salesChannelContextService->get(new SalesChannelContextServiceParameters(
@@ -193,6 +202,7 @@ class HelloRetailExportHandler
             $output = $this->helloRetailService->renderBody(
                 $feedEntity,
                 $salesChannelContext,
+                $salesChannelDomain,
                 $data
             );
 
