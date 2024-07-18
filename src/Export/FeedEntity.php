@@ -11,10 +11,71 @@ class FeedEntity implements FeedEntityInterface, AsyncMessageInterface
     private string $feedDirectory;
     private string $file;
     private string $salesChannelDomainId;
+    private string $salesChannelDomainLanguageId;
+    private string $salesChannelDomainLanguageLocaleId;
+    private string $salesChannelDomainCurrencyId;
+    private string $salesChannelId;
+    private string $salesChannelDomainUrl;
     private array $associations = [];
     private ?string $headerTemplate = null;
     private ?string $bodyTemplate = null;
     private ?string $footerTemplate = null;
+
+    /**
+     * @return string
+     */
+    public function getSalesChannelDomainUrl(): string
+    {
+        return $this->salesChannelDomainUrl;
+    }
+
+    /**
+     * @param string $salesChannelDomainUrl
+     */
+    public function setSalesChannelDomainUrl(string $salesChannelDomainUrl): void
+    {
+        $this->salesChannelDomainUrl = $salesChannelDomainUrl;
+    }
+
+    public function getSalesChannelDomainLanguageId(): string
+    {
+        return $this->salesChannelDomainLanguageId;
+    }
+
+    public function setSalesChannelDomainLanguageId(string $salesChannelDomainLanguageId): void
+    {
+        $this->salesChannelDomainLanguageId = $salesChannelDomainLanguageId;
+    }
+
+    public function getSalesChannelDomainLanguageLocaleId(): string
+    {
+        return $this->salesChannelDomainLanguageLocaleId;
+    }
+
+    public function setSalesChannelDomainLanguageLocaleId(string $salesChannelDomainLanguageLocaleId): void
+    {
+        $this->salesChannelDomainLanguageLocaleId = $salesChannelDomainLanguageLocaleId;
+    }
+
+    public function getSalesChannelDomainCurrencyId(): string
+    {
+        return $this->salesChannelDomainCurrencyId;
+    }
+
+    public function setSalesChannelDomainCurrencyId(string $salesChannelDomainCurrencyId): void
+    {
+        $this->salesChannelDomainCurrencyId = $salesChannelDomainCurrencyId;
+    }
+
+    public function getSalesChannelId(): string
+    {
+        return $this->salesChannelId;
+    }
+
+    public function setSalesChannelId(string $salesChannelId): void
+    {
+        $this->salesChannelId = $salesChannelId;
+    }
 
     public function getFeed(): string
     {

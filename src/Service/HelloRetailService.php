@@ -127,6 +127,11 @@ class HelloRetailService
         $feedEntity->setFeedDirectory($exportEntity->getFeedDirectory());
         $feedEntity->setFeed($feed);
         $feedEntity->setDomain($salesChannelDomain->getId());
+        $feedEntity->setSalesChannelDomainLanguageId($salesChannelDomain->getLanguageId());
+        $feedEntity->setSalesChannelDomainCurrencyId($salesChannelDomain->getCurrencyId());
+        $feedEntity->setSalesChannelDomainLanguageLocaleId($salesChannelDomain->getLanguage()->getLocaleId());
+        $feedEntity->setSalesChannelId($salesChannelDomain->getSalesChannelId());
+        $feedEntity->setSalesChannelDomainUrl($salesChannelDomain->getUrl());
         $feedEntity->setEntity($exportFeed->getEntity());
         $feedEntity->setFile($exportFeed->getFile());
 
@@ -263,12 +268,12 @@ class HelloRetailService
     public function renderBody(
         FeedEntityInterface $feedEntity,
         SalesChannelContext $salesChannelContext,
-        SalesChannelDomainEntity $salesChannelDomain,
+        string $domainUrl,
         array $data = []
     ): string {
         return $this->replaceSeoUrlPlaceholder(
             $this->renderTemplate($feedEntity->getBodyTemplate(), $data, $salesChannelContext->getContext()),
-            $salesChannelDomain,
+            $domainUrl,
             $salesChannelContext
         );
     }
@@ -283,10 +288,10 @@ class HelloRetailService
 
     public function replaceSeoUrlPlaceholder(
         string $content,
-        SalesChannelDomainEntity $domain,
+        string $domainUrl,
         SalesChannelContext $salesChannelContext
     ): string {
-        return $this->seoUrlPlaceholderHandler->replace($content, $domain->getUrl(), $salesChannelContext);
+        return $this->seoUrlPlaceholderHandler->replace($content, $domainUrl, $salesChannelContext);
     }
 
     public function exportLogger(

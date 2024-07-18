@@ -49,8 +49,7 @@ class HelloRetailExportHandler
         protected HelloRetailService $helloRetailService,
         protected MessageBusInterface $bus,
         protected ProductStreamBuilderInterface $productStreamBuilder,
-        protected SalesChannelContextService $salesChannelContextService,
-        protected EntityRepository $salesChannelDomainRepository
+        protected SalesChannelContextService $salesChannelContextService
     ) {
         $fullPath = $helloRetailService->getFeedDirectoryPath();
         $this->filesystem = new Filesystem(new LocalFilesystemAdapter($fullPath));
@@ -67,22 +66,14 @@ class HelloRetailExportHandler
     public function __invoke(ExportEntityElement $message): void
     {
         $feedEntity = $message->getFeedEntity();
-        $salesChannelDomainId = $feedEntity->getDomain();
 
-        $salesChannelDomainCriteria = new Criteria([$salesChannelDomainId]);
-        $salesChannelDomainCriteria->addAssociation('language');
-
-        /** @var SalesChannelDomainEntity $salesChannelDomain */
-        $salesChannelDomain = $this->salesChannelDomainRepository
-            ->search($salesChannelDomainCriteria, Context::createDefaultContext())->first();
-
-        $salesChannelId = $salesChannelDomain->getSalesChannelId();
+        $salesChannelId = $feedEntity->getSalesChannelId();
         $salesChannelContext = $this->salesChannelContextService->get(new SalesChannelContextServiceParameters(
             $salesChannelId,
             '',
-            $salesChannelDomain->getLanguageId(),
-            $salesChannelDomain->getCurrencyId(),
-            $salesChannelDomain->getId()
+            $feedEntity->getSalesChannelDomainLanguageId(),
+            $feedEntity->getSalesChannelDomainCurrencyId(),
+            $feedEntity->getDomain()
         ));
 
         $context = $salesChannelContext->getContext();
@@ -104,8 +95,8 @@ class HelloRetailExportHandler
 
         $this->translator->injectSettings(
             $salesChannelId,
-            $salesChannelDomain->getLanguageId(),
-            $salesChannelDomain->getLanguage()->getLocaleId(),
+            $feedEntity->getSalesChannelDomainLanguageId(),
+            $feedEntity->getSalesChannelDomainLanguageLocaleId(),
             $context
         );
 
@@ -202,7 +193,7 @@ class HelloRetailExportHandler
             $output = $this->helloRetailService->renderBody(
                 $feedEntity,
                 $salesChannelContext,
-                $salesChannelDomain,
+                $feedEntity->getSalesChannelDomainUrl(),
                 $data
             );
 
