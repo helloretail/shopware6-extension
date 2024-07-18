@@ -18,9 +18,7 @@ use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilderInterface;
 use Shopware\Core\Framework\Adapter\Translation\AbstractTranslator;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -73,7 +71,7 @@ class HelloRetailExportHandler
             '',
             $feedEntity->getSalesChannelDomainLanguageId(),
             $feedEntity->getSalesChannelDomainCurrencyId(),
-            $feedEntity->getDomain()
+            $feedEntity->getSalesChannelDomainId()
         ));
 
         $context = $salesChannelContext->getContext();

@@ -10,7 +10,7 @@ interface FeedEntityInterface
 
     public function getFile(): string;
 
-    public function getDomain(): string;
+    public function getSalesChannelDomainId(): string;
 
     public function getAssociations(): array;
 
@@ -26,7 +26,7 @@ interface FeedEntityInterface
 
     public function setFile(string $file): void;
 
-    public function setDomain(string $salesChannelDomainId): void;
+    public function setSalesChannelDomainId(string $salesChannelDomainId): void;
 
     public function setAssociations(array $associations): void;
 

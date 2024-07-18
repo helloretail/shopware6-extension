@@ -21,17 +21,11 @@ class FeedEntity implements FeedEntityInterface, AsyncMessageInterface
     private ?string $bodyTemplate = null;
     private ?string $footerTemplate = null;
 
-    /**
-     * @return string
-     */
     public function getSalesChannelDomainUrl(): string
     {
         return $this->salesChannelDomainUrl;
     }
 
-    /**
-     * @param string $salesChannelDomainUrl
-     */
     public function setSalesChannelDomainUrl(string $salesChannelDomainUrl): void
     {
         $this->salesChannelDomainUrl = $salesChannelDomainUrl;
@@ -92,7 +86,7 @@ class FeedEntity implements FeedEntityInterface, AsyncMessageInterface
         return $this->file;
     }
 
-    public function getDomain(): string
+    public function getSalesChannelDomainId(): string
     {
         return $this->salesChannelDomainId;
     }
@@ -132,7 +126,7 @@ class FeedEntity implements FeedEntityInterface, AsyncMessageInterface
         $this->file = $file;
     }
 
-    public function setDomain(string $salesChannelDomainId): void
+    public function setSalesChannelDomainId(string $salesChannelDomainId): void
     {
         $this->salesChannelDomainId = $salesChannelDomainId;
     }

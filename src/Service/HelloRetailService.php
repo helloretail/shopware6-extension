@@ -126,7 +126,7 @@ class HelloRetailService
 
         $feedEntity->setFeedDirectory($exportEntity->getFeedDirectory());
         $feedEntity->setFeed($feed);
-        $feedEntity->setDomain($salesChannelDomain->getId());
+        $feedEntity->setSalesChannelDomainId($salesChannelDomain->getId());
         $feedEntity->setSalesChannelDomainLanguageId($salesChannelDomain->getLanguageId());
         $feedEntity->setSalesChannelDomainCurrencyId($salesChannelDomain->getCurrencyId());
         $feedEntity->setSalesChannelDomainLanguageLocaleId($salesChannelDomain->getLanguage()->getLocaleId());
