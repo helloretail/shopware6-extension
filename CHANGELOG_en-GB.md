@@ -1,3 +1,6 @@
+# 4.2.1
+* Fixed bug regarding message queue serialization
+
 # 4.2.0
 * Added authorization token to all feeds. Go to Hello Retail sales channels and generate token
 
