@@ -1,3 +1,6 @@
+# 4.2.1
+* Fehler bezüglich der Serialisierung der Nachrichtenwarteschlange behoben
+
 # 4.2.0
 * Autorisierungstoken zu allen Feeds hinzugefügt. Gehen Sie zu den Hello Retail-Vertriebskanälen und generieren Sie ein Token
 

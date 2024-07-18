@@ -21,7 +21,6 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -65,15 +64,14 @@ class HelloRetailExportHandler
     public function __invoke(ExportEntityElement $message): void
     {
         $feedEntity = $message->getFeedEntity();
-        $salesChannelDomain = $feedEntity->getDomain();
 
-        $salesChannelId = $salesChannelDomain->getSalesChannelId();
+        $salesChannelId = $feedEntity->getSalesChannelId();
         $salesChannelContext = $this->salesChannelContextService->get(new SalesChannelContextServiceParameters(
             $salesChannelId,
             '',
-            $salesChannelDomain->getLanguageId(),
-            $salesChannelDomain->getCurrencyId(),
-            $salesChannelDomain->getId()
+            $feedEntity->getSalesChannelDomainLanguageId(),
+            $feedEntity->getSalesChannelDomainCurrencyId(),
+            $feedEntity->getSalesChannelDomainId()
         ));
 
         $context = $salesChannelContext->getContext();
@@ -95,8 +93,8 @@ class HelloRetailExportHandler
 
         $this->translator->injectSettings(
             $salesChannelId,
-            $salesChannelDomain->getLanguageId(),
-            $salesChannelDomain->getLanguage()->getLocaleId(),
+            $feedEntity->getSalesChannelDomainLanguageId(),
+            $feedEntity->getSalesChannelDomainLanguageLocaleId(),
             $context
         );
 
@@ -193,6 +191,7 @@ class HelloRetailExportHandler
             $output = $this->helloRetailService->renderBody(
                 $feedEntity,
                 $salesChannelContext,
+                $feedEntity->getSalesChannelDomainUrl(),
                 $data
             );
 
