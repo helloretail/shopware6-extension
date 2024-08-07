@@ -1,1 +1,0 @@
-// Webpack want an empty icons.js file here, or it will break
