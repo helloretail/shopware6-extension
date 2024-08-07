@@ -10,7 +10,7 @@
                 :label="$tc('helret-hello-retail.comparison.select')"
                 :isLoading="isLoading"
                 :options="getFeedOptions()"
-                v-model="feedType"
+                v-model:value="feedType"
                 :disabled="!getFeedOptions().length"
             ></sw-single-select>
 
@@ -18,7 +18,7 @@
             <sw-container v-if="getFeedOptions().length">
                 {% block sw_sales_channel_detail_product_comparison_input_header %}
                     <sw-inherit-wrapper
-                        v-model="getConfiguration.headerTemplate"
+                        v-model:value="getConfiguration.headerTemplate"
                         :inherited-value="getInheritValue('headerTemplate')"
                         :label="$tc('sw-sales-channel.detail.productComparison.inputHeaderLabel')">
                         <template #content="{ currentValue, updateCurrentValue, isInherited }">
@@ -40,7 +40,7 @@
                 {# Body #}
                 {% block sw_sales_channel_detail_product_comparison_input_body %}
                     <sw-inherit-wrapper
-                        v-model="getConfiguration.bodyTemplate"
+                        v-model:value="getConfiguration.bodyTemplate"
                         :inherited-value="getInheritValue('bodyTemplate')"
                         :label="$tc('sw-sales-channel.detail.productComparison.inputBodyLabel')">
                         <template #content="{ currentValue, updateCurrentValue, isInherited }">
@@ -62,7 +62,7 @@
                 {# Footer #}
                 {% block sw_sales_channel_detail_product_comparison_input_footer %}
                     <sw-inherit-wrapper
-                        v-model="getConfiguration.footerTemplate"
+                        v-model:value="getConfiguration.footerTemplate"
                         :inherited-value="getInheritValue('footerTemplate')"
                         :label="$tc('sw-sales-channel.detail.productComparison.inputFooterLabel')">
                         <template #content="{ currentValue, updateCurrentValue, isInherited }">

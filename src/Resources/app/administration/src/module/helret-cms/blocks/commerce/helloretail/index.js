@@ -1,5 +1,5 @@
-import './component';
-import './preview';
+Shopware.Component.register('sw-cms-block-hello-retail', () => import('./component'));
+Shopware.Component.register('sw-cms-preview-hello-retail', () => import('./preview'));
 
 Shopware.Service('cmsService').registerCmsBlock({
     name: 'hello-retail',
