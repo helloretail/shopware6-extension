@@ -6,7 +6,7 @@ mkdir HelretHelloRetail
 
 cd shopware6-extension
 
-git checkout shopware_6.5
+git checkout shopware_6.6
 
 cp -rf .gitignore CHANGELOG_de-DE.md CHANGELOG_en-GB.md composer.json src ../HelretHelloRetail
 
