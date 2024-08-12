@@ -11,3 +11,8 @@
 Icon?
 ehthumbs.db
 Thumbs.db
+
+###> Shopware static & map files ###
+src/Resources/public/static/**/**
+src/Resources/public/administration/js/*.js.map
+###< Shopware static & map files ###

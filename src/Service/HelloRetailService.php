@@ -9,6 +9,7 @@ use Helret\HelloRetail\Core\Content\Feeds\ExportEntity;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 use Shopware\Core\Framework\Adapter\Twig\TwigVariableParser;
+use Shopware\Core\Framework\Adapter\Twig\TwigVariableParserFactory;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\EntityDefinitionQueryHelper;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
@@ -16,13 +17,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Mapping\ClassDiscriminatorFromClassMetadata;
-use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
-use Symfony\Component\Serializer\Mapping\Loader\AttributeLoader;
-use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
+use Twig\Environment;
 use TypeError;
 use League\Flysystem\Filesystem;
 use Monolog\Logger;
@@ -53,6 +48,7 @@ use Helret\HelloRetail\HelretHelloRetail;
 class HelloRetailService
 {
     protected Filesystem $filesystem;
+    protected TwigVariableParser $twigVariableParser;
 
     public function __construct(
         protected EntityRepository $logEntryRepository,
@@ -66,18 +62,20 @@ class HelloRetailService
         protected EntityRepository $salesChannelDomainRepository,
         protected SystemConfigService $configService,
         protected string $projectRoot,
-        protected TwigVariableParser $twigVariableParser,
-        protected ExportService $exportService
+        protected ExportService $exportService,
+        Environment $twig,
+        TwigVariableParserFactory $parserFactory
     ) {
         $fullPath = $this->getFeedDirectoryPath();
         $localFilesystemAdapter = new LocalFilesystemAdapter($fullPath);
         $this->filesystem = new Filesystem($localFilesystemAdapter);
+        $this->twigVariableParser = $parserFactory->getParser($twig);
     }
 
     public function getFeedDirectoryPath(): string
     {
-        $publicDir = $this->projectRoot . DIRECTORY_SEPARATOR . 'public';
-        return $publicDir . DIRECTORY_SEPARATOR . HelretHelloRetail::STORAGE_PATH;
+        $filesDir = $this->projectRoot . DIRECTORY_SEPARATOR . 'files';
+        return $filesDir . DIRECTORY_SEPARATOR . HelretHelloRetail::STORAGE_PATH;
     }
 
     /**

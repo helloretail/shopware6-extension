@@ -15,7 +15,9 @@
                 "storefront": "Schaufenster",
                 "storefrontDomain": "Storefront-Domain",
                 "storefrontDomainCurrency": "Schaufensterwährung",
-                "feedDirectory": "Feed-Verzeichnis"
+                "feedDirectory": "Feed-Verzeichnis",
+                "authToken": "Autorisierungstoken",
+                "buttonGenerateAuthToken": "Autorisierungstoken generieren"
             }
         },
         "detail": {

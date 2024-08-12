@@ -1,3 +1,7 @@
+# 5.0.0
+* Kompatibilität für Shopware 6.5
+* Autorisierungstoken zu allen Feeds hinzugefügt. Gehen Sie zu den Hello Retail-Vertriebskanälen und generieren Sie ein Token
+
 # 4.1.0
 * Einige Fehler bei der Serialisierung der Nachrichtenwarteschlange behoben, die unter Shopware 6.5.x auftreten konnten
 

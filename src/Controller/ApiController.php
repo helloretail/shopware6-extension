@@ -6,7 +6,7 @@ use Helret\HelloRetail\Service\ExportService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Helret\HelloRetail\Export\Profiles\ProfileExporterInterface;
 use Helret\HelloRetail\HelretHelloRetail;
 use Symfony\Component\Serializer\Encoder\DecoderInterface;
@@ -18,7 +18,8 @@ class ApiController extends AbstractController
         protected ProfileExporterInterface $profileExporter,
         protected ExportService $exportService,
         protected DecoderInterface $serializer
-    ) {}
+    ) {
+    }
 
     #[Route(
         path: '/api/helret/hello-retail/getTypeId',
