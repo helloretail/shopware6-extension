@@ -12,6 +12,13 @@
             <label lang="de-DE">Partner-ID</label>
             <label lang="da-DK">Partner-ID</label>
         </input-field>
+
+        <input-field type="text">
+            <name>offcanvasCartKey</name>
+            <label>Offcanvas Cart Key</label>
+            <label lang="de-DE">Offcanvas Cart Key</label>
+            <label lang="da-DK">Offcanvas Cart Key</label>
+        </input-field>
     </card>
 
     <card>

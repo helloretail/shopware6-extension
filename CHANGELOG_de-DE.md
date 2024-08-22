@@ -1,3 +1,6 @@
+# 4.2.0
+* Funktion zum Abrufen von Produktempfehlungen im OffCanvas-Warenkorb hinzugefügt.
+
 # 4.0.2
 * Korrigieren Sie die Nachverfolgung, indem Sie das Skript in den Block „layout_head_javascript_tracking“ verschieben
 

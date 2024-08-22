@@ -6,24 +6,22 @@ use Helret\HelloRetail\Service\Models\RecommendationContext;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Cms\DataResolver\CriteriaCollection;
 use Shopware\Core\Content\Product\ProductDefinition;
-use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductCollection;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Struct\ArrayEntity;
-use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainCollection;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Storefront\Controller\CookieController;
+use Shopware\Core\Content\Product\ProductCollection;
 
 class HelloRetailRecommendationService
 {
     private const STATIC_SEARCH_KEY = 'hello-retail-recommendations';
 
-    private const extraData = "extraData";
-    private const endpoint = "recoms";
+    private const EXTRA_DATA = "extraData";
+    private const ENDPOINT = "recoms";
 
     /**
      * @param HelloRetailClientService $client
@@ -31,7 +29,8 @@ class HelloRetailRecommendationService
      */
     public function __construct(
         protected HelloRetailClientService $client,
-        protected EntityRepository $productRepository
+        protected EntityRepository         $productRepository,
+        private readonly SalesChannelRepository $salesChannelRepository
     ) {
     }
 
@@ -47,7 +46,7 @@ class HelloRetailRecommendationService
         $category = null;
         if ($entity::class == CategoryEntity::class) {
             $category = $entity;
-        } else if ($entity::class == SalesChannelProductEntity::class) {
+        } elseif ($entity::class == SalesChannelProductEntity::class) {
             $category = $entity->getSeoCategory();
         }
 
@@ -78,18 +77,18 @@ class HelloRetailRecommendationService
         return $collection;
     }
 
-    public function getRecommendations(string $key): salesChannelProductCollection
+    public function getRecommendations(string $key, SalesChannelContext $context): ProductCollection
     {
         $productData = $this->fetchRecommendations($key);
-        return $this->getProducts($productData);
+        return $this->getProducts($productData, $context);
     }
 
     private function fetchRecommendations(string $key, array $hierarchies = [], $urls = []): array
     {
         $productData = [];
         $context = new RecommendationContext($hierarchies, "", $urls);
-        $request = new Models\Recommendation($key, [self::extraData], $context);
-        $callback = $this->client->callApi(self::endpoint, $request);
+        $request = new Models\Recommendation($key, [self::EXTRA_DATA], $context);
+        $callback = $this->client->callApi(self::ENDPOINT, $request);
 
         foreach ($callback['responses'] ?? [] as $response) {
             if (!$response['success']) {
@@ -97,26 +96,32 @@ class HelloRetailRecommendationService
             }
             $productData = array_merge($productData, $response['products']);
         }
+
         return $productData;
     }
 
-    private function getProducts(array $productData): mixed
+    private function getProducts(array $productData, SalesChannelContext $context): mixed
     {
+
         $ids = $this->getIds($productData);
+
         if (!$ids) {
             return null;
         }
 
         $criteria = new Criteria($ids);
-        return $this->productRepository->search($criteria, Context::createDefaultContext())->getEntities();
+        $criteria->addAssociation('cover');
+        $criteria->addAssociation('media');
+        $criteria->addAssociation('seoUrls');
+        return $this->salesChannelRepository->search($criteria, $context)->getEntities();
     }
 
     private function getIds(array $productData): array
     {
         $ids = [];
         foreach ($productData as $data) {
-            if (isset($data[self::extraData]['id'])) {
-                $ids[] = $data[self::extraData]['id'];
+            if (isset($data[self::EXTRA_DATA]['productId'])) {
+                $ids[] = $data[self::EXTRA_DATA]['productId'];
             }
         }
 

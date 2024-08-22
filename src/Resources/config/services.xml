@@ -15,6 +15,19 @@
             </call>
         </service>
 
+        <service id="Helret\HelloRetail\Controller\CartController">
+            <argument type="service" id="Helret\HelloRetail\Service\HelloRetailRecommendationService"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="service_container"/>
+            <tag name="controller.service_arguments"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+            <call method="setTwig">
+                <argument type="service" id="twig"/>
+            </call>
+        </service>
+
         <service id="Helret\HelloRetail\Service\HelloRetailService" public="true">
             <argument type="service" id="log_entry.repository"/>
             <argument type="service" id="monolog.logger"/>
@@ -109,6 +122,7 @@
         <service id="Helret\HelloRetail\Service\HelloRetailRecommendationService">
             <argument type="service" id="Helret\HelloRetail\Service\HelloRetailClientService"/>
             <argument type="service" id="product.repository"/>
+            <argument type="service" id="sales_channel.product.repository" />
         </service>
 
         <service id="Helret\HelloRetail\DataResolver\HelloRetailRecommendationsResolver">

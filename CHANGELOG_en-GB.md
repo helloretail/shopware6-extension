@@ -1,3 +1,6 @@
+# 4.2.0
+* Added functionality to get product recommendations in offcanvas cart.
+
 # 4.0.2
 * Fix tracking by moving script to the layout_head_javascript_tracking block
 
