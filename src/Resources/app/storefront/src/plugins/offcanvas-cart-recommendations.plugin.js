@@ -7,10 +7,10 @@ export default class OffCanvasCartRecommendationsPlugin extends Plugin {
         recommendationsUrl: '/checkout/cart/recommendations',
         cartSelector: '.cart-offcanvas .offcanvas-body',
         recommendationsSelector: '.offcanvas-cart-recommendations',
+        hrRecom: '.hr-recom'
     }
     init() {
         this._client = new HttpClient();
-        console.log('init')
         this._registerEvents();
     }
 
@@ -33,7 +33,7 @@ export default class OffCanvasCartRecommendationsPlugin extends Plugin {
 
             if (recommendationsContainer) {
                 recommendationsContainer.innerHTML = response;
-                document.querySelector('.hr-recom').classList.remove('d-none');
+                DomAccess.querySelector(document, this.options.hrRecom).classList.remove('d-none');
             }
         }, (error) => {
             console.error('Error fetching recommendations:', error);
