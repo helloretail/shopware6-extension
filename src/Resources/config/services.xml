@@ -40,7 +40,7 @@
             <argument type="service" id="sales_channel_domain.repository"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument>%kernel.project_dir%</argument>
-            <argument type="service" id="Shopware\Core\Framework\Adapter\Twig\TwigVariableParser"/>
+            <argument type="service" id="Shopware\Core\Framework\Adapter\Twig\TwigVariableParserFactory"/>
             <argument type="service" id="Helret\HelloRetail\Service\ExportService"/>
         </service>
 
