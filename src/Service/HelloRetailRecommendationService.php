@@ -77,7 +77,7 @@ class HelloRetailRecommendationService
         return $collection;
     }
 
-    public function getRecommendations(string $key, SalesChannelContext $context): ProductCollection
+    public function getRecommendations(string $key, SalesChannelContext $context)
     {
         $productData = $this->fetchRecommendations($key);
         return $this->getProducts($productData, $context);
@@ -120,8 +120,10 @@ class HelloRetailRecommendationService
     {
         $ids = [];
         foreach ($productData as $data) {
-            if (isset($data[self::EXTRA_DATA]['productId'])) {
-                $ids[] = $data[self::EXTRA_DATA]['productId'];
+            $id = $data[self::EXTRA_DATA]['id'] ?? $data[self::EXTRA_DATA]['productId'] ?? null;
+
+            if ($id) {
+                $ids[] = $id;
             }
         }
 
