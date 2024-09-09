@@ -2,7 +2,6 @@ import './component';
 import './preview';
 import './config';
 const config = Shopware.Service('cmsService').getCmsElementConfigByName('product-slider').defaultConfig;
-console.log(config)
 
 Shopware.Service('cmsService').registerCmsElement({
     name: 'hello-retail-recommendations',
