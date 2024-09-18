@@ -17,7 +17,10 @@ use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilderInterface;
 use Shopware\Core\Framework\Adapter\Translation\AbstractTranslator;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -44,7 +47,8 @@ class HelloRetailExportHandler
         protected AbstractTranslator $translator,
         protected HelloRetailService $helloRetailService,
         protected MessageBusInterface $bus,
-        protected ProductStreamBuilderInterface $productStreamBuilder
+        protected ProductStreamBuilderInterface $productStreamBuilder,
+        protected SalesChannelContextService $salesChannelContextService
     ) {
         $fullPath = $helloRetailService->getFeedDirectoryPath();
         $this->filesystem = new Filesystem(new LocalFilesystemAdapter($fullPath));
@@ -60,6 +64,20 @@ class HelloRetailExportHandler
      */
     public function __invoke(ExportEntityElement $message): void
     {
+        $feedEntity = $message->getFeedEntity();
+
+        $salesChannelId = $feedEntity->getSalesChannelId();
+        $salesChannelContext = $this->salesChannelContextService->get(new SalesChannelContextServiceParameters(
+            $salesChannelId,
+            '',
+            $feedEntity->getSalesChannelDomainLanguageId(),
+            $feedEntity->getSalesChannelDomainCurrencyId(),
+            $feedEntity->getSalesChannelDomainId()
+        ));
+
+        $context = $salesChannelContext->getContext();
+        $context->setConsiderInheritance(true);
+
         if ($message->getTemplateType() === TemplateType::FOOTER) {
             /**
              * Ugly fix/hack
@@ -68,7 +86,7 @@ class HelloRetailExportHandler
              */
             sleep(10);
 
-            $this->collectFiles($message);
+            $this->collectFiles($message, $context);
             return;
         }
 
@@ -81,9 +99,9 @@ class HelloRetailExportHandler
 
 
         $this->translator->injectSettings(
-            $salesChannelContext->getSalesChannel()->getId(),
-            $feedEntity->getDomain()->getLanguageId(),
-            $feedEntity->getDomain()->getLanguage()->getLocaleId(),
+            $salesChannelId,
+            $feedEntity->getSalesChannelDomainLanguageId(),
+            $feedEntity->getSalesChannelDomainLanguageLocaleId(),
             $context
         );
 
@@ -132,7 +150,11 @@ class HelloRetailExportHandler
                 }
             }
 
-            $entity = $repository->search($criteria, $salesChannelContext->getContext())->first();
+            $entity = $repository->search($criteria, $context)->first();
+        }
+
+        if (!$entity) {
+            return;
         }
 
         $data = [$feed => $entity];
@@ -165,7 +187,7 @@ class HelloRetailExportHandler
                         ))
                         // Ensure product's on this salesChannel and is active
                         ->addFilter(new ProductAvailableFilter(
-                            $salesChannelContext->getSalesChannelId(),
+                            $salesChannelId,
                             ProductVisibilityDefinition::VISIBILITY_LINK
                         )),
                     $context
@@ -179,6 +201,7 @@ class HelloRetailExportHandler
             $output = $this->helloRetailService->renderBody(
                 $feedEntity,
                 $salesChannelContext,
+                $feedEntity->getSalesChannelDomainUrl(),
                 $data
             );
 
@@ -218,7 +241,7 @@ class HelloRetailExportHandler
     /**
      * @throws FilesystemException
      */
-    private function collectFiles(ExportEntityElement $message): void
+    private function collectFiles(ExportEntityElement $message, Context $context): void
     {
         $dir = $message->getDirectory();
 
@@ -273,7 +296,7 @@ class HelloRetailExportHandler
             // Construct file
             $feedContent .= $this->helloRetailService->renderFooter(
                 $feedEntity,
-                $message->getSalesChannelContext()
+                $context
             );
 
             if ($failures > (count($allIds) - $successThreshold)) {

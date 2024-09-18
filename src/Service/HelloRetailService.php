@@ -71,7 +71,7 @@ class HelloRetailService
 
     public function getFeedDirectoryPath(): string
     {
-        $publicDir = $this->projectRoot . DIRECTORY_SEPARATOR . 'public';
+        $publicDir = $this->projectRoot . DIRECTORY_SEPARATOR . 'files';
         return $publicDir . DIRECTORY_SEPARATOR . HelretHelloRetail::STORAGE_PATH;
     }
 
@@ -95,9 +95,13 @@ class HelloRetailService
          */
         $salesChannelContext = $this->salesChannelContextService->get(new SalesChannelContextServiceParameters(
             $exportEntity->getStorefrontSalesChannelId(),
-            "",
-            $salesChannelDomain->getLanguageId()
+            '',
+            $salesChannelDomain->getLanguageId(),
+            $salesChannelDomain->getCurrencyId(),
+            $salesChannelDomain->getId()
         ));
+        $context = $salesChannelContext->getContext();
+        $salesChannelId = $salesChannelContext->getSalesChannelId();
 
         /** @var FeedEntityInterface $feedEntity */
         if (isset($exportEntity->getFeeds()[$feed])) {
@@ -125,7 +129,12 @@ class HelloRetailService
 
         $feedEntity->setFeedDirectory($exportEntity->getFeedDirectory());
         $feedEntity->setFeed($feed);
-        $feedEntity->setDomain($salesChannelDomain);
+        $feedEntity->setSalesChannelDomainId($salesChannelDomain->getId());
+        $feedEntity->setSalesChannelDomainLanguageId($salesChannelDomain->getLanguageId());
+        $feedEntity->setSalesChannelDomainCurrencyId($salesChannelDomain->getCurrencyId());
+        $feedEntity->setSalesChannelDomainLanguageLocaleId($salesChannelDomain->getLanguage()->getLocaleId());
+        $feedEntity->setSalesChannelId($salesChannelDomain->getSalesChannelId());
+        $feedEntity->setSalesChannelDomainUrl($salesChannelDomain->getUrl());
         $feedEntity->setEntity($exportFeed->getEntity());
         $feedEntity->setFile($exportFeed->getFile());
 
@@ -139,7 +148,7 @@ class HelloRetailService
             $criteria->addFilter(new EqualsFilter('product.active', true));
             $criteria->addFilter(new EqualsFilter(
                 'product.visibilities.salesChannelId',
-                $salesChannelContext->getSalesChannelId()
+                $salesChannelId
             ));
         } elseif (EntityType::getMatchingEntityType($feed) == EntityType::CATEGORY) {
             $categoryIds = [
@@ -188,7 +197,7 @@ class HelloRetailService
             unset($pureRepo);
         } else {
             /** @var EntityRepository $repository */
-            $entityIdsResult = $repository->searchIds($criteria, $salesChannelContext->getContext());
+            $entityIdsResult = $repository->searchIds($criteria, $context);
             $associations = $this->getAssociations($feedEntity->getBodyTemplate(), $repository);
         }
 
@@ -201,7 +210,7 @@ class HelloRetailService
 
         $entityIds = $entityIdsResult->getIds();
 
-        $content = $this->renderHeader($feedEntity, $salesChannelContext, [
+        $content = $this->renderHeader($feedEntity, $context, [
              "{$feed}sTotal" => $entityIdsResult->getTotal(),
              "total" => $entityIdsResult->getTotal(),
              "updatedAt" => date("Y-m-d H:i:s")
@@ -215,88 +224,78 @@ class HelloRetailService
         // Create temp dir for all file parts: {dir}/{salesChannelId}_{entityType}
         // Change: Use same dir (salesChannelId) to ensure lots of folders aren't created in case of failure / staling
         $tmpDir = 'hello-retail-generation-content/'
-            . $salesChannelContext->getSalesChannelId()
+            . $salesChannelId
             . HelretHelloRetail::FILE_TYPE_INDICATOR_SEPARATOR
             . $feed;
 
         $this->filesystem->write($tmpDir . DIRECTORY_SEPARATOR . TemplateType::HEADER, $content);
 
-        $config = $this->configService->get("HelretHelloRetail.config", $salesChannelContext->getSalesChannelId());
-
-        $groupedIds = null;
-
-        if ($feed == "product") {
-            $criteria->addGroupField(new FieldGrouping('displayGroup'));
-
-            $criteria->addFilter(
-                new NotFilter(
-                    NotFilter::CONNECTION_AND,
-                    [new EqualsFilter('displayGroup', null)]
-                )
-            );
-            $groupedIds = $repository->searchIds($criteria, $salesChannelContext);
-        }
+        $config = $this->configService->get("HelretHelloRetail.config", $salesChannelId);
 
         foreach ($entityIds as $entityId) {
             $message = new ExportEntityElement(
-                $salesChannelContext,
                 $tmpDir,
                 $entityId,
                 $feedEntity,
                 EntityType::getMatchingEntityType($feed),
-                TemplateType::BODY,
-                ($groupedIds ? $groupedIds->has($entityId) : false)
+                TemplateType::BODY
             );
             $message->setExportConfig($config);
 
-            $this->bus->dispatch(new Envelope($message));
+            $this->bus->dispatch($message);
         }
 
         $footerElement = new ExportEntityElement(
-                $salesChannelContext,
-                $tmpDir,
-                TemplateType::FOOTER,
-                $feedEntity,
-                EntityType::getMatchingEntityType($feed),
-                TemplateType::FOOTER
+            $tmpDir,
+            TemplateType::FOOTER,
+            $feedEntity,
+            EntityType::getMatchingEntityType($feed),
+            TemplateType::FOOTER
         );
 
         $footerElement->setExportConfig($config);
         $footerElement->setAllIds($entityIds);
 
-        $this->bus->dispatch(new Envelope($footerElement));
+        $this->bus->dispatch($footerElement);
 
         return true;
     }
 
-    public function renderHeader(FeedEntityInterface $feedEntity, SalesChannelContext $context, array $data = []): bool|string
-    {
+    public function renderHeader(
+        FeedEntityInterface $feedEntity,
+        Context $context,
+        array $data = []
+    ): bool|string {
         return $this->renderTemplate($feedEntity->getHeaderTemplate(), $data, $context);
     }
 
     public function renderBody(
         FeedEntityInterface $feedEntity,
-        SalesChannelContext $context,
+        SalesChannelContext $salesChannelContext,
+        string $domainUrl,
         array $data = []
     ): string {
         return $this->replaceSeoUrlPlaceholder(
-            $this->renderTemplate($feedEntity->getBodyTemplate(), $data, $context),
-            $feedEntity->getDomain(),
-            $context
+            $this->renderTemplate($feedEntity->getBodyTemplate(), $data, $salesChannelContext->getContext()),
+            $domainUrl,
+            $salesChannelContext
         );
     }
 
-    public function renderFooter(FeedEntityInterface $feedEntity, SalesChannelContext $context, array $data = []): bool|string
-    {
+    public function renderFooter(
+        FeedEntityInterface $feedEntity,
+        Context $context,
+        array $data = []
+    ): bool|string {
         return $this->renderTemplate($feedEntity->getFooterTemplate(), $data, $context);
     }
 
     public function replaceSeoUrlPlaceholder(
         string $content,
-        SalesChannelDomainEntity $domain,
+        string $domainUrl,
         SalesChannelContext $salesChannelContext
     ): string {
-        return $this->seoUrlPlaceholderHandler->replace($content, $domain->getUrl(), $salesChannelContext);
+        return $this->seoUrlPlaceholderHandler->replace($content, $domainUrl, $salesChannelContext);
     }
 
     public function exportLogger(
@@ -317,10 +316,13 @@ class HelloRetailService
         );
     }
 
-    private function renderTemplate(?string $template, array $data, SalesChannelContext $context): bool|string
-    {
+    private function renderTemplate(
+        ?string $template,
+        array $data,
+        Context $context
+    ): bool|string {
         try {
-            return $this->templateRenderer->render($template, $data, $context->getContext()) . PHP_EOL;
+            return $this->templateRenderer->render($template, $data, $context) . PHP_EOL;
         } catch (Error|TypeError|Exception|StringTemplateRenderingException $e) {
             $this->exportLogger(
                 HelretHelloRetail::EXPORT_ERROR,

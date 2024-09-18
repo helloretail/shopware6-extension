@@ -20,7 +20,7 @@ class SalesChannelSubscriber implements EventSubscriberInterface
         protected EntityRepository $salesChannelRepository,
         protected StorefrontCartFacade $cartService,
         protected SystemConfigService $configService,
-        protected EventDispatcherInterface $eventDispatcher,
+        protected EventDispatcherInterface $eventDispatcher
     ) {
     }
 

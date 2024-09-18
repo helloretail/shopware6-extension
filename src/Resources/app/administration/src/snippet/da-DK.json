@@ -51,7 +51,9 @@
                 "storefront": "Storefront",
                 "storefrontDomain": "Storefront domæne",
                 "storefrontDomainCurrency": "Storefront valuta",
-                "feedDirectory": "Feed mappe"
+                "feedDirectory": "Feed mappe",
+                "authToken": "Autorisationstoken",
+                "buttonGenerateAuthToken": "Generer autorisationstoken"
             }
         },
         "detail": {
