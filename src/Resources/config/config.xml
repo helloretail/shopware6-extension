@@ -12,12 +12,29 @@
             <label lang="de-DE">Partner-ID</label>
             <label lang="da-DK">Partner-ID</label>
         </input-field>
+    </card>
+
+    <card>
+        <title>Cart Recommendations</title>
+        <title lang="de-DE">Warenkorb-Empfehlungen</title>
+        <title lang="da-DK">Indkøbskurv anbefalinger</title>
+
+        <input-field type="bool">
+            <name>cartRecomsToggle</name>
+            <label>Enable Cart Recommendations</label>
+            <label lang="de-DE">Warenkorb-Empfehlungen aktivieren</label>
+            <label lang="da-DK">Aktiver indkøbskurvsanbefalinger</label>
+            <defaultValue>false</defaultValue>
+        </input-field>
 
         <input-field type="text">
             <name>offcanvasCartKey</name>
-            <label>Offcanvas Cart Key</label>
+            <label>Cart Recommendations Offcanvas Key</label>
             <label lang="de-DE">Offcanvas Cart Key</label>
             <label lang="da-DK">Offcanvas Cart Key</label>
+            <helpText>Can be found in Hello Retail Dashboard</helpText>
+            <helpText lang="de-DE">Zu finden im Hello Retail Dashboard</helpText>
+            <helpText lang="da-DK">Kan findes i Hello Retail Dashboard</helpText>
         </input-field>
     </card>
 
