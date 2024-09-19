@@ -3,7 +3,6 @@
 namespace Helret\HelloRetail\Export;
 
 use Shopware\Core\Framework\MessageQueue\AsyncMessageInterface;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class ExportEntityElement implements AsyncMessageInterface
 {
@@ -12,19 +11,12 @@ class ExportEntityElement implements AsyncMessageInterface
     protected array $exportConfig = [];
 
     public function __construct(
-        protected SalesChannelContext $salesChannelContext,
         protected string $directory,
         protected string $id,
-        protected FeedEntityInterface $feedEntity,
+        protected FeedEntity $feedEntity,
         protected string $entityType,
-        protected string $templateType,
-        protected bool $groupDisplay = false
+        protected string $templateType
     ) {
-    }
-
-    public function getSalesChannelContext(): SalesChannelContext
-    {
-        return $this->salesChannelContext;
     }
 
     public function getDirectory(): string
@@ -90,21 +82,5 @@ class ExportEntityElement implements AsyncMessageInterface
     public function setConfigValue(string $key, $value): void
     {
         $this->exportConfig[$key] = $value;
-    }
-
-    /**
-     * @return bool
-     */
-    public function groupDisplay(): bool
-    {
-        return $this->groupDisplay;
-    }
-
-    /**
-     * @param bool $groupDisplay
-     */
-    public function setGroupDisplay(bool $groupDisplay): void
-    {
-        $this->groupDisplay = $groupDisplay;
     }
 }

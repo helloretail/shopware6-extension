@@ -36,7 +36,6 @@ use Helret\HelloRetail\HelretHelloRetail;
 #[AsMessageHandler]
 class HelloRetailExportHandler
 {
-    // TODO: Should be settings
     private const RETRIES = 20;
     private const SLEEP_BETWEEN_RETRIES = 20; // Seconds
     protected Filesystem $filesystem;
@@ -90,13 +89,7 @@ class HelloRetailExportHandler
             return;
         }
 
-        $feedEntity = $message->getFeedEntity();
         $feed = $feedEntity->getFeed();
-        $salesChannelContext = $message->getSalesChannelContext();
-
-        $context = $salesChannelContext->getContext();
-        $context->setConsiderInheritance(true);
-
 
         $this->translator->injectSettings(
             $salesChannelId,
@@ -109,7 +102,6 @@ class HelloRetailExportHandler
         foreach ($feedEntity->getAssociations() as $association) {
             $criteria->addAssociation($association);
         }
-
 
         /** @var SalesChannelProductEntity|CategoryEntity|OrderEntity $entity */
         $repository = $this->container->get(("{$feedEntity->getEntity()}.repository"));
@@ -174,8 +166,6 @@ class HelloRetailExportHandler
                 }
                 $entity->addExtension("properties", new ArrayStruct($properties));
             }
-
-            $entity->addExtension('groupDisplay', new ArrayStruct(['value' => $message->groupDisplay()]));
         } elseif ($feed === 'category' && $message->getConfigValue("includeCategoryProducts")) {
             if ($entity->getProductAssignmentType() === "product_stream" && $entity->getProductStreamId()) {
                 $productRepository = $this->container->get("product.repository");

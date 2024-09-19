@@ -2,8 +2,6 @@
 
 namespace Helret\HelloRetail\Export;
 
-use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
-
 interface FeedEntityInterface
 {
     public function getFeed(): string;
@@ -12,7 +10,6 @@ interface FeedEntityInterface
 
     public function getFile(): string;
 
-    public function getDomain(): SalesChannelDomainEntity;
     public function getSalesChannelDomainId(): string;
 
     public function getAssociations(): array;
@@ -30,7 +27,6 @@ interface FeedEntityInterface
     public function setFile(string $file): void;
 
     public function setSalesChannelDomainId(string $salesChannelDomainId): void;
-    public function setDomain(SalesChannelDomainEntity $salesChannelDomainEntity): void;
 
     public function setAssociations(array $associations): void;
 
