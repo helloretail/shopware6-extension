@@ -2,9 +2,10 @@
 
 namespace Helret\HelloRetail\Export;
 
+use Shopware\Core\Framework\MessageQueue\AsyncMessageInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
-class ExportEntityElement
+class ExportEntityElement implements AsyncMessageInterface
 {
     protected ?array $allIds;
     protected int $retryCount = 0;
@@ -14,7 +15,7 @@ class ExportEntityElement
         protected SalesChannelContext $salesChannelContext,
         protected string $directory,
         protected string $id,
-        protected FeedEntityInterface $feedEntity,
+        protected FeedEntity $feedEntity,
         protected string $entityType,
         protected string $templateType
     ) {
@@ -35,7 +36,7 @@ class ExportEntityElement
         return $this->id;
     }
 
-    public function getFeedEntity(): FeedEntityInterface
+    public function getFeedEntity(): FeedEntity
     {
         return $this->feedEntity;
     }

@@ -40,7 +40,7 @@
             <argument type="service" id="sales_channel_domain.repository"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument>%kernel.project_dir%</argument>
-            <argument type="service" id="Shopware\Core\Framework\Adapter\Twig\TwigVariableParserFactory"/>
+            <argument type="service" id="Shopware\Core\Framework\Adapter\Twig\TwigVariableParser"/>
             <argument type="service" id="Helret\HelloRetail\Service\ExportService"/>
         </service>
 
@@ -59,6 +59,7 @@
             <argument type="service" id="Helret\HelloRetail\Service\HelloRetailService"/>
             <argument type="service" id="messenger.bus.shopware"/>
             <argument type="service" id="Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder"/>
+            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextService"/>
             <tag name="messenger.message_handler"/>
         </service>
 
@@ -96,6 +97,8 @@
 
         <service id="Helret\HelloRetail\Core\Content\Export\SalesChannel\FileController" public="true">
             <argument type="service" id="shopware.filesystem.public"/>
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument>%kernel.project_dir%</argument>
             <tag name="controller.service_arguments"/>
             <call method="setContainer">
                 <argument type="service" id="service_container"/>

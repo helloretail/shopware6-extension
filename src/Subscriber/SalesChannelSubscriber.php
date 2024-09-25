@@ -20,7 +20,7 @@ class SalesChannelSubscriber implements EventSubscriberInterface
         protected EntityRepository $salesChannelRepository,
         protected StorefrontCartFacade $cartService,
         protected SystemConfigService $configService,
-        protected EventDispatcherInterface $eventDispatcher,
+        protected EventDispatcherInterface $eventDispatcher
     ) {
     }
 
@@ -39,8 +39,6 @@ class SalesChannelSubscriber implements EventSubscriberInterface
             // Missing partnerId, bail
             return;
         }
-
-
 
         /** @var HelretBeforeCartLoadEvent $beforeLoad */
         $beforeLoad = $this->eventDispatcher->dispatch(new HelretBeforeCartLoadEvent([
