@@ -8,7 +8,7 @@ use Exception;
 use Helret\HelloRetail\Core\Content\Feeds\ExportEntity;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\Local\LocalFilesystemAdapter;
-use Shopware\Core\Framework\Adapter\Twig\TwigVariableParser;
+use Shopware\Core\Framework\Adapter\Twig\TwigVariableParserFactory;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\EntityDefinitionQueryHelper;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
@@ -59,7 +59,7 @@ class HelloRetailService
         protected EntityRepository $salesChannelDomainRepository,
         protected SystemConfigService $configService,
         protected string $projectRoot,
-        protected TwigVariableParser $twigVariableParser,
+        protected TwigVariableParserFactory $twigVariableParser,
         protected ExportService $exportService
     ) {
         $fullPath = $this->getFeedDirectoryPath();
@@ -338,7 +338,7 @@ class HelloRetailService
     protected function getAssociations(string $template, EntityRepository $repo): array
     {
         try {
-            $variables = $this->twigVariableParser->parse($template);
+            $variables = $this->twigVariableParser->getParser($template);
         } catch (\Exception $e) {
             return [];
             // Should we throw, or just rely on the associations from the conf file?
