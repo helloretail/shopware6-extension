@@ -9,11 +9,5 @@ Component.extend('sw-cms-el-config-hello-retail-recommendations', 'sw-cms-el-con
         createdComponent() {
             this.initElementConfig('hello-retail-recommendations');
         },
-    },
-    computed: {
-        isShopware66 () {
-            let isShopware66 = window.Shopware.Feature.flags.V6_6_0_0
-            return isShopware66;
-        }
     }
 });

@@ -5,17 +5,11 @@
 <!-- remove parent products -->
 {% block sw_cms_element_product_slider_config_content_products %}
     <sw-text-field
-            v-if="isShopware66"
-            v-model:value="element.config.key.value"
-            :label="$tc('helret-cms.elements.productSlider.config.label.key')"
-            :placeholder="$tc('helret-cms.elements.productSlider.config.placeholder.key')"
-    />
-
-    <sw-text-field
-            v-else
-            v-model="element.config.key.value"
-            :label="$tc('helret-cms.elements.productSlider.config.label.key')"
-            :placeholder="$tc('helret-cms.elements.productSlider.config.placeholder.key')"
+            {% if VUE3 %}
+                v-model:value="element.config.key.value"
+            {% else %}
+                v-model="element.config.key.value"
+            {% endif %}
     />
 {% endblock %}
 
