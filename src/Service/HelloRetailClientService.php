@@ -33,19 +33,6 @@ class HelloRetailClientService
         }
     }
 
-    public function getApiKey(): ?string
-    {
-        $this->loadAuthData();
-        return $this->apiKey;
-    }
-
-    public function getUserId(): ?string
-    {
-        $this->loadAuthData();
-        $response = $this->callApi(self::userEndpoint);
-        return $response['id'] ?? null;
-    }
-
     private function getCookieUserId(): ?string
     {
         //returns cookie, unless user has opted out
