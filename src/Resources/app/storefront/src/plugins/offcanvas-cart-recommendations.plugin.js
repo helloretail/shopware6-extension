@@ -4,7 +4,7 @@ import DomAccess from 'src/helper/dom-access.helper';
 
 export default class OffCanvasCartRecommendationsPlugin extends Plugin {
     static options = {
-        recommendationsUrl: '/hello-retail/checkout/cart/recommendations',
+        recommendationsUrl: '/hello-retail/cart/recommendations',
         cartSelector: '.cart-offcanvas .offcanvas-body',
         recommendationsSelector: '.offcanvas-cart-recommendations',
         hrRecom: '.hr-recom'

@@ -19,8 +19,8 @@ class CartController extends StorefrontController
     }
 
     #[Route(
-        path: '/hello-retail/checkout/cart/recommendations',
-        name: 'hello-retail.checkout.cart.recommendations',
+        path: '/hello-retail/cart/recommendations',
+        name: 'hello-retail.cart.recommendations',
         defaults: [
             '_routeScope' => ['storefront'],
             'XmlHttpRequest' => 'true'
