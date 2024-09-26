@@ -26,18 +26,13 @@ class RecommendationsTest extends Command
     {
         $this
             ->addOption('recommendation', 'r', InputOption::VALUE_REQUIRED, 'Specific recommendation to generate')
-            ->addOption('salesChannelId', 's', InputOption::VALUE_OPTIONAL, "Generate for specific salesChannel");
+            ->addOption('salesChannelId', 's', InputOption::VALUE_OPTIONAL, 'Generate for specific salesChannel');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $recommendationKey = $input->getOption('recommendation');
         $context = Context::createDefaultContext();
-        $salesChannelId = $input->getOption('salesChannelId') ? [$input->getOption('salesChannelId')] : null;
-        /*$salesChannelIds = $this->salesChannelRepository->searchIds(
-            ExportService::getSalesChannelCriteria($salesChannelId),
-            $context
-        )->getIds();*/
 
         $this->recommendationService->getRecommendations($recommendationKey, $context);
 
