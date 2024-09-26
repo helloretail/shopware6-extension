@@ -14,7 +14,6 @@ use Shopware\Core\Framework\Struct\ArrayEntity;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Core\Content\Product\ProductCollection;
 
 class HelloRetailRecommendationService
 {
@@ -25,11 +24,11 @@ class HelloRetailRecommendationService
 
     /**
      * @param HelloRetailClientService $client
-     * @param EntityRepository $productRepository
+     * @param EntityRepository<ProductEntity> $productRepository
      */
     public function __construct(
         protected HelloRetailClientService $client,
-        protected EntityRepository         $productRepository,
+        protected EntityRepository $productRepository,
         private readonly SalesChannelRepository $salesChannelRepository
     ) {
     }
@@ -102,7 +101,6 @@ class HelloRetailRecommendationService
 
     private function getProducts(array $productData, SalesChannelContext $context): mixed
     {
-
         $ids = $this->getIds($productData);
 
         if (!$ids) {

@@ -11,13 +11,19 @@ class HelloRetailClientService
 {
     private const url = "https://core.helloretail.com/serve/";
     private const userEndpoint = "trackingUser";
-    private string|null $apiKey = null;
-    private Client $client;
+    private ?string $apiKey = null;
+    private ?Client $client = null;
 
     public function __construct(protected SystemConfigService $systemConfigService)
     {
-        $this->client = new Client();
-        $this->loadAuthData();
+    }
+
+    private function getClient(): Client
+    {
+        if ($this->client === null) {
+            $this->client = new Client();
+        }
+        return $this->client;
     }
 
     public function loadAuthData(): void
@@ -29,16 +35,15 @@ class HelloRetailClientService
 
     public function getApiKey(): ?string
     {
+        $this->loadAuthData();
         return $this->apiKey;
     }
 
     public function getUserId(): ?string
     {
+        $this->loadAuthData();
         $response = $this->callApi(self::userEndpoint);
-        if (!isset($response['id'])) {
-            return null;
-        }
-        return $response['id'];
+        return $response['id'] ?? null;
     }
 
     private function getCookieUserId(): ?string
@@ -49,16 +54,21 @@ class HelloRetailClientService
 
     public function callApi(string $endpoint, Mixed $request = []): array
     {
+        $this->loadAuthData();
+        $client = $this->getClient();
+
         if ($request && !is_array($request)) {
             $request = [$request];
         }
+
         $body = json_encode([
             "websiteUuid" => $this->apiKey,
             "trackingUserId" => $this->getCookieUserId(),
             "requests" => $request
         ]);
+
         try {
-            $response = $this->client->send(new Request(
+            $response = $client->send(new Request(
                 'POST',
                 self::url . $endpoint,
                 ['Content-Type' => 'application/json'],
@@ -68,11 +78,10 @@ class HelloRetailClientService
             return [];
         }
 
-
         if ($response->getStatusCode() != "200") {
             return [];
         }
+
         return json_decode($response->getBody()->getContents(), true);
     }
-
 }

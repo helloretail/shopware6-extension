@@ -4,11 +4,12 @@ import DomAccess from 'src/helper/dom-access.helper';
 
 export default class OffCanvasCartRecommendationsPlugin extends Plugin {
     static options = {
-        recommendationsUrl: '/checkout/cart/recommendations',
+        recommendationsUrl: '/hello-retail/checkout/cart/recommendations',
         cartSelector: '.cart-offcanvas .offcanvas-body',
         recommendationsSelector: '.offcanvas-cart-recommendations',
         hrRecom: '.hr-recom'
     }
+
     init() {
         this._client = new HttpClient();
         this._registerEvents();
