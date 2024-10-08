@@ -6,9 +6,9 @@ use Helret\HelloRetail\Service\Models\RecommendationContext;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Cms\DataResolver\CriteriaCollection;
 use Shopware\Core\Content\Product\ProductDefinition;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductCollection;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Struct\ArrayEntity;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
@@ -17,19 +17,15 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class HelloRetailRecommendationService
 {
-    private const STATIC_SEARCH_KEY = 'hello-retail-recommendations';
-
     private const EXTRA_DATA = "extraData";
     private const ENDPOINT = "recoms";
 
     /**
-     * @param HelloRetailClientService $client
-     * @param EntityRepository<ProductEntity> $productRepository
+     * @param SalesChannelRepository<SalesChannelProductCollection> $salesChannelRepository
      */
     public function __construct(
-        protected HelloRetailClientService $client,
-        protected EntityRepository $productRepository,
-        private readonly SalesChannelRepository $salesChannelRepository
+        protected readonly HelloRetailClientService $client,
+        protected readonly SalesChannelRepository $salesChannelRepository
     ) {
     }
 

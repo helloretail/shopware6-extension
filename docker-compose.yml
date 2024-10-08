@@ -1,4 +1,3 @@
-version: "3.3"
 services:
   shopware:
     image: ghcr.io/helloretail/shopware6-extension/shopware:1.4
