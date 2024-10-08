@@ -1,5 +1,19 @@
+# 5.1.0
+* Funktion zum Abrufen von Produktempfehlungen im OffCanvas-Warenkorb hinzugefügt.
+* JavaScript-Empfehlungsblock durch serverseitigen API-Aufruf an Hello Retail ersetzt
+
 # 5.0.0
 * Kompatibilität für Shopware 6.5
+* Autorisierungstoken zu allen Feeds hinzugefügt. Gehen Sie zu den Hello Retail-Vertriebskanälen und generieren Sie ein Token
+
+# 4.3.0
+* Funktion zum Abrufen von Produktempfehlungen im OffCanvas-Warenkorb hinzugefügt.
+* JavaScript-Empfehlungsblock durch serverseitigen API-Aufruf an Hello Retail ersetzt
+
+# 4.2.1
+* Fehler bezüglich der Serialisierung der Nachrichtenwarteschlange behoben
+
+# 4.2.0
 * Autorisierungstoken zu allen Feeds hinzugefügt. Gehen Sie zu den Hello Retail-Vertriebskanälen und generieren Sie ein Token
 
 # 4.1.0

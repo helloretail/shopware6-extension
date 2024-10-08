@@ -33,7 +33,6 @@ use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelD
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -132,7 +131,12 @@ class HelloRetailService
 
         $feedEntity->setFeedDirectory($exportEntity->getFeedDirectory());
         $feedEntity->setFeed($feed);
-        $feedEntity->setDomain($salesChannelDomain);
+        $feedEntity->setSalesChannelDomainId($salesChannelDomain->getId());
+        $feedEntity->setSalesChannelDomainLanguageId($salesChannelDomain->getLanguageId());
+        $feedEntity->setSalesChannelDomainCurrencyId($salesChannelDomain->getCurrencyId());
+        $feedEntity->setSalesChannelDomainLanguageLocaleId($salesChannelDomain->getLanguage()->getLocaleId());
+        $feedEntity->setSalesChannelId($salesChannelDomain->getSalesChannelId());
+        $feedEntity->setSalesChannelDomainUrl($salesChannelDomain->getUrl());
         $feedEntity->setEntity($exportFeed->getEntity());
         $feedEntity->setFile($exportFeed->getFile());
 
@@ -239,7 +243,7 @@ class HelloRetailService
             );
             $message->setExportConfig($config);
 
-            $this->bus->dispatch(new Envelope($message));
+            $this->bus->dispatch($message);
         }
 
         $footerElement = new ExportEntityElement(
@@ -253,7 +257,7 @@ class HelloRetailService
         $footerElement->setExportConfig($config);
         $footerElement->setAllIds($entityIds);
 
-        $this->bus->dispatch(new Envelope($footerElement));
+        $this->bus->dispatch($footerElement);
 
         return true;
     }
@@ -269,11 +273,12 @@ class HelloRetailService
     public function renderBody(
         FeedEntityInterface $feedEntity,
         SalesChannelContext $salesChannelContext,
+        string $domainUrl,
         array $data = []
     ): string {
         return $this->replaceSeoUrlPlaceholder(
             $this->renderTemplate($feedEntity->getBodyTemplate(), $data, $salesChannelContext->getContext()),
-            $feedEntity->getDomain(),
+            $domainUrl,
             $salesChannelContext
         );
     }
@@ -288,10 +293,10 @@ class HelloRetailService
 
     public function replaceSeoUrlPlaceholder(
         string $content,
-        SalesChannelDomainEntity $domain,
+        string $domainUrl,
         SalesChannelContext $salesChannelContext
     ): string {
-        return $this->seoUrlPlaceholderHandler->replace($content, $domain->getUrl(), $salesChannelContext);
+        return $this->seoUrlPlaceholderHandler->replace($content, $domainUrl, $salesChannelContext);
     }
 
     public function exportLogger(

@@ -50,7 +50,6 @@ class FileController extends AbstractController
         if ($content === false) {
             throw new \RuntimeException("Failed to read the file content.");
         }
-
         return (new Response(
             $content ?: null,
             200,
@@ -71,7 +70,6 @@ class FileController extends AbstractController
         $expectedToken = $this->getAuthToken($feedDirectory);
 
         $authHeader = $request->headers->get('Authorization');
-
 
         if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
             throw new UnauthorizedHttpException('Bearer', 'Missing or invalid Authorization header.');

@@ -1,0 +1,31 @@
+.hr-recom {
+  display: block;
+  padding: 5px 0;
+  width: 300px;
+  overflow-y: scroll;
+  max-height: 100vh;
+  background-color: white;
+  position: fixed;
+  right: 400px;
+  border: 1px solid var(--secondary);
+  z-index: 9999999;
+  bottom: 0px;
+
+  .hr-recom-heading {
+    text-align: center;
+    font-size: 24px;
+  }
+
+  .product-box {
+    border: none;
+
+    .product-image-wrapper {
+      padding: 10px 10px 0;
+      background: #fff;
+    }
+
+    .product-info .product-name {
+      height: auto;
+    }
+  }
+}
