@@ -1,0 +1,32 @@
+{% sw_extends '@Storefront/storefront/component/product/listing.html.twig' %}
+
+{% block product_listing %}
+    {% if searchResult.extensions.helloRetailPageData is defined %}
+        {% set helloRetailData = searchResult.extensions.helloRetailPageData.all() %}
+        {% set pageKey = searchResult.extensions.pageKey.all()[0] %}
+
+        <div id="hr-category-page">
+            {{ helloRetailData['products']['html']|raw }}
+        </div>
+        <style>
+            {{ helloRetailData['products']['style']|raw }}
+        </style>
+        <script>
+            hrq = window.hrq || [];
+            hrq.push(function(){
+                (function(_, container, data, page){
+                    {{ helloRetailData['products']['javascript']|raw }}
+                })(
+                    ADDWISH_PARTNER_NS,
+                    document.getElementById('hr-category-page'),
+                    {{ helloRetailData|json_encode|raw }},
+                    { key: '{{ pageKey }}' }
+                )
+            });
+        </script>
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
+
+

@@ -40,11 +40,6 @@ class HelloRetailClientService
         return $_COOKIE['hello_retail_id'] ?? null;
     }
 
-    protected function parseRequest(): array
-    {
-
-    }
-
     public function callApi(string $endpoint, RecommendationRequest|PageRequest $request): array
     {
         $request->setWebsiteUuid($this->apiKey);
@@ -64,7 +59,7 @@ class HelloRetailClientService
 
 
         if ($response->getStatusCode() != "200") {
-            return [];
+            return array($response);
         }
         return json_decode($response->getBody()->getContents(), true);
     }
