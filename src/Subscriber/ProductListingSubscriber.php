@@ -28,7 +28,7 @@ class ProductListingSubscriber implements EventSubscriberInterface
         ];
     }
 
-    public function onProductListingResult(ProductListingResultEvent $event)
+    public function onProductListingResult(ProductListingResultEvent $event): void
     {
         $request = $event->getRequest();
         $pageKey = $request->get('helloRetailPageKey');
