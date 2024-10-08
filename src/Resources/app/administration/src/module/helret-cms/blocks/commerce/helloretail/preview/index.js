@@ -1,5 +1,11 @@
 import template from './sw-cms-preview-hello-retail.html.twig';
 
-Shopware.Component.register('sw-cms-preview-hello-retail', {
-    template
-});
+export default {
+    template,
+
+    computed: {
+        assetFilter() {
+            return Shopware.Filter.getByName('asset');
+        }
+    }
+}

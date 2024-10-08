@@ -8,6 +8,7 @@ use Exception;
 use Helret\HelloRetail\Core\Content\Feeds\ExportEntity;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\Local\LocalFilesystemAdapter;
+use Shopware\Core\Framework\Adapter\Twig\TwigVariableParser;
 use Shopware\Core\Framework\Adapter\Twig\TwigVariableParserFactory;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\EntityDefinitionQueryHelper;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -16,6 +17,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
+use Twig\Environment;
 use TypeError;
 use League\Flysystem\Filesystem;
 use Monolog\Logger;
@@ -31,7 +33,6 @@ use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelD
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -46,6 +47,7 @@ use Helret\HelloRetail\HelretHelloRetail;
 class HelloRetailService
 {
     protected Filesystem $filesystem;
+    protected TwigVariableParser $twigVariableParser;
 
     public function __construct(
         protected EntityRepository $logEntryRepository,
@@ -59,18 +61,20 @@ class HelloRetailService
         protected EntityRepository $salesChannelDomainRepository,
         protected SystemConfigService $configService,
         protected string $projectRoot,
-        protected TwigVariableParserFactory $twigVariableParser,
-        protected ExportService $exportService
+        protected ExportService $exportService,
+        Environment $twig,
+        TwigVariableParserFactory $parserFactory
     ) {
         $fullPath = $this->getFeedDirectoryPath();
         $localFilesystemAdapter = new LocalFilesystemAdapter($fullPath);
         $this->filesystem = new Filesystem($localFilesystemAdapter);
+        $this->twigVariableParser = $parserFactory->getParser($twig);
     }
 
     public function getFeedDirectoryPath(): string
     {
-        $publicDir = $this->projectRoot . DIRECTORY_SEPARATOR . 'files';
-        return $publicDir . DIRECTORY_SEPARATOR . HelretHelloRetail::STORAGE_PATH;
+        $filesDir = $this->projectRoot . DIRECTORY_SEPARATOR . 'files';
+        return $filesDir . DIRECTORY_SEPARATOR . HelretHelloRetail::STORAGE_PATH;
     }
 
     /**
@@ -338,7 +342,7 @@ class HelloRetailService
     protected function getAssociations(string $template, EntityRepository $repo): array
     {
         try {
-            $variables = $this->twigVariableParser->getParser($template);
+            $variables = $this->twigVariableParser->parse($template);
         } catch (\Exception $e) {
             return [];
             // Should we throw, or just rely on the associations from the conf file?

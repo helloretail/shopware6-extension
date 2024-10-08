@@ -167,7 +167,6 @@ Component.override('sw-sales-channel-detail-base', {
             return this.storefrontDomainUrl + urlPath;
         },
 
-        // @change
         onStorefrontSelectionChange(storefrontSalesChannelId, salesChannel) {
             if (!this.isHelloRetail) {
                 this.$super('onStorefrontSelectionChange', storefrontSalesChannelId, salesChannel);

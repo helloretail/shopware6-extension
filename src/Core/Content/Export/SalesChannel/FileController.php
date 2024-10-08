@@ -3,17 +3,16 @@
 namespace Helret\HelloRetail\Core\Content\Export\SalesChannel;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Exception;
 use Helret\HelloRetail\HelretHelloRetail;
 use League\Flysystem\Filesystem;
 use League\Flysystem\FilesystemException;
 use Shopware\Core\Content\ProductExport\Exception\ExportNotGeneratedException;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
-use Symfony\Component\Routing\Annotation\Route;
-use Shopware\Core\Framework\Uuid\Uuid;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(defaults: ['_routeScope' => ['storefront']])]
 class FileController extends AbstractController
@@ -42,7 +41,6 @@ class FileController extends AbstractController
         $file = $path . DIRECTORY_SEPARATOR . $request->get("fileName");
 
         if (!file_exists($file)) {
-            // Generate
             throw new ExportNotGeneratedException();
         }
 
@@ -65,12 +63,10 @@ class FileController extends AbstractController
         return $filesDir . DIRECTORY_SEPARATOR . HelretHelloRetail::STORAGE_PATH;
     }
 
-    /**
-     * @throws UnauthorizedHttpException
-     */
     protected function checkAuthorization(Request $request): void
     {
         $feedDirectory = $request->get("feedDirectory");
+
         $expectedToken = $this->getAuthToken($feedDirectory);
 
         $authHeader = $request->headers->get('Authorization');
@@ -86,9 +82,6 @@ class FileController extends AbstractController
         }
     }
 
-    /**
-     * @throws Exception
-     */
     protected function getAuthToken(string $feedDirectory): ?string
     {
         if (!$feedDirectory) {
