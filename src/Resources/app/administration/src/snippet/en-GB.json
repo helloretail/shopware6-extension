@@ -5,6 +5,30 @@
                 "hello-retail": {
                     "label": "Hello Retail Integration"
                 }
+            },
+            "hello-retail": {
+                "hello-retail-recommendations": {
+                    "label": "Hello Retail Recommendations"
+                }
+            }
+        },
+        "detail": {
+            "label": {
+                "blockCategoryHelloRetail": "Hello Retail"
+            }
+        }
+    },
+    "helret-cms": {
+        "elements": {
+            "productSlider": {
+                "config": {
+                    "label": {
+                        "key": "Key"
+                    },
+                    "placeholder": {
+                        "key": "Key"
+                    }
+                }
             }
         }
     },

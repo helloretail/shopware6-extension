@@ -2,6 +2,8 @@
 
 namespace Helret\HelloRetail\Export;
 
+use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
+
 interface FeedEntityInterface
 {
     public function getFeed(): string;

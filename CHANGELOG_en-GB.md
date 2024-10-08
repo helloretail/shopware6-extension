@@ -1,3 +1,7 @@
+# 4.3.0
+* Added functionality to get product recommendations in offcanvas cart
+* Replaced javascript recommendations block with server side api call to hello retail
+
 # 4.2.1
 * Fixed bug regarding message queue serialization
 

@@ -2,6 +2,7 @@
     <url>{{ seoUrl('frontend.detail.page', {'productId': product.id}) }}</url>
     <title>{% if product.name %}{{ product.name }}{% else %}{{ product.translated.name }}{% endif %}</title>
     <ean>{{ product.ean }}</ean>
+    <id>{{ product.id }}</id>
     <sku>{{ product.productNumber }}</sku>
     {% if product.cover %}
         {% set thumbnail = product.cover.media.thumbnails.elements|filter(img => img.width == 400)|first %}

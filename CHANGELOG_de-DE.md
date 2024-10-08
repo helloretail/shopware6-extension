@@ -1,3 +1,7 @@
+# 4.3.0
+* Funktion zum Abrufen von Produktempfehlungen im OffCanvas-Warenkorb hinzugefügt.
+* JavaScript-Empfehlungsblock durch serverseitigen API-Aufruf an Hello Retail ersetzt
+
 # 4.2.1
 * Fehler bezüglich der Serialisierung der Nachrichtenwarteschlange behoben
 

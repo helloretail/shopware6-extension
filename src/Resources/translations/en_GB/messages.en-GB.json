@@ -40,6 +40,9 @@
                 "customerTitle": "Customers",
                 "orderTitle": "Orders"
             }
+        },
+        "cart" : {
+            "offcanvasHeading": "Others also bought"
         }
     }
 }
