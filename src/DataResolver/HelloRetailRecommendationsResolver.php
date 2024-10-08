@@ -3,7 +3,6 @@
 namespace Helret\HelloRetail\DataResolver;
 
 use Helret\HelloRetail\Service\HelloRetailRecommendationService;
-use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Cms\Aggregate\CmsSlot\CmsSlotEntity;
 use Shopware\Core\Content\Cms\DataResolver\CriteriaCollection;
 use Shopware\Core\Content\Cms\DataResolver\Element\AbstractCmsElementResolver;
@@ -17,8 +16,6 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class HelloRetailRecommendationsResolver extends AbstractCmsElementResolver
 {
-    private const PRODUCT_SLIDER_ENTITY_FALLBACK = 'hello-retail-recommendations-entity-fallback';
-    private const FALLBACK_LIMIT = 50;
     private const STATIC_SEARCH_KEY = 'hello-retail-recommendations';
 
     public function __construct(
