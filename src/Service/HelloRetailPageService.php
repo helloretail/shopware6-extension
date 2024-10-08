@@ -38,7 +38,7 @@ class HelloRetailPageService extends HelloRetailApiService
         }
         return $callback;
     }
-
+    
     private function buildEndpoint(string $key): string
     {
         return self::endpoint . '/' . $key;

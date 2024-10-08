@@ -23,8 +23,7 @@ class ProductListingSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            ProductListingResultEvent::class => 'onProductListingResult',
-            ProductListingResolvePreviewEvent::class => 'onProductListingResolvePreview'
+            ProductListingResultEvent::class => 'onProductListingResult'
         ];
     }
 
