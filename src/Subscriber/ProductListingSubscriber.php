@@ -36,11 +36,14 @@ class ProductListingSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $pageProductsResult = $this->pageService->getPage($pageKey, $request->get('helloRetailHierarchies'), $event->getSalesChannelContext());
+        $hierarchies = $request->get('helloRetailHierarchies');
+
+        $pageProductsResult = $this->pageService->getPage($pageKey, $hierarchies, $event->getSalesChannelContext());
         $pageKey = [$pageKey];
 
 
         $event->getResult()->addExtension('helloRetailPageData', new ArrayEntity($pageProductsResult));
+        $event->getResult()->addExtension('helloRetailHierarchies', new ArrayEntity($hierarchies));
         $event->getResult()->addExtension('pageKey', new ArrayEntity($pageKey));
     }
 }

@@ -4,6 +4,7 @@
     {% if searchResult.extensions.helloRetailPageData is defined %}
         {% set helloRetailData = searchResult.extensions.helloRetailPageData.all() %}
         {% set pageKey = searchResult.extensions.pageKey.all()[0] %}
+        {% set hierarchies = searchResult.extensions.helloRetailHierarchies.all() %}
 
         <div id="hr-category-page">
             {{ helloRetailData['products']['html']|raw }}
@@ -12,9 +13,16 @@
             {{ helloRetailData['products']['style']|raw }}
         </style>
         <script>
+            let hrHierarchies = {{ hierarchies|json_encode|raw }};
+            let filtersObject = { hierarchies: hrHierarchies };
+
             hrq = window.hrq || [];
             hrq.push(function(){
                 (function(_, container, data, page){
+
+                    data.params = data.params || {};
+                    data.params.filters = JSON.stringify(filtersObject);
+
                     {{ helloRetailData['products']['javascript']|raw }}
                 })(
                     ADDWISH_PARTNER_NS,
