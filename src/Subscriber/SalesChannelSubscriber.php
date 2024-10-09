@@ -40,8 +40,6 @@ class SalesChannelSubscriber implements EventSubscriberInterface
             return;
         }
 
-
-
         /** @var HelretBeforeCartLoadEvent $beforeLoad */
         $beforeLoad = $this->eventDispatcher->dispatch(new HelretBeforeCartLoadEvent([
             'frontend.checkout', // Checkout pages has cart loaded.

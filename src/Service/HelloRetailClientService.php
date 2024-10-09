@@ -12,13 +12,20 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 class HelloRetailClientService
 {
     private const url = "https://core.helloretail.com/serve/";
-    private string|null $apiKey = null;
-    private Client $client;
+    private const userEndpoint = "trackingUser";
+    private ?string $apiKey = null;
+    private ?Client $client = null;
 
     public function __construct(protected SystemConfigService $systemConfigService)
     {
-        $this->client = new Client();
-        $this->loadAuthData();
+    }
+
+    private function getClient(): Client
+    {
+        if ($this->client === null) {
+            $this->client = new Client();
+        }
+        return $this->client;
     }
 
     public function loadAuthData(): void
@@ -28,25 +35,29 @@ class HelloRetailClientService
         }
     }
 
-    public function getApiKey(): ?string
-    {
-        return $this->apiKey;
-    }
-
     private function getCookieUserId(): ?string
     {
         //returns cookie, unless user has opted out
         return $_COOKIE['hello_retail_id'] ?? null;
     }
 
-    public function callApi(string $endpoint, RecommendationRequest|PageRequest $request): array
+    public function callApi(string $endpoint, Mixed $request = []): array
     {
-        $request->setWebsiteUuid($this->apiKey);
-        $request->setTrackingUserId($this->getCookieUserId());
+        $this->loadAuthData();
+        $client = $this->getClient();
 
-        $body = json_encode($request);
+        if ($request && !is_array($request)) {
+            $request = [$request];
+        }
+
+        $body = json_encode([
+            "websiteUuid" => $this->apiKey,
+            "trackingUserId" => $this->getCookieUserId(),
+            "requests" => $request
+        ]);
+
         try {
-            $response = $this->client->send(new Request(
+            $response = $client->send(new Request(
                 'POST',
                 self::url . $endpoint,
                 ['Content-Type' => 'application/json'],
@@ -60,6 +71,7 @@ class HelloRetailClientService
         if ($response->getStatusCode() != "200") {
             return array($response);
         }
+
         return json_decode($response->getBody()->getContents(), true);
     }
 

@@ -12,10 +12,8 @@ use Shopware\Core\Framework\Adapter\Twig\TwigVariableParser;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\EntityDefinitionQueryHelper;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Grouping\FieldGrouping;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use TypeError;
@@ -172,7 +170,6 @@ class HelloRetailService
             )));
             $criteria->addFilter(new EqualsFilter('category.active', true));
         } elseif (EntityType::getMatchingEntityType($feed) == EntityType::ORDER) {
-            $salesChannelId = $salesChannelContext->getSalesChannelId();
             $criteria->addFilter(new EqualsFilter('salesChannelId', $salesChannelId));
             if ($this->configService->get('HelretHelloRetail.config.orderLimit', $salesChannelId)) {
                 $amountOfMonths = $this->configService->getInt(

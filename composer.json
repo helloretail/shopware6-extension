@@ -16,7 +16,7 @@
         }
     },
     "require": {
-        "shopware/core": "^6.5"
+        "shopware/core": "~6.5"
     },
     "extra": {
         "shopware-plugin-class": "Helret\\HelloRetail\\HelretHelloRetail",
