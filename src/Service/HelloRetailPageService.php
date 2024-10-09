@@ -12,8 +12,6 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class HelloRetailPageService extends HelloRetailApiService
 {
-    private const STATIC_SEARCH_KEY = 'hello-retail-recommendations';
-
     private const endpoint = "pages";
 
     public function getPage(string $key, array $hierarchies, SalesChannelContext $salesChannelContext) : array
@@ -27,8 +25,6 @@ class HelloRetailPageService extends HelloRetailApiService
     {
         $pageFilters = new PageFilters($hierarchies);
         $pageParams = new PageParams($pageFilters);
-        //TODO
-        //add start and count. Calculate from pagination of slot
         $pageProducts = new PageProducts(0, 100);
         $request = new PageRequest($pageParams, $pageProducts, $urls[0]);
 

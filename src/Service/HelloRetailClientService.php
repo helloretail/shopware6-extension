@@ -12,7 +12,6 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 class HelloRetailClientService
 {
     private const url = "https://core.helloretail.com/serve/";
-    private const userEndpoint = "trackingUser";
     private string|null $apiKey = null;
     private Client $client;
 
