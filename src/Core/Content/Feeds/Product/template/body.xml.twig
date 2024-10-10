@@ -1,25 +1,4 @@
 <product>
-
-    {% if product.isCloseOut and product.availableStock <= 0 %}
-        {% set available = false %}
-    {% else %}
-        {% set available = true %}
-    {% endif %}
-    {% set visibility = 0 %}
-
-    {% set displayGroup = product.displayGroup %}
-    {% if usedGroups|default([]) is empty %}
-        {% set usedGroups = [] %}
-    {% endif %}
-
-    {% set groupDisplay = product.extensions.groupDisplay.value|default(false) %}
-
-    {% for productVisibility in product.visibilities %}
-        {% if productVisibility.salesChannelId == salesChannelId %}
-            {% set visibility = productVisibility.visibility %}
-        {% endif %}
-    {% endfor %}
-
     <url>{{ seoUrl('frontend.detail.page', {'productId': product.id}) }}</url>
     <title>{% if product.name %}{{ product.name }}{% else %}{{ product.translated.name }}{% endif %}</title>
     <ean>{{ product.ean }}</ean>
@@ -39,12 +18,6 @@
     <oldPrice>{% if listPrice %}{{ listPrice.price }}{% endif %}</oldPrice>
     <displayFrom>{{ product.calculatedPrices.count > 1 }}</displayFrom>
     {# Price end #}
-
-    {# display on pages #}
-    <available>{% if available %}true{%else%}false{%endif%}</available>
-    <visibility>{{ visibility }}</visibility>
-    <displayGroup>{{ displayGroup }}</displayGroup>
-    <display>{% if available and visibility == 30 and groupDisplay and product.active %}true{% else %}false{% endif %}</display>
 
     <description>{{ product.description }}</description>
     <brand>{% if product.manufacturer %}{{ product.manufacturer.name }}{% endif %}</brand>

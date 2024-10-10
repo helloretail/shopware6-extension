@@ -5,8 +5,6 @@ namespace Helret\HelloRetail\Service;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Request;
-use Helret\HelloRetail\Service\Models\Requests\PageRequest;
-use Helret\HelloRetail\Service\Models\Requests\RecommendationRequest;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class HelloRetailClientService
@@ -56,12 +54,11 @@ class HelloRetailClientService
                 $body
             ));
         } catch (GuzzleException $e) {
-
             return [];
         }
 
         if ($response->getStatusCode() != "200") {
-            return array($response);
+            return [];
         }
 
         return json_decode($response->getBody()->getContents(), true);

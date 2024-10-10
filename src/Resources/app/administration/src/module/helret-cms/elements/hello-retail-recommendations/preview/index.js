@@ -1,7 +1,7 @@
-import template from './sw-cms-el-preview-hello-retail-pages.html.twig';
+import template from './sw-cms-el-preview-hello-retail-recommendations.html.twig';
 
 const { Component } = Shopware;
 
-Component.register('sw-cms-preview-hello-retail-pages', {
+Component.register('sw-cms-preview-hello-retail-recommendations', {
     template
 });
