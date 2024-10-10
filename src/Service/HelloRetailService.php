@@ -31,6 +31,7 @@ use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelD
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -207,9 +208,9 @@ class HelloRetailService
         $entityIds = $entityIdsResult->getIds();
 
         $content = $this->renderHeader($feedEntity, $context, [
-             "{$feed}sTotal" => $entityIdsResult->getTotal(),
-             "total" => $entityIdsResult->getTotal(),
-             "updatedAt" => date("Y-m-d H:i:s")
+            "{$feed}sTotal" => $entityIdsResult->getTotal(),
+            "total" => $entityIdsResult->getTotal(),
+            "updatedAt" => date("Y-m-d H:i:s")
         ]);
         if (!$content) {
             // If the header render failed, no need to continue.
@@ -230,6 +231,7 @@ class HelloRetailService
 
         foreach ($entityIds as $entityId) {
             $message = new ExportEntityElement(
+                $salesChannelContext,
                 $tmpDir,
                 $entityId,
                 $feedEntity,
@@ -242,6 +244,7 @@ class HelloRetailService
         }
 
         $footerElement = new ExportEntityElement(
+            $salesChannelContext,
             $tmpDir,
             TemplateType::FOOTER,
             $feedEntity,
