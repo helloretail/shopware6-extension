@@ -19,7 +19,6 @@ class ApiController extends AbstractController
         protected ExportService $exportService,
         protected DecoderInterface $serializer
     ) {
-
     }
 
     #[Route(

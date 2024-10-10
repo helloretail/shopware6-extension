@@ -4,11 +4,12 @@ namespace Helret\HelloRetail\Service\Models;
 
 class PageProducts
 {
-
     public function __construct(
         public int $start,
         public int $count,
-    ){}
+    ) {
+
+    }
 
     public function getStart(): int
     {
