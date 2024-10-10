@@ -147,12 +147,9 @@
             <argument type="service" id="Helret\HelloRetail\Service\HelloRetailClientService"/>
             <argument type="service" id="product.repository"/>
         </service>
-        <service id="Helret\HelloRetail\Service\HelloRetailRecommendationService"
-                 parent="Helret\HelloRetail\Service\HelloRetailApiService"
-        />
+
         <service id="Helret\HelloRetail\Service\HelloRetailPageService"
-                parent="Helret\HelloRetail\Service\HelloRetailApiService"
-        />
+                parent="Helret\HelloRetail\Service\HelloRetailApiService"/>
 
         <service id="Helret\HelloRetail\DataResolver\HelloRetailRecommendationsResolver">
             <argument type="service" id="Helret\HelloRetail\Service\HelloRetailRecommendationService"/>

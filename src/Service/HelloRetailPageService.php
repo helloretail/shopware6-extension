@@ -12,12 +12,12 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class HelloRetailPageService extends HelloRetailApiService
 {
-    private const endpoint = "pages";
+    private const ENDPOINT = "pages";
 
     public function getPage(string $key, array $hierarchies, SalesChannelContext $salesChannelContext) : array
     {
         $urls = $this->renderUrls($salesChannelContext);
-
+        
         return $this->fetchPage($key, $hierarchies, $urls);
     }
 
@@ -26,8 +26,8 @@ class HelloRetailPageService extends HelloRetailApiService
         $pageFilters = new PageFilters($hierarchies);
         $pageParams = new PageParams($pageFilters);
         $pageProducts = new PageProducts(0, 100);
-        $request = new PageRequest($pageParams, $pageProducts, $urls[0]);
 
+        $request = new PageRequest($pageParams, $pageProducts, $urls[1]);
         $callback = $this->client->callApi($this->buildEndpoint($key), $request);
         if (!$callback['success'] || empty($callback['products'])) {
             return [];
@@ -37,6 +37,6 @@ class HelloRetailPageService extends HelloRetailApiService
     
     private function buildEndpoint(string $key): string
     {
-        return self::endpoint . '/' . $key;
+        return self::ENDPOINT . '/' . $key;
     }
 }
