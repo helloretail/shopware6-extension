@@ -35,11 +35,13 @@ class ProductListingSubscriber implements EventSubscriberInterface
         $hierarchies = $request->get('helloRetailHierarchies');
 
         $pageProductsResult = $this->pageService->getPage($pageKey, $hierarchies, $event->getSalesChannelContext());
-        $pageKey = [$pageKey];
 
+        if ($pageProductsResult) {
+            $pageKey = [$pageKey];
 
-        $event->getResult()->addExtension('helloRetailPageData', new ArrayEntity($pageProductsResult));
-        $event->getResult()->addExtension('helloRetailHierarchies', new ArrayEntity($hierarchies));
-        $event->getResult()->addExtension('pageKey', new ArrayEntity($pageKey));
+            $event->getResult()->addExtension('helloRetailPageData', new ArrayEntity($pageProductsResult));
+            $event->getResult()->addExtension('helloRetailHierarchies', new ArrayEntity($hierarchies));
+            $event->getResult()->addExtension('pageKey', new ArrayEntity($pageKey));
+        }
     }
 }

@@ -9,7 +9,7 @@ class PageRequest extends Request
 {
     public function __construct(
         public PageParams $params,
-        public PageProducts $products,
+        public array $products = [],
         public string $url,
         public bool $firstLoad = true,
         public bool $layout = false,
@@ -27,16 +27,6 @@ class PageRequest extends Request
     public function setParams(PageParams $params): void
     {
         $this->params = $params;
-    }
-
-    public function getProducts(): PageProducts
-    {
-        return $this->products;
-    }
-
-    public function setProducts(PageProducts $products): void
-    {
-        $this->products = $products;
     }
 
     public function getUrl(): string
