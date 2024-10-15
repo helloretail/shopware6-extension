@@ -11,7 +11,6 @@ use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRouteRespon
 use Shopware\Core\Content\Product\SalesChannel\Listing\ResolveCriteriaProductListingRoute;
 use Shopware\Core\Content\Product\SalesChannel\Search\ResolvedCriteriaProductSearchRoute;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\Feature;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
