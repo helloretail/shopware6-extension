@@ -1,14 +1,9 @@
 
 {% block sw_cms_element_product_listing_config_info %}
     <sw-text-field
-            {% if VUE3 %}
-                v-model:value="element.config.helloRetailKey.value"
-            {% else %}
-                v-model="element.config.helloRetailKey.value"
-            {% endif %}
+            v-model="element.config.helloRetailKey.value"
             :label="$tc('sw-cms.elements.productListing.config.label.pageKey')"
             :placeholder="$tc('sw-cms.elements.productListing.config.placeholder.pageKey')"
     />
-
     {% parent %}
 {% endblock %}

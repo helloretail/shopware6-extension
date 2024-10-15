@@ -170,11 +170,6 @@
                  parent="Shopware\Core\Content\Product\SalesChannel\Listing\ResolveCriteriaProductListingRoute"
                  public="true"
         />
-        <service id="Helret\HelloRetail\Content\Product\SalesChannel\Listing\HelRetProductListingLoader"
-                 decorates="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader"
-                 parent="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader"
-                 public="true"
-        />
 
     </services>
 </container>

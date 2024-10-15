@@ -34,9 +34,7 @@ class ResolveCriteriaHelloRetailListingRoute extends ResolveCriteriaProductListi
 
         $this->processor->prepare($request, $criteria, $context);
 
-        if (!Feature::isActive('v6.6.0.0')) {
-            $context->getContext()->addState(ProductListingFeaturesSubscriber::HANDLED_STATE);
-        }
+        $context->getContext()->addState(ProductListingFeaturesSubscriber::HANDLED_STATE);
 
         $this->eventDispatcher->dispatch(
             new ProductListingCriteriaEvent($request, $criteria, $context)
