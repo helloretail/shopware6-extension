@@ -6,31 +6,18 @@
         {% set pageKey = searchResult.extensions.pageKey.all()[0] %}
         {% set hierarchies = searchResult.extensions.helloRetailHierarchies.all() %}
 
-        <div id="hr-category-page">
+        <div id="hr-category-page" data-helret-listing>
             {{ helloRetailData['products']['html']|raw }}
         </div>
-        <style>
+        <style id="hr-category-page-style">
             {{ helloRetailData['products']['style']|raw }}
         </style>
-        <script>
-            let hrHierarchies = {{ hierarchies|json_encode|raw }};
-            let filtersObject = { hierarchies: hrHierarchies };
-
-            hrq = window.hrq || [];
-            hrq.push(function(){
-                (function(_, container, data, page){
-
-                    data.params = data.params || {};
-                    data.params.filters = JSON.stringify(filtersObject);
-
-                    {{ helloRetailData['products']['javascript']|raw }}
-                })(
-                    ADDWISH_PARTNER_NS,
-                    document.getElementById('hr-category-page'),
-                    {{ helloRetailData|json_encode|raw }},
-                    { key: '{{ pageKey }}' }
-                )
-            });
+        <script type="text/javascript">
+            window.hrListingData = {
+                helloRetailData: {{ helloRetailData|json_encode|raw }},
+                pageKey: '{{ pageKey }}',
+                hierarchies: {{ hierarchies|json_encode|raw }}
+            };
         </script>
     {% else %}
         {{ parent() }}
