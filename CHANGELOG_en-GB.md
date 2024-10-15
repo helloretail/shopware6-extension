@@ -1,3 +1,6 @@
+# 4.4.0
+* Added the option to replace Shopware product listing with hello retail pages using page key
+
 # 4.3.0
 * Added functionality to get product recommendations in offcanvas cart
 * Replaced javascript recommendations block with server side api call to hello retail
