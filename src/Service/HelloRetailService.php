@@ -231,7 +231,6 @@ class HelloRetailService
 
         foreach ($entityIds as $entityId) {
             $message = new ExportEntityElement(
-                $salesChannelContext,
                 $tmpDir,
                 $entityId,
                 $feedEntity,
@@ -244,7 +243,6 @@ class HelloRetailService
         }
 
         $footerElement = new ExportEntityElement(
-            $salesChannelContext,
             $tmpDir,
             TemplateType::FOOTER,
             $feedEntity,
