@@ -44,15 +44,7 @@ class HelloRetailClientService
         $this->loadAuthData();
         $client = $this->getClient();
 
-        if ($request && !is_array($request)) {
-            $request = [$request];
-        }
-
-        $body = json_encode([
-            "websiteUuid" => $this->apiKey,
-            "trackingUserId" => $this->getCookieUserId(),
-            "requests" => $request
-        ]);
+        $body = json_encode($request);
 
         try {
             $response = $client->send(new Request(
@@ -71,4 +63,5 @@ class HelloRetailClientService
 
         return json_decode($response->getBody()->getContents(), true);
     }
+
 }

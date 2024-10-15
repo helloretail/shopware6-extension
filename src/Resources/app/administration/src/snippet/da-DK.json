@@ -16,6 +16,18 @@
             "label": {
                 "blockCategoryHelloRetail": "Hello Retail"
             }
+        },
+        "elements": {
+            "productListing": {
+                "config": {
+                    "label": {
+                        "pageKey": "Page nøgle"
+                    },
+                    "placeholder": {
+                        "pageKey": "Page Nøgle"
+                    }
+                }
+            }
         }
     },
     "helret-cms": {

@@ -3,7 +3,6 @@
 namespace Helret\HelloRetail\Export;
 
 use Shopware\Core\Framework\MessageQueue\AsyncMessageInterface;
-use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 
 class FeedEntity implements FeedEntityInterface, AsyncMessageInterface
 {

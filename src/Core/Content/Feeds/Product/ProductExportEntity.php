@@ -18,7 +18,8 @@ class ProductExportEntity extends ExportEntity
         'media',
         'cover',
         'properties.group',
-        'cheapestPrice'
+        'cheapestPrice',
+        'visibilities'
     ];
 
     public function getSnippetKey(): string
