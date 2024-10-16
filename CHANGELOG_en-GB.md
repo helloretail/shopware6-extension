@@ -1,3 +1,6 @@
+# 4.3.1
+* Bugfix: Remove Sales Channel Context from export message
+
 # 4.3.0
 * Added functionality to get product recommendations in offcanvas cart
 * Replaced javascript recommendations block with server side api call to hello retail
