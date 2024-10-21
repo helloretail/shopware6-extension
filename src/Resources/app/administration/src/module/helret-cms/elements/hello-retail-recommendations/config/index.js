@@ -9,7 +9,5 @@ Component.extend('sw-cms-el-config-hello-retail-recommendations', 'sw-cms-el-con
         createdComponent() {
             this.initElementConfig('hello-retail-recommendations');
         },
-    },
-    computed: {
     }
 });

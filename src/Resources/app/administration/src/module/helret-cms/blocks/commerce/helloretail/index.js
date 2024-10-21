@@ -1,0 +1,30 @@
+import './component';
+import './preview';
+
+Shopware.Service('cmsService').registerCmsBlock({
+    name: 'hello-retail',
+    label: 'sw-cms.blocks.commerce.hello-retail.label',
+    category: 'commerce',
+    component: 'sw-cms-block-hello-retail',
+    previewComponent: 'sw-cms-preview-hello-retail',
+    defaultConfig: {
+        marginBottom: '20px',
+        marginTop: '20px',
+        marginLeft: '20px',
+        marginRight: '20px',
+        sizingMode: 'boxed'
+    },
+    slots: {
+        content: {
+            type: 'text',
+            default: {
+                config: {
+                    content: {
+                        source: 'static',
+                        value: 'Enter Recommendation ID Here'
+                    }
+                }
+            }
+        }
+    }
+});

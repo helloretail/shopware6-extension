@@ -12,12 +12,23 @@ use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Struct\ArrayEntity;
+use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class HelloRetailRecommendationService extends HelloRetailApiService
 {
-    private const STATIC_SEARCH_KEY = 'hello-retail-recommendations';
-    private const endpoint = "recoms";
+    private const EXTRA_DATA = "extraData";
+    private const ENDPOINT = "recoms";
+
+    /**
+     * @param SalesChannelRepository<SalesChannelProductCollection> $salesChannelRepository
+     */
+    public function __construct(
+        protected readonly HelloRetailClientService $client,
+        protected readonly SalesChannelRepository $salesChannelRepository
+    ) {
+    }
 
     public function getRecommendationsSearch(
         string $key,
@@ -26,8 +37,25 @@ class HelloRetailRecommendationService extends HelloRetailApiService
         SalesChannelContext $salesChannelContext = null
     ): CriteriaCollection {
         $collection = new CriteriaCollection();
-        $hierarchies = $this->renderHierarchies($entity);
-        $urls = $this->renderUrls($salesChannelContext);
+        $hierarchies = [];
+        $urls = [];
+        $category = null;
+        if ($entity::class == CategoryEntity::class) {
+            $category = $entity;
+        } elseif ($entity::class == SalesChannelProductEntity::class) {
+            $category = $entity->getSeoCategory();
+        }
+
+        if ($category && $category->getBreadcrumb()) {
+            $hierarchies = $category->getBreadcrumb();
+        }
+
+        if ($salesChannelContext) {
+            /** @var SalesChannelDomainEntity $domain */
+            foreach ($salesChannelContext->getSalesChannel()->getDomains() as $domain) {
+                $urls[] = $domain->getUrl();
+            }
+        }
         $productData = $this->fetchRecommendations($key, [$hierarchies], $urls);
 
         $ids = $this->getIds($productData);
@@ -45,20 +73,18 @@ class HelloRetailRecommendationService extends HelloRetailApiService
         return $collection;
     }
 
-    public function getRecommendations(string $key): salesChannelProductCollection
+    public function getRecommendations(string $key, SalesChannelContext $context)
     {
         $productData = $this->fetchRecommendations($key);
-        return $this->getProducts($productData);
+        return $this->getProducts($productData, $context);
     }
 
     private function fetchRecommendations(string $key, array $hierarchies = [], $urls = []): array
     {
         $productData = [];
         $context = new RecommendationContext($hierarchies, "", $urls);
-        $request = new Models\Recommendation($key, [self::extraData], $context);
-        $request = new RecommendationRequest([$request]);
-
-        $callback = $this->client->callApi(self::endpoint, $request);
+        $request = new Models\Recommendation($key, [self::EXTRA_DATA], $context);
+        $callback = $this->client->callApi(self::ENDPOINT, $request);
 
         foreach ($callback['responses'] ?? [] as $response) {
             if (!$response['success']) {
@@ -66,6 +92,36 @@ class HelloRetailRecommendationService extends HelloRetailApiService
             }
             $productData = array_merge($productData, $response['products']);
         }
+
         return $productData;
+    }
+
+    private function getProducts(array $productData, SalesChannelContext $context): mixed
+    {
+        $ids = $this->getIds($productData);
+
+        if (!$ids) {
+            return null;
+        }
+
+        $criteria = new Criteria($ids);
+        $criteria->addAssociation('cover');
+        $criteria->addAssociation('media');
+        $criteria->addAssociation('seoUrls');
+        return $this->salesChannelRepository->search($criteria, $context)->getEntities();
+    }
+
+    private function getIds(array $productData): array
+    {
+        $ids = [];
+        foreach ($productData as $data) {
+            $id = $data[self::EXTRA_DATA]['id'] ?? $data[self::EXTRA_DATA]['productId'] ?? null;
+
+            if ($id) {
+                $ids[] = $id;
+            }
+        }
+
+        return $ids;
     }
 }

@@ -13,13 +13,19 @@ class HelloRetailClientService
 {
     private const url = "https://core.helloretail.com/serve/";
     private const userEndpoint = "trackingUser";
-    private string|null $apiKey = null;
-    private Client $client;
+    private ?string $apiKey = null;
+    private ?Client $client = null;
 
     public function __construct(protected SystemConfigService $systemConfigService)
     {
-        $this->client = new Client();
-        $this->loadAuthData();
+    }
+
+    private function getClient(): Client
+    {
+        if ($this->client === null) {
+            $this->client = new Client();
+        }
+        return $this->client;
     }
 
     public function loadAuthData(): void
@@ -27,11 +33,6 @@ class HelloRetailClientService
         if (!$this->apiKey) {
             $this->apiKey = $this->systemConfigService->get('HelretHelloRetail.config.partnerId') ?? null;
         }
-    }
-
-    public function getApiKey(): ?string
-    {
-        return $this->apiKey;
     }
 
     private function getCookieUserId(): ?string
@@ -42,17 +43,21 @@ class HelloRetailClientService
 
     protected function parseRequest(): array
     {
+        $this->loadAuthData();
+        $client = $this->getClient();
 
-    }
+        if ($request && !is_array($request)) {
+            $request = [$request];
+        }
 
-    public function callApi(string $endpoint, RecommendationRequest|PageRequest $request): array
-    {
-        $request->setWebsiteUuid($this->apiKey);
-        $request->setTrackingUserId($this->getCookieUserId());
+        $body = json_encode([
+            "websiteUuid" => $this->apiKey,
+            "trackingUserId" => $this->getCookieUserId(),
+            "requests" => $request
+        ]);
 
-        $body = json_encode($request);
         try {
-            $response = $this->client->send(new Request(
+            $response = $client->send(new Request(
                 'POST',
                 self::url . $endpoint,
                 ['Content-Type' => 'application/json'],
@@ -62,11 +67,10 @@ class HelloRetailClientService
             return [];
         }
 
-
         if ($response->getStatusCode() != "200") {
             return [];
         }
+
         return json_decode($response->getBody()->getContents(), true);
     }
-
 }

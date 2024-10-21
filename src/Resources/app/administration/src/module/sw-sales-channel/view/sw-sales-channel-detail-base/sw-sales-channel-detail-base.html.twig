@@ -56,7 +56,9 @@
                         :disabled="!salesChannel.configuration.storefrontSalesChannelId"
                     ></sw-entity-single-select>
                 {% endblock %}
+            </sw-container>
 
+            <sw-container>
                 {% block sw_sales_channel_detail_base_general_feed_directory %}
                     <sw-text-field
                         :value="salesChannel.configuration.feedDirectory"
@@ -64,6 +66,27 @@
                         :copyable="true"
                         disabled
                     ></sw-text-field>
+                {% endblock %}
+            </sw-container>
+
+            <sw-container columns="2fr 1fr" gap="0px 15px">
+                {% block sw_sales_channel_detail_base_general_auth %}
+                    <sw-text-field
+                        v-model="salesChannel.configuration.authToken"
+                        :label="$tc('helret-hello-retail.sales-channel-types.base.authToken')"
+                        :copyable="true"
+                        disabled
+                    ></sw-text-field>
+                {% endblock %}
+
+                {% block sw_sales_channel_detail_base_general_generate %}
+                    <sw-button-process
+                        class="custom-btn-auth-gen"
+                        variant="primary"
+                        @click="generateAuthToken"
+                    >
+                        {{ $tc('helret-hello-retail.sales-channel-types.base.buttonGenerateAuthToken') }}
+                    </sw-button-process>
                 {% endblock %}
             </sw-container>
         {% endblock %}

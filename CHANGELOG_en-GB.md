@@ -1,3 +1,19 @@
+# 4.3.1
+* Bugfix: Remove Sales Channel Context from export message
+
+# 4.3.0
+* Added functionality to get product recommendations in offcanvas cart
+* Replaced javascript recommendations block with server side api call to hello retail
+
+# 4.2.1
+* Fixed bug regarding message queue serialization
+
+# 4.2.0
+* Added authorization token to all feeds. Go to Hello Retail sales channels and generate token
+
+# 4.1.0
+* Fixed some message queue serialization errors that could occur on Shopware 6.5.x
+
 # 4.0.2
 * Fix tracking by moving script to the layout_head_javascript_tracking block
 
