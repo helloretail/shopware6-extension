@@ -3,7 +3,6 @@
 namespace Helret\HelloRetail\Export;
 
 use Shopware\Core\Framework\MessageQueue\AsyncMessageInterface;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class ExportEntityElement implements AsyncMessageInterface
 {
