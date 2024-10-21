@@ -63,5 +63,4 @@ class HelloRetailClientService
 
         return json_decode($response->getBody()->getContents(), true);
     }
-
 }

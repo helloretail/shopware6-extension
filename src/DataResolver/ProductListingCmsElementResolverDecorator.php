@@ -10,14 +10,15 @@ use Shopware\Core\Content\Cms\DataResolver\ResolverContext\ResolverContext;
 use Shopware\Core\Content\Product\Cms\ProductListingCmsElementResolver;
 use Shopware\Core\Content\Product\SalesChannel\Listing\AbstractProductListingRoute;
 
-class ProductListingCmsElementResolverDecorator extends ProductListingCmsElementResolver {
-
+class ProductListingCmsElementResolverDecorator extends ProductListingCmsElementResolver
+{
     public function __construct(
         private readonly AbstractProductListingRoute $listingRoute,
         private readonly HelloRetailPageService $pageService
     ) {
         parent::__construct($this->listingRoute);
     }
+
     public function collect(CmsSlotEntity $slot, ResolverContext $resolverContext): ?CriteriaCollection
     {
         return parent::collect($slot, $resolverContext);
@@ -30,7 +31,6 @@ class ProductListingCmsElementResolverDecorator extends ProductListingCmsElement
 
         $key = $config->get('helloRetailKey');
 
-
         if ($key) {
             if (method_exists($resolverContext, 'getEntity')) {
                 $entity = $resolverContext->getEntity();
@@ -40,8 +40,6 @@ class ProductListingCmsElementResolverDecorator extends ProductListingCmsElement
             $resolverContext->getRequest()->request->set('helloRetailPageKey', $key->getValue());
             $resolverContext->getRequest()->request->set('helloRetailHierarchies', $hierarchies);
         }
-
-
 
         parent::enrich($slot, $resolverContext, $result);
     }

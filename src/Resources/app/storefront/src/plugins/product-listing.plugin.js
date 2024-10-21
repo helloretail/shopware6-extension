@@ -1,7 +1,6 @@
 import Plugin from 'src/plugin-system/plugin.class';
 
 export default class ProductListingPlugin extends Plugin {
-
     init() {
         let pageKey = window.hrListingData.pageKey
         let hrScript = window.hrListingData.helloRetailData.products.javascript
