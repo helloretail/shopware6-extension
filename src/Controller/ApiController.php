@@ -18,7 +18,8 @@ class ApiController extends AbstractController
         protected ProfileExporterInterface $profileExporter,
         protected ExportService $exportService,
         protected DecoderInterface $serializer
-    ) {}
+    ) {
+    }
 
     #[Route(
         path: '/api/helret/hello-retail/getTypeId',

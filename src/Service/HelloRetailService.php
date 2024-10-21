@@ -208,9 +208,9 @@ class HelloRetailService
         $entityIds = $entityIdsResult->getIds();
 
         $content = $this->renderHeader($feedEntity, $context, [
-             "{$feed}sTotal" => $entityIdsResult->getTotal(),
-             "total" => $entityIdsResult->getTotal(),
-             "updatedAt" => date("Y-m-d H:i:s")
+            "{$feed}sTotal" => $entityIdsResult->getTotal(),
+            "total" => $entityIdsResult->getTotal(),
+            "updatedAt" => date("Y-m-d H:i:s")
         ]);
         if (!$content) {
             // If the header render failed, no need to continue.

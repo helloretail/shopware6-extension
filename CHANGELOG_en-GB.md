@@ -1,3 +1,6 @@
+# 4.4.0
+* Added the option to replace Shopware product listing with hello retail pages using page key
+
 # 4.3.1
 * Bugfix: Remove Sales Channel Context from export message
 

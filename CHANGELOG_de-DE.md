@@ -1,3 +1,6 @@
+# 4.4.0
+* Option hinzugefügt, Shopware-Produktlisten mithilfe des Seitenschlüssels durch Hello-Retail-Seiten zu ersetzen
+
 # 4.3.1
 * Bugfix: Sales Channel Context aus Exportnachricht entfernen
 

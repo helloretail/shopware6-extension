@@ -16,6 +16,18 @@
             "label": {
                 "blockCategoryHelloRetail": "Hello Retail"
             }
+        },
+        "elements": {
+            "productListing": {
+                "config": {
+                    "label": {
+                        "pageKey": "Seitenschlüssel"
+                    },
+                    "placeholder": {
+                        "pageKey": "Seitenschlüssel"
+                    }
+                }
+            }
         }
     },
     "helret-cms": {
