@@ -63,7 +63,7 @@
     <color>{% if color %}{{ color.name }}{% endif %}</color>
     {% set gender = product.properties.elements|filter(property => property.group.name == 'Gender')|first %}
     <gender>{% if gender %}{{ gender.name }}{% endif %}</gender>
-    <instock>{% if product.availableStock > 0 %}true{% else %}false{% endif %}</instock>
+    <instock>{% if product.stock > 0 %}true{% else %}false{% endif %}</instock>
     <description>{{ product.description }}</description>
     <brand>{% if product.manufacturer %}{{ product.manufacturer.name }}{% endif %}</brand>
 </product>

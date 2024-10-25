@@ -9,8 +9,8 @@ class PageRequest extends Request
 {
     public function __construct(
         public PageParams $params,
-        public array $products = [],
         public string $url,
+        public ?array $products = [],
         public bool $firstLoad = true,
         public bool $layout = false,
         public ?string $websiteUuid = null,

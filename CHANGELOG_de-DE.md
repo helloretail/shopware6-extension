@@ -1,3 +1,6 @@
+# 5.2.0
+* Option hinzugefügt, Shopware-Produktlisten mithilfe des Seitenschlüssels durch Hello-Retail-Seiten zu ersetzen
+
 # 5.1.0
 * Funktion zum Abrufen von Produktempfehlungen im OffCanvas-Warenkorb hinzugefügt.
 * JavaScript-Empfehlungsblock durch serverseitigen API-Aufruf an Hello Retail ersetzt

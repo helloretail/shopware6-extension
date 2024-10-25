@@ -9,15 +9,19 @@ use Shopware\Core\Content\Cms\DataResolver\Element\ElementDataCollection;
 use Shopware\Core\Content\Cms\DataResolver\ResolverContext\ResolverContext;
 use Shopware\Core\Content\Product\Cms\ProductListingCmsElementResolver;
 use Shopware\Core\Content\Product\SalesChannel\Listing\AbstractProductListingRoute;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 
 class ProductListingCmsElementResolverDecorator extends ProductListingCmsElementResolver
 {
     public function __construct(
         private readonly AbstractProductListingRoute $listingRoute,
+        private readonly EntityRepository $sortingRepository,
         private readonly HelloRetailPageService $pageService
     ) {
-        parent::__construct($this->listingRoute);
+        parent::__construct($this->listingRoute, $sortingRepository);
     }
+
+
 
     public function collect(CmsSlotEntity $slot, ResolverContext $resolverContext): ?CriteriaCollection
     {
