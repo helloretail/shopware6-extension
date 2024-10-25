@@ -95,6 +95,12 @@
             <tag name="kernel.event_subscriber"/>
         </service>
 
+        <service id="Helret\HelloRetail\Subscriber\ProductListingSubscriber" public="true">
+            <argument type="service" id="Helret\HelloRetail\Service\HelloRetailPageService" />
+            <argument type="service" id="product.repository" />
+            <argument type="service" id="cache.app" />
+            <tag name="kernel.event_subscriber"/>
+        </service>
 
         <service id="Helret\HelloRetail\Core\Content\Export\SalesChannel\FileController" public="true">
             <argument type="service" id="shopware.filesystem.public"/>
@@ -133,5 +139,36 @@
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <tag name="shopware.cms.data_resolver"/>
         </service>
+        <service id="Helret\HelloRetail\Service\HelloRetailClientService">
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+        </service>
+
+        <service id="Helret\HelloRetail\Service\HelloRetailApiService">
+            <argument type="service" id="Helret\HelloRetail\Service\HelloRetailClientService"/>
+            <argument type="service" id="product.repository"/>
+        </service>
+
+        <service id="Helret\HelloRetail\Service\HelloRetailPageService"
+                parent="Helret\HelloRetail\Service\HelloRetailApiService"/>
+
+        <service id="Helret\HelloRetail\DataResolver\HelloRetailRecommendationsResolver">
+            <argument type="service" id="Helret\HelloRetail\Service\HelloRetailRecommendationService"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <tag name="shopware.cms.data_resolver"/>
+        </service>
+
+        <service id="Helret\HelloRetail\DataResolver\ProductListingCmsElementResolverDecorator"
+                 decorates="Shopware\Core\Content\Product\Cms\ProductListingCmsElementResolver"
+                 parent="Shopware\Core\Content\Product\Cms\ProductListingCmsElementResolver"
+        >
+            <argument type="service" id="Helret\HelloRetail\Service\HelloRetailPageService" />
+            <tag name="shopware.cms.data_resolver"/>
+        </service>
+
+        <service id="Helret\HelloRetail\Content\Product\SalesChannel\Listing\ResolveCriteriaHelloRetailListingRoute"
+                 decorates="Shopware\Core\Content\Product\SalesChannel\Listing\ResolveCriteriaProductListingRoute"
+                 parent="Shopware\Core\Content\Product\SalesChannel\Listing\ResolveCriteriaProductListingRoute"
+                 public="true"
+        />
     </services>
 </container>

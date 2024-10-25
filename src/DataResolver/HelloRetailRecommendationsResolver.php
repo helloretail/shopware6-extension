@@ -73,7 +73,7 @@ class HelloRetailRecommendationsResolver extends AbstractCmsElementResolver
         ElementDataCollection $result,
         string $searchKey,
         SalesChannelContext $salesChannelContext
-    ):void {
+    ): void {
         $searchResult = $result->get($searchKey);
         if ($searchResult === null) {
             return;

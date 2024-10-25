@@ -1,0 +1,25 @@
+{% sw_extends '@Storefront/storefront/component/product/listing.html.twig' %}
+
+{% block product_listing %}
+    {% if searchResult.extensions.helloRetailPageData is defined %}
+        {% set helloRetailData = searchResult.extensions.helloRetailPageData.all() %}
+        {% set pageKey = searchResult.extensions.pageKey.all()[0] %}
+        {% set hierarchies = searchResult.extensions.helloRetailHierarchies.all() %}
+
+        <div id="hr-category-page" data-helret-listing>
+            {{ helloRetailData['products']['html']|raw }}
+        </div>
+        <style id="hr-category-page-style">
+            {{ helloRetailData['products']['style']|raw }}
+        </style>
+        <script type="text/javascript">
+            window.hrListingData = {
+                helloRetailData: {{ helloRetailData|json_encode|raw }},
+                pageKey: '{{ pageKey }}',
+                hierarchies: {{ hierarchies|json_encode|raw }}
+            };
+        </script>
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
