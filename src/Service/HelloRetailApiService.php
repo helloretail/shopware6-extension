@@ -3,6 +3,7 @@
 namespace Helret\HelloRetail\Service;
 
 use Shopware\Core\Content\Category\CategoryEntity;
+use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
@@ -16,8 +17,7 @@ class HelloRetailApiService
     protected const extraData = "extraData";
 
     /**
-     * @param HelloRetailClientService $client
-     * @param EntityRepository $productRepository
+     * @param EntityRepository<ProductCollection> $productRepository
      */
     public function __construct(
         protected HelloRetailClientService $client,

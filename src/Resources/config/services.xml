@@ -97,8 +97,6 @@
 
         <service id="Helret\HelloRetail\Subscriber\ProductListingSubscriber" public="true">
             <argument type="service" id="Helret\HelloRetail\Service\HelloRetailPageService" />
-            <argument type="service" id="product.repository" />
-            <argument type="service" id="cache.app" />
             <tag name="kernel.event_subscriber"/>
         </service>
 

@@ -15,6 +15,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
+use Shopware\Core\Framework\Log\LogEntryCollection;
+use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainCollection;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Twig\Environment;
@@ -49,6 +51,10 @@ class HelloRetailService
     protected Filesystem $filesystem;
     protected TwigVariableParser $twigVariableParser;
 
+    /**
+     * @param EntityRepository<LogEntryCollection> $logEntryRepository
+     * @param EntityRepository<SalesChannelDomainCollection> $salesChannelDomainRepository
+     */
     public function __construct(
         protected EntityRepository $logEntryRepository,
         protected LoggerInterface $logger,
