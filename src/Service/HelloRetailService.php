@@ -15,6 +15,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
+use Shopware\Core\Framework\Log\LogEntryCollection;
+use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainCollection;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Twig\Environment;
@@ -49,6 +51,10 @@ class HelloRetailService
     protected Filesystem $filesystem;
     protected TwigVariableParser $twigVariableParser;
 
+    /**
+     * @param EntityRepository<LogEntryCollection> $logEntryRepository
+     * @param EntityRepository<SalesChannelDomainCollection> $salesChannelDomainRepository
+     */
     public function __construct(
         protected EntityRepository $logEntryRepository,
         protected LoggerInterface $logger,
@@ -212,9 +218,9 @@ class HelloRetailService
         $entityIds = $entityIdsResult->getIds();
 
         $content = $this->renderHeader($feedEntity, $context, [
-             "{$feed}sTotal" => $entityIdsResult->getTotal(),
-             "total" => $entityIdsResult->getTotal(),
-             "updatedAt" => date("Y-m-d H:i:s")
+            "{$feed}sTotal" => $entityIdsResult->getTotal(),
+            "total" => $entityIdsResult->getTotal(),
+            "updatedAt" => date("Y-m-d H:i:s")
         ]);
         if (!$content) {
             // If the header render failed, no need to continue.

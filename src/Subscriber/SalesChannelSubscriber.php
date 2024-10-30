@@ -7,6 +7,7 @@ use Helret\HelloRetail\HelretHelloRetail;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\System\SalesChannel\SalesChannelCollection;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Checkout\Cart\SalesChannel\StorefrontCartFacade;
 use Shopware\Storefront\Page\GenericPageLoadedEvent;
@@ -16,6 +17,9 @@ use Shopware\Core\System\SalesChannel\SalesChannelEvents;
 
 class SalesChannelSubscriber implements EventSubscriberInterface
 {
+    /**
+     * @param EntityRepository<SalesChannelCollection> $salesChannelRepository
+     */
     public function __construct(
         protected EntityRepository $salesChannelRepository,
         protected StorefrontCartFacade $cartService,

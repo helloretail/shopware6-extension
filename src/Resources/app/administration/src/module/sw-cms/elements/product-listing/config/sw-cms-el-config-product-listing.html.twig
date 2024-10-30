@@ -1,0 +1,8 @@
+{% block sw_cms_element_product_listing_config_info %}
+    <sw-text-field
+            v-model:value="element.config.helloRetailKey.value"
+            :label="$tc('sw-cms.elements.productListing.config.label.pageKey')"
+            :placeholder="$tc('sw-cms.elements.productListing.config.placeholder.pageKey')"
+    />
+    {% parent %}
+{% endblock %}
