@@ -39,10 +39,14 @@ class HelloRetailClientService
         return $_COOKIE['hello_retail_id'] ?? null;
     }
 
-    public function callApi(string $endpoint, Mixed $request = []): array
+    public function callApi(string $endpoint, Mixed $request = [], string $type = 'page'): array
     {
         $this->loadAuthData();
         $client = $this->getClient();
+
+        if ($type != 'page') {
+            $request = $this->formatRequestBody($request, $type);
+        }
 
         $body = json_encode($request);
 
@@ -54,6 +58,7 @@ class HelloRetailClientService
                 $body
             ));
         } catch (GuzzleException $e) {
+            dump($e->getMessage());
             return [];
         }
 
@@ -62,5 +67,21 @@ class HelloRetailClientService
         }
 
         return json_decode($response->getBody()->getContents(), true);
+    }
+
+    private function formatRequestBody(mixed $request, string $type): array
+    {
+        $baseBody = [
+            "websiteUuid" => $this->apiKey,
+            "trackingUserId" => $this->getCookieUserId()
+        ];
+
+        if ($type === 'recommendations') {
+            $baseBody['requests'] = is_array($request) ? $request : [$request];
+        } else {
+            $baseBody[] = $request;
+        }
+
+        return $baseBody;
     }
 }
