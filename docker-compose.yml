@@ -1,6 +1,6 @@
 services:
   shopware:
-    image: ghcr.io/helloretail/shopware6-extension/shopware:1.4
+    image: 029959346319.dkr.ecr.eu-west-1.amazonaws.com/devenv/shopware6/webserver:1.0
     container_name: shopware
     environment:
       APP_ENV: dev
@@ -15,7 +15,7 @@ services:
     container_name: shopwaredb
     networks:
     - dev-env
-    image: ghcr.io/helloretail/shopware6-extension/shopwaredb:1.4
+    image: 029959346319.dkr.ecr.eu-west-1.amazonaws.com/devenv/shopware6/db:1.0
     volumes:
     - db:/var/lib/mysql
     environment:
