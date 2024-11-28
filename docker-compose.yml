@@ -1,4 +1,3 @@
-
 services:
   shopware:
     image: 029959346319.dkr.ecr.eu-west-1.amazonaws.com/devenv/shopware6/webserver:1.0
