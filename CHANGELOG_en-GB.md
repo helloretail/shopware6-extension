@@ -1,3 +1,7 @@
+# 4.4.1
+* Added API request safeguard and better handling
+* Added custom log handler to the API requests
+
 # 4.4.0
 * Added the option to replace Shopware product listing with hello retail pages using page key
 
