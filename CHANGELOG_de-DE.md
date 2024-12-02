@@ -1,3 +1,7 @@
+# 5.2.1
+* API-Anforderungsschutz und bessere Handhabung hinzugefügt
+* Benutzerdefinierter Protokollhandler für die API-Anforderungen hinzugefügt
+
 # 5.2.0
 * Option hinzugefügt, Shopware-Produktlisten mithilfe des Seitenschlüssels durch Hello-Retail-Seiten zu ersetzen
 
