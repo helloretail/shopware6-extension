@@ -28,7 +28,7 @@ class HelloRetailPageService extends HelloRetailApiService
 
         $request = new PageRequest($pageParams, $productOffset, $urls[0]);
         $callback = $this->client->callApi($this->buildEndpoint($key), $request);
-        if (!$callback['success'] || empty($callback['products'])) {
+        if ($callback && (!$callback['success'] || empty($callback['products']))) {
             return [];
         }
         return $callback;

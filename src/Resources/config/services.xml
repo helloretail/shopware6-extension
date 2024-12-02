@@ -127,6 +127,7 @@
         </service>
         <service id="Helret\HelloRetail\Service\HelloRetailClientService">
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="string">%kernel.logs_dir%</argument>
         </service>
         <service id="Helret\HelloRetail\Service\HelloRetailRecommendationService">
             <argument type="service" id="Helret\HelloRetail\Service\HelloRetailClientService"/>
@@ -140,6 +141,7 @@
         </service>
         <service id="Helret\HelloRetail\Service\HelloRetailClientService">
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="string">%kernel.logs_dir%</argument>
         </service>
 
         <service id="Helret\HelloRetail\Service\HelloRetailApiService">
