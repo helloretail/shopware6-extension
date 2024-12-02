@@ -6,16 +6,22 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Request;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 
 class HelloRetailClientService
 {
+    private Logger $logger;
+
     private const url = "https://core.helloretail.com/serve/";
     private const userEndpoint = "trackingUser";
     private ?string $apiKey = null;
     private ?Client $client = null;
 
-    public function __construct(protected SystemConfigService $systemConfigService)
+    public function __construct(protected SystemConfigService $systemConfigService, public string $logDir)
     {
+        $this->logger = new Logger('hello-retail');
+        $this->logger->pushHandler(new StreamHandler($logDir . '/hello-retail.log', Logger::ERROR));
     }
 
     private function getClient(): Client
@@ -58,7 +64,12 @@ class HelloRetailClientService
                 $body
             ));
         } catch (GuzzleException $e) {
-            dump($e->getMessage());
+            $this->logger->error('Request failed. Check logs.', [
+                'endpoint' => $endpoint,
+                'body' => $body,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             return [];
         }
 
