@@ -12,6 +12,7 @@
                 :options="getFeedOptions()"
                 v-model:value="feedType"
                 :disabled="!getFeedOptions().length"
+                @update:value="(templateName) => $emit('template-selected', templateName)"
             ></sw-single-select>
 
             {# Header #}
@@ -23,7 +24,7 @@
                         :label="$tc('sw-sales-channel.detail.productComparison.inputHeaderLabel')">
                         <template #content="{ currentValue, updateCurrentValue, isInherited }">
                             <sw-code-editor
-                                :value="currentValue"
+                                v-model:value="currentValue"
                                 :disabled="!acl.can('sales_channel.editor')"
                                 :completer-function="outerCompleterFunctionHeader"
                                 :editor-config="editorConfig"
@@ -31,7 +32,7 @@
                                 mode="twig"
                                 :soft-wraps="true"
                                 :set-focus="false"
-                                @input="updateCurrentValue"
+                                @update:value="updateCurrentValue"
                             ></sw-code-editor>
                         </template>
                     </sw-inherit-wrapper>
@@ -45,7 +46,7 @@
                         :label="$tc('sw-sales-channel.detail.productComparison.inputBodyLabel')">
                         <template #content="{ currentValue, updateCurrentValue, isInherited }">
                             <sw-code-editor
-                                :value="currentValue"
+                                v-model:value="currentValue"
                                 :disabled="!acl.can('sales_channel.editor')"
                                 :completer-function="outerCompleterFunctionBody"
                                 :editor-config="editorConfig"
@@ -53,7 +54,7 @@
                                 mode="twig"
                                 :soft-wraps="true"
                                 :set-focus="false"
-                                @input="updateCurrentValue"
+                                @update:value="updateCurrentValue"
                             ></sw-code-editor>
                         </template>
                     </sw-inherit-wrapper>
@@ -67,7 +68,7 @@
                         :label="$tc('sw-sales-channel.detail.productComparison.inputFooterLabel')">
                         <template #content="{ currentValue, updateCurrentValue, isInherited }">
                             <sw-code-editor
-                                :value="currentValue"
+                                v-model:value="currentValue"
                                 :disabled="!acl.can('sales_channel.editor')"
                                 :completer-function="outerCompleterFunctionFooter"
                                 :editor-config="editorConfig"
@@ -75,7 +76,7 @@
                                 mode="twig"
                                 :soft-wraps="true"
                                 :set-focus="false"
-                                @input="updateCurrentValue"
+                                @update:value="updateCurrentValue"
                             ></sw-code-editor>
                         </template>
                     </sw-inherit-wrapper>

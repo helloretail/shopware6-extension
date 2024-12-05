@@ -1,3 +1,6 @@
+# 5.2.2
+* Fixed bug in feed generation template
+
 # 5.2.1
 * Added API request safeguard and better handling
 * Added custom log handler to the API requests

@@ -1,3 +1,6 @@
+# 5.2.2
+* Fehler in der Vorlage zur Feed-Generierung behoben
+
 # 5.2.1
 * API-Anforderungsschutz und bessere Handhabung hinzugefügt
 * Benutzerdefinierter Protokollhandler für die API-Anforderungen hinzugefügt
