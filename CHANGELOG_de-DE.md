@@ -1,3 +1,6 @@
+# 5.3.0
+* Option zur Auswahl der Platzierung von Empfehlungsfeldern hinzugefügt: Seitenleiste (Standard) oder eingebettet in den Offcanvas.
+
 # 5.2.2
 * Fehler in der Vorlage zur Feed-Generierung behoben
 

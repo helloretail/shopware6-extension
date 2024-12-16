@@ -1,3 +1,6 @@
+# 5.3.0
+* Added the option to choose the placement of recommendation boxes: sidebar (default) or embedded in the offcanvas.
+
 # 5.2.2
 * Fixed bug in feed generation template
 
