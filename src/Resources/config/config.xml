@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/master/src/Core/System/SystemConfig/Schema/config.xsd">
+    xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/master/src/Core/System/SystemConfig/Schema/config.xsd">
     <card>
         <title>Hello Retail Settings</title>
         <title lang="de-DE">Hello Retail Einstellungen</title>
@@ -49,8 +49,10 @@
             <label lang="de-DE">Limit Orders</label>
             <label lang="da-DK">Begræns ordrer</label>
             <helpText>When active it will only sync orders made in the past X months</helpText>
-            <helpText lang="de-DE">Wenn es aktiv ist, werden nur Bestellungen synchronisiert, die in den letzten X Monaten getätigt wurden</helpText>
-            <helpText lang="da-DK">Hvis aktiv, vil synkronisering af ordrer kun foretages fra de sidste X måneder</helpText>
+            <helpText lang="de-DE">Wenn es aktiv ist, werden nur Bestellungen synchronisiert, die in
+                den letzten X Monaten getätigt wurden</helpText>
+            <helpText lang="da-DK">Hvis aktiv, vil synkronisering af ordrer kun foretages fra de
+                sidste X måneder</helpText>
             <defaultValue>false</defaultValue>
         </input-field>
         <input-field type="int">
@@ -67,8 +69,10 @@
             <label lang="de-DE">Erweiterte Preise</label>
             <label lang="da-DK">Advanced Pricing</label>
             <helpText>Sync products with Advance pricing instead of List and Normal prices</helpText>
-            <helpText lang="de-DE">Synchronisieren Sie Produkte mit Advance anstelle von Listen- und Normalpreisen</helpText>
-            <helpText lang="da-DK">Synkroniser produkter med Advance priser i stedet for Liste og normale priser</helpText>
+            <helpText lang="de-DE">Synchronisieren Sie Produkte mit Advance anstelle von Listen- und
+                Normalpreisen</helpText>
+            <helpText lang="da-DK">Synkroniser produkter med Advance priser i stedet for Liste og
+                normale priser</helpText>
             <defaultValue>false</defaultValue>
         </input-field>
     </card>
@@ -293,6 +297,63 @@
                 </option>
             </options>
             <defaultValue>0</defaultValue>
+        </input-field>
+    </card>
+
+    <card>
+        <title>Search</title>
+        <title lang="de-DE">Suchen</title>
+        <title lang="da-DK">Søge</title>
+
+        <input-field type="bool">
+            <name>searchEnabled</name>
+            <label>Enabled</label>
+            <label lang="de-DE">Ermöglicht</label>
+            <label lang="da-DK">Aktiveret</label>
+            <defaultValue>false</defaultValue>
+        </input-field>
+
+        <input-field type="text">
+            <name>searchConfigKey</name>
+            <label>Search Config Key</label>
+            <label lang="de-DE">Konfigurationsschlüssel suchen</label>
+            <label lang="da-DK">Søgnings Konfigurations Nøgle</label>
+            <helpText>Found at the top in hello-retail dashboard when navigating "Search -> Overview
+                -> Configuration"</helpText>
+            <helpText lang="de-DE">Oben im Hello-Retail-Dashboard zu finden, wenn Sie zu „Suche ->
+                Übersicht -> Konfiguration“ navigieren.</helpText>
+            <helpText lang="da-DK">Findes øverst i Hello-retail dashboard, når du navigerer "Søg ->
+                Oversigt -> Konfiguration"</helpText>
+        </input-field>
+
+        <input-field type="int">
+            <name>productRequestCount</name>
+            <label>Request Count (LIVE SEARCH)</label>
+            <label lang="de-DE">Menge</label>
+            <label lang="da-DK">Antal</label>
+            <helpText>The amount of product results requested</helpText>
+            <helpText lang="de-DE">Die Menge der angeforderten Produktergebnisse</helpText>
+            <helpText lang="da-DK">Mængden af produktresultater, der anmodes om</helpText>
+            <defaultValue>10</defaultValue>
+        </input-field>
+
+        <input-field type="bool">
+            <name>categorySearchEnabled</name>
+            <label>Enable category in response</label>
+            <label lang="de-DE">Kategorie in Antwort aktivieren</label>
+            <label lang="da-DK">Aktiver kategorier i respons</label>
+            <defaultValue>false</defaultValue>
+        </input-field>
+
+        <input-field type="int">
+            <name>categoryRequestCount</name>
+            <label>Request Count (LIVE SEARCH - CATEGORY)</label>
+            <label lang="de-DE">Menge</label>
+            <label lang="da-DK">Antal</label>
+            <helpText>The amount of categories requested</helpText>
+            <helpText lang="de-DE">Die Anzahl der angeforderten Kategorien</helpText>
+            <helpText lang="da-DK">Antallet af anmodede kategorier</helpText>
+            <defaultValue>10</defaultValue>
         </input-field>
     </card>
 </config>

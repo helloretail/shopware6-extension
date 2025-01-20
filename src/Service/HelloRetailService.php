@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Helret\HelloRetail\Service;
 
@@ -106,7 +108,7 @@ class HelloRetailService
             try {
                 $feedEntity = $this->serializer
                     ->deserialize(json_encode($exportEntity->getFeeds()[$feed]), FeedEntity::class, 'json');
-            } catch (Error|TypeError|NotEncodableValueException|Exception $e) {
+            } catch (Error | TypeError | NotEncodableValueException | Exception $e) {
                 $this->exportLogger(
                     HelretHelloRetail::EXPORT_ERROR,
                     [
@@ -320,7 +322,7 @@ class HelloRetailService
     ): bool|string {
         try {
             return $this->templateRenderer->render($template, $data, $context) . PHP_EOL;
-        } catch (Error|TypeError|Exception|StringTemplateRenderingException $e) {
+        } catch (Error | TypeError | Exception | StringTemplateRenderingException $e) {
             $this->exportLogger(
                 HelretHelloRetail::EXPORT_ERROR,
                 [
@@ -379,6 +381,6 @@ class HelloRetailService
         string $feed,
         FeedEntityInterface $feedEntity,
         SalesChannelContext $context
-    ): void {
-    }
+    ): void {}
 }
+

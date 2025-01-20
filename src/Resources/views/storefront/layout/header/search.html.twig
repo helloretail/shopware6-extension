@@ -1,0 +1,24 @@
+{% sw_extends '@Storefront/storefront/layout/header/search.html.twig' %}
+{% block layout_header_search_form %}
+    {% if not config('HelretHelloRetail.config.searchEnabled') or config('HelretHelloRetail.config.searchConfigKey') is empty %}
+        {{ parent() }}
+    {% else %}
+        {% set searchWidgetOptions = {
+            searchWidgetResultSelector: '.hr-search-result'
+        } %}
+        <form action="{{ path('frontend.search.page') }}"
+              method="get"
+            {% if feature('v6.6.0.0') %}
+                data-search-widget="true"
+            {% else %}
+                data-search-form="true"
+            {% endif %}
+              data-search-widget-options='{{ searchWidgetOptions|json_encode }}'
+              data-url="{{ path('hello.retail.suggest') }}?search="
+              class="header-search-form">
+            {% block layout_header_search_input_group %}
+                {{ parent() }}
+            {% endblock %}
+        </form>
+    {% endif %}
+{% endblock %}

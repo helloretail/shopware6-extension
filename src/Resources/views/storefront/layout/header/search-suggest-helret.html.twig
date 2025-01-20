@@ -1,0 +1,20 @@
+{% block layout_header_search_suggest_hr %}
+    <div class="search-suggest hr-search-result">
+        {% block helret_search_results %}
+            {% if products and products.results|length > 0 %}
+                <ul class="search-suggest-container">
+                    {% for product in products.results %}
+                        <li class="search-suggest-product js-result">
+                            <a href="{{ seoUrl('frontend.detail.page', {'productId': product.extraData.id}) }}"
+                               title="{{ product.translated.name }}"
+                               class="search-suggest-product-link">
+                                <div class="col search-suggest-product-name">{{product.title}}</div>
+                                <div class="col search-suggest-product-name">{{product.extraData.id}}</div>
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endblock %}
+    </div>
+{% endblock %}

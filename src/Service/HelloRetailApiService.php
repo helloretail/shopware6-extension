@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Helret\HelloRetail\Service;
 
@@ -22,8 +24,7 @@ class HelloRetailApiService
     public function __construct(
         protected HelloRetailClientService $client,
         protected EntityRepository $productRepository
-    ) {
-    }
+    ) {}
 
     protected function getProducts(array $productData): mixed
     {
@@ -36,7 +37,7 @@ class HelloRetailApiService
         return $this->productRepository->search($criteria, Context::createDefaultContext())->getEntities();
     }
 
-    protected function getIds(array $productData, bool $group = true): array
+    public function getIds(array $productData, bool $group = true): array
     {
         $ids = [];
         $filteredGroups = [];
