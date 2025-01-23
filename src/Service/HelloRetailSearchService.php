@@ -33,13 +33,8 @@ class HelloRetailSearchService
     public function search(string $query, SalesChannelContext $context, int $offset = 0, int $limit = 1000): array
     {
         $postData = $this->getDefaultPostData($query, $context);
-        /*$postData['products']['start'] = $offset;*/
-        $postData['products']['start'] = 0;
-        $postData['products']['count'] = 9;
-        /*if ($offset) {*/
-        /*    $postData['products']['start'] = 2;*/
-        /*}*/
-        /*dd($postData);*/
+        $postData['products']['start'] = $offset;
+        $postData['products']['count'] = $limit;
 
         $postData = $this->eventDispatcher->dispatch(
             new HelretBeforeSearchEvent($postData, $context),

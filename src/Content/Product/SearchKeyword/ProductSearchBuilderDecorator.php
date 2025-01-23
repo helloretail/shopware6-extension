@@ -40,14 +40,9 @@ class ProductSearchBuilderDecorator implements ProductSearchBuilderInterface
         if ($this->helloRetailConfigService->hrSearchEnabled($context->getSalesChannelId())) {
             $offset = $criteria->getOffset();
             $limit = $criteria->getLimit();
-            /*dd($limit);*/
-            /*dd($criteria);*/
             $idsFromHelloRetail = $this->searchService->search($search, $context, $offset, $limit);
-            /*dd($idsFromHelloRetail);*/
             $criteria->setIds($idsFromHelloRetail ?? null);
             $criteria->resetSorting();
-            /*dd($idsFromHelloRetail);*/
-            return;
         }
         $this->decorated->build($request, $criteria, $context);
         return;

@@ -1,5 +1,5 @@
 {
-    "name": "testing/hello-retail",
+    "name": "helret/hello-retail",
     "description": "Hello Retail integration for Shopware 6",
     "type": "shopware-platform-plugin",
     "license": "proprietary",
