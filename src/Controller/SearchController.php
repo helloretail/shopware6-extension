@@ -15,19 +15,17 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route(defaults: ['_routeScope' => ['storefront']])]
 class SearchController extends StorefrontController
 {
-    /**
-     * @param HelloRetailSearchService $searchService
-     */
     public function __construct(
         private readonly HelloRetailSearchService $searchService,
-    ) {}
+    ) {
+    }
 
-    /**
-     * @param SalesChannelContext $context
-     * @param Request $request
-     * @return Response
-     */
-    #[Route(path: '/helretsuggest', name: 'hello.retail.suggest', defaults: ['XmlHttpRequest' => true, '_httpCache' => true], methods: ['GET'])]
+    #[Route(
+        path: '/helretsuggest',
+        name: 'widgets.hello.retail.suggest',
+        defaults: ['XmlHttpRequest' => true, '_httpCache' => true],
+        methods: ['GET']
+    )]
     public function SuggestHelloRetail(SalesChannelContext $context, Request $request): Response
     {
         $search = $request->query->get('search');

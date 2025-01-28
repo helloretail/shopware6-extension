@@ -1,9 +1,15 @@
 <product>
     <url>{{ seoUrl('frontend.detail.page', {'productId': product.id}) }}</url>
-    <title>{% if product.name %}{{ product.name }}{% else %}{{ product.translated.name }}{% endif %}</title>
+    <title>{{ product.translated.name }}</title>
+    <description>{{ product.translated.description }}</description>
+    <displayGroup>{{ product.displayGroup }}</displayGroup>
+    <parentId>{{ product.parentId }}</parentId>
+
     <ean>{{ product.ean }}</ean>
     <id>{{ product.id }}</id>
     <sku>{{ product.productNumber }}</sku>
+    <productnumber>{{ product.productNumber }}</productnumber>
+
     {% if product.cover %}
         {% set thumbnail = product.cover.media.thumbnails.elements|filter(img => img.width == 400)|first %}
         <imgurl>{% if thumbnail %}{{ thumbnail.url }}{% else %}{{ product.cover.media.url }}{% endif %}</imgurl>
@@ -19,11 +25,7 @@
     <displayFrom>{{ product.calculatedPrices.count > 1 }}</displayFrom>
     {# Price end #}
 
-
-    <description>{{ product.description }}</description>
     <brand>{% if product.manufacturer %}{{ product.manufacturer.name }}{% endif %}</brand>
-
-    <productnumber>{{ product.productNumber }}</productnumber>
     <hierarchies>
         {% if product.categories %}
             {% for category in product.categories.elements %}

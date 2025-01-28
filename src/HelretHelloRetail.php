@@ -4,6 +4,7 @@ namespace Helret\HelloRetail;
 
 use Helret\HelloRetail\Service\ExportService;
 use League\Flysystem\FilesystemException;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -99,54 +100,17 @@ class HelretHelloRetail extends Plugin
         parent::postUpdate($updateContext);
 
         if (version_compare($updateContext->getUpdatePluginVersion(), "3.0.0", ">=")) {
-            $salesChannelRepository = $this->container->get("sales_channel.repository");
-
-            $updateTemplate = $this->getUpdateTemplatesV300();
-            $templates = ["headerTemplate", "bodyTemplate", "footerTemplate"];
-
-            $salesChannels = $salesChannelRepository->search(
-                (new Criteria())->addFilter(new EqualsFilter("typeId", self::SALES_CHANNEL_TYPE_HELLO_RETAIL)),
+            $this->updateTemplates(
+                $this->getUpdateTemplatesV300(),
                 $updateContext->getContext()
             );
+        }
 
-            /** @var SalesChannelEntity $salesChannel */
-            foreach ($salesChannels as $salesChannel) {
-                $updated = false;
-                $configuration = $salesChannel->getConfiguration();
-                if (!isset($configuration["feeds"]) || !is_array($configuration["feeds"])) {
-                    continue;
-                }
-
-                foreach ($configuration["feeds"] as $key => $feed) {
-                    if (!isset($updateTemplate[$key])) {
-                        continue;
-                    }
-
-                    $template = $updateTemplate[$key];
-                    foreach ($templates as $templateKey) {
-                        if (!$configuration["feeds"][$key][$templateKey]) {
-                            continue;
-                        }
-
-                        $entity = trim($template[$templateKey]);
-                        $config = trim($configuration["feeds"][$key][$templateKey]);
-
-                        if ($entity === $config) {
-                            $configuration["feeds"][$key][$templateKey] = null;
-                            $updated = true;
-                        }
-                    }
-                }
-
-                if ($updated) {
-                    $salesChannelRepository->upsert([
-                        [
-                            "id" => $salesChannel->getId(),
-                            "configuration" => $configuration
-                        ]
-                    ], $updateContext->getContext());
-                }
-            }
+        if (version_compare($updateContext->getUpdatePluginVersion(), "4.4.1", ">=")) {
+            $this->updateTemplates(
+                $this->getUpdateTemplatesV441(),
+                $updateContext->getContext()
+            );
         }
     }
 
@@ -325,5 +289,138 @@ class HelretHelloRetail extends Plugin
             ],
         ];
         // phpcs:enable Generic.Files.LineLength.TooLong
+    }
+
+    private function getUpdateTemplatesV441(): array
+    {
+        // phpcs:disable Generic.Files.LineLength.TooLong
+        return [
+            'product' => [
+                'bodyTemplate' => "<product>
+    <url>{{ seoUrl('frontend.detail.page', {'productId': product.id}) }}</url>
+    <title>{% if product.name %}{{ product.name }}{% else %}{{ product.translated.name }}{% endif %}</title>
+    <ean>{{ product.ean }}</ean>
+    <id>{{ product.id }}</id>
+    <sku>{{ product.productNumber }}</sku>
+    {% if product.cover %}
+        {% set thumbnail = product.cover.media.thumbnails.elements|filter(img => img.width == 400)|first %}
+        <imgurl>{% if thumbnail %}{{ thumbnail.url }}{% else %}{{ product.cover.media.url }}{% endif %}</imgurl>
+    {% else %}
+        <imgurl/>
+    {% endif %}
+
+    {# Price #}
+    {% set price = product.calculatedPrices.count > 0 ? product.calculatedPrices.last : product.calculatedPrice %}
+    {% set listPrice = price.listPrice %}
+    <price>{{ price.unitPrice }}</price>
+    <oldPrice>{% if listPrice %}{{ listPrice.price }}{% endif %}</oldPrice>
+    <displayFrom>{{ product.calculatedPrices.count > 1 }}</displayFrom>
+    {# Price end #}
+
+
+    <description>{{ product.description }}</description>
+    <brand>{% if product.manufacturer %}{{ product.manufacturer.name }}{% endif %}</brand>
+
+    <productnumber>{{ product.productNumber }}</productnumber>
+    <hierarchies>
+        {% if product.categories %}
+            {% for category in product.categories.elements %}
+                <hierarchy>
+                    {%- for breadCrumb in category.getBreadcrumb -%}
+                        <category>{{ breadCrumb }}</category>
+                    {%- endfor -%}
+                </hierarchy>
+            {% endfor %}
+        {% endif %}
+    </hierarchies>
+
+    {% if product.extensions.properties %}
+        <properties>
+            {% for key, value in product.extensions.properties.all() %}
+                <property>
+                    <name>{{ key }}</name>
+                    <options>
+                        {%- for option in value -%}
+                            <option>{{ option.name }}</option>
+                        {%- endfor -%}
+                    </options>
+                </property>
+            {% endfor %}
+        </properties>
+    {% endif %}
+
+    <keywords>{% if product.searchKeywords %}{% for keyword in product.searchKeywords.elements %}{{ keyword.keyword }},{% endfor %}{% endif %}</keywords>
+
+    {% set color = product.properties.elements|filter(property => property.group.name == 'Color')|first %}
+    <color>{% if color %}{{ color.name }}{% endif %}</color>
+
+    {% set gender = product.properties.elements|filter(property => property.group.name == 'Gender')|first %}
+    <gender>{% if gender %}{{ gender.name }}{% endif %}</gender>
+    <instock>{% if product.availableStock > 0 %}true{% else %}false{% endif %}</instock>
+</product>
+",
+            ],
+        ];
+        // phpcs:enable Generic.Files.LineLength.TooLong
+    }
+
+
+    private function updateTemplates(array $updateTemplate, Context $context): void
+    {
+        if (!$updateTemplate) {
+            return;
+        }
+
+        $salesChannelRepository = $this->container->get('sales_channel.repository');
+
+        $templates = ['headerTemplate', 'bodyTemplate', 'footerTemplate'];
+
+        $salesChannels = $salesChannelRepository->search(
+            (new Criteria())->addFilter(new EqualsFilter('typeId', self::SALES_CHANNEL_TYPE_HELLO_RETAIL)),
+            $context
+        );
+
+        /** @var SalesChannelEntity $salesChannel */
+        foreach ($salesChannels as $salesChannel) {
+            $updated = false;
+            $configuration = $salesChannel->getConfiguration();
+            if (!isset($configuration['feeds']) || !is_array($configuration['feeds'])) {
+                continue;
+            }
+
+            foreach ($configuration['feeds'] as $key => $feed) {
+                if (!isset($updateTemplate[$key])) {
+                    continue;
+                }
+
+                $template = $updateTemplate[$key];
+                foreach ($templates as $templateKey) {
+                    if (!isset($template[$templateKey])) {
+                        continue;
+                    }
+
+                    if (!$configuration['feeds'][$key][$templateKey]) {
+                        continue;
+                    }
+
+                    $entity = trim($template[$templateKey]);
+                    $config = trim($configuration['feeds'][$key][$templateKey]);
+
+                    if ($entity === $config) {
+                        $configuration['feeds'][$key][$templateKey] = null;
+                        $updated = true;
+                    }
+                }
+            }
+
+            if ($updated) {
+                $salesChannelRepository->upsert([
+                    [
+                        "id" => $salesChannel->getId(),
+                        "configuration" => $configuration
+                    ]
+                ], $context);
+            }
+        }
     }
 }
