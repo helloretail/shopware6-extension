@@ -12,6 +12,7 @@ use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\DeactivateContext;
 use Shopware\Core\Framework\Plugin\Context\UninstallContext;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
+use Shopware\Core\System\SalesChannel\SalesChannelCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 class HelretHelloRetail extends Plugin
@@ -99,18 +100,41 @@ class HelretHelloRetail extends Plugin
     {
         parent::postUpdate($updateContext);
 
+
+        $updates = [];
         if (version_compare($updateContext->getUpdatePluginVersion(), "3.0.0", ">=")) {
-            $this->updateTemplates(
-                $this->getUpdateTemplatesV300(),
-                $updateContext->getContext()
-            );
+            $updates[] = $this->getUpdateTemplatesV300();
+        }
+        if (version_compare($updateContext->getUpdatePluginVersion(), "4.4.1", ">=")) {
+            $updates[] = $this->getUpdateTemplatesV441();
         }
 
-        if (version_compare($updateContext->getUpdatePluginVersion(), "4.4.1", ">=")) {
-            $this->updateTemplates(
-                $this->getUpdateTemplatesV441(),
-                $updateContext->getContext()
-            );
+        $versionUpdate = $updates && $this->updateTemplates($updates, $updateContext->getContext());
+
+        // Trigger notification.
+        if ($versionUpdate) {
+            $this->container->get('notification.repository')->create([
+                [
+                    'status' => 'info',
+                    'message' => 'Hello Retail feeds updated please verify updates/inheritance',
+                    'requiredPrivileges' => [],
+                    'adminOnly' => true,
+                ]
+            ], $updateContext->getContext());
+        }
+
+        // Mark "active" templates as inherited
+        $template = [];
+        $exportService = $this->container->get(ExportService::class);
+        foreach ($exportService->getFeeds() as $feed) {
+            $template[$feed->getFeed()] = [
+                'headerTemplate' => $feed->getHeaderTemplate(),
+                'bodyTemplate' => $feed->getBodyTemplate(),
+                'footerTemplate' => $feed->getFooterTemplate(),
+            ];
+        }
+        if ($template) {
+            $this->updateTemplates([$template], $updateContext->getContext());
         }
     }
 
@@ -365,62 +389,76 @@ class HelretHelloRetail extends Plugin
     }
 
 
-    private function updateTemplates(array $updateTemplate, Context $context): void
+    private function updateTemplates(array $updateTemplates, Context $context): bool
     {
-        if (!$updateTemplate) {
-            return;
-        }
-
+        /** @var EntityRepository<SalesChannelCollection> $salesChannelRepository */
         $salesChannelRepository = $this->container->get('sales_channel.repository');
-
-        $templates = ['headerTemplate', 'bodyTemplate', 'footerTemplate'];
-
         $salesChannels = $salesChannelRepository->search(
-            (new Criteria())->addFilter(new EqualsFilter('typeId', self::SALES_CHANNEL_TYPE_HELLO_RETAIL)),
+            (new Criteria())
+                ->addFilter(new EqualsFilter('typeId', self::SALES_CHANNEL_TYPE_HELLO_RETAIL)),
             $context
         );
 
-        /** @var SalesChannelEntity $salesChannel */
-        foreach ($salesChannels as $salesChannel) {
-            $updated = false;
-            $configuration = $salesChannel->getConfiguration();
-            if (!isset($configuration['feeds']) || !is_array($configuration['feeds'])) {
+        if (!$salesChannels->first()) {
+            return false;
+        }
+
+
+        $updates = [];
+        foreach ($updateTemplates as $updateTemplate) {
+            if (!$updateTemplate) {
                 continue;
             }
 
-            foreach ($configuration['feeds'] as $key => $feed) {
-                if (!isset($updateTemplate[$key])) {
+            /** @var SalesChannelEntity $salesChannel */
+            foreach ($salesChannels as $salesChannel) {
+                $updated = false;
+                $configuration = $salesChannel->getConfiguration();
+                if (!isset($configuration['feeds']) || !is_array($configuration['feeds'])) {
                     continue;
                 }
 
-                $template = $updateTemplate[$key];
-                foreach ($templates as $templateKey) {
-                    if (!isset($template[$templateKey])) {
+                foreach ($configuration['feeds'] as $key => $feed) {
+                    if (!isset($updateTemplate[$key])) {
                         continue;
                     }
 
-                    if (!$configuration['feeds'][$key][$templateKey]) {
-                        continue;
-                    }
+                    $template = $updateTemplate[$key];
+                    foreach (['headerTemplate', 'bodyTemplate', 'footerTemplate'] as $templateKey) {
+                        if (!isset($template[$templateKey])) {
+                            continue;
+                        }
 
-                    $entity = trim($template[$templateKey]);
-                    $config = trim($configuration['feeds'][$key][$templateKey]);
+                        if (!$configuration['feeds'][$key][$templateKey]) {
+                            // Considered inherited
+                            continue;
+                        }
 
-                    if ($entity === $config) {
-                        $configuration['feeds'][$key][$templateKey] = null;
-                        $updated = true;
+                        $entity = preg_replace('/\s+/', '', trim($template[$templateKey]));
+                        $config = preg_replace('/\s+/', '', trim($configuration['feeds'][$key][$templateKey]));
+
+                        if ($entity === $config) {
+                            $configuration['feeds'][$key][$templateKey] = null;
+                            $updated = true;
+                        }
                     }
                 }
-            }
 
-            if ($updated) {
-                $salesChannelRepository->upsert([
-                    [
-                        "id" => $salesChannel->getId(),
-                        "configuration" => $configuration
-                    ]
-                ], $context);
+                if ($updated) {
+                    $salesChannel->setConfiguration($configuration);
+                    $updates[$salesChannel->getId()] = [
+                        'id' => $salesChannel->getId(),
+                        'configuration' => $configuration
+                    ];
+                }
             }
         }
+
+        if ($updates) {
+            $salesChannelRepository->update(array_values($updates), $context);
+            return true;
+        }
+
+        return false;
     }
 }

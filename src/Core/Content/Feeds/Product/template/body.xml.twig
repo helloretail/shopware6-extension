@@ -25,7 +25,7 @@
     <displayFrom>{{ product.calculatedPrices.count > 1 }}</displayFrom>
     {# Price end #}
 
-    <brand>{% if product.manufacturer %}{{ product.manufacturer.name }}{% endif %}</brand>
+    <brand>{% if product.manufacturer %}{{ product.manufacturer.translated.name }}{% endif %}</brand>
     <hierarchies>
         {% if product.categories %}
             {% for category in product.categories.elements %}
@@ -52,7 +52,7 @@
             {% endfor %}
         </properties>
     {% endif %}
-
+    9
     <keywords>{% if product.searchKeywords %}{% for keyword in product.searchKeywords.elements %}{{ keyword.keyword }},{% endfor %}{% endif %}</keywords>
 
     {% set color = product.properties.elements|filter(property => property.group.name == 'Color')|first %}

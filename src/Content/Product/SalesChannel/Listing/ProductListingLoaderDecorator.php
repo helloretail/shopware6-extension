@@ -35,6 +35,7 @@ class ProductListingLoaderDecorator extends ProductListingLoader
     {
         $result = $this->decorated->load($origin, $context);
         $ids = $origin->getIds();
+        dd($origin->useIdSorting(), $origin->getIds(), $result);
         $result->getEntities()->sortByIdArray($ids);
         return $result;
     }
