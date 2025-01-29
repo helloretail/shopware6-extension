@@ -52,7 +52,7 @@
             {% endfor %}
         </properties>
     {% endif %}
-    9
+
     <keywords>{% if product.searchKeywords %}{% for keyword in product.searchKeywords.elements %}{{ keyword.keyword }},{% endfor %}{% endif %}</keywords>
 
     {% set color = product.properties.elements|filter(property => property.group.name == 'Color')|first %}
