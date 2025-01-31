@@ -11,21 +11,18 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class HelretBeforeSearchEvent extends NestedEvent implements ShopwareSalesChannelEvent
 {
-    public $postData = [];
-
     public function __construct(
-        array $postData,
+        public array $postData,
         protected SalesChannelContext $context
     ) {
-        $this->postData = $postData;
     }
 
-    public function getPostData()
+    public function getPostData(): array
     {
         return $this->postData;
     }
 
-    public function setPostData($postData): void
+    public function setPostData(array $postData): void
     {
         $this->postData = $postData;
     }

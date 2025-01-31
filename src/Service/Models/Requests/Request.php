@@ -2,8 +2,8 @@
 
 namespace Helret\HelloRetail\Service\Models\Requests;
 
-class Request {
-
+class Request
+{
     public function __construct(
         public ?string $websiteUuid,
         public ?string $trackingUserId

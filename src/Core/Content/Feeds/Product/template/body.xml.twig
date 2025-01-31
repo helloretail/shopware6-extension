@@ -1,7 +1,8 @@
+{# @var product \Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity #}
 <product>
     <url>{{ seoUrl('frontend.detail.page', {'productId': product.id}) }}</url>
-    <title>{{ product.translated.name }}</title>
-    <description>{{ product.translated.description }}</description>
+    <title>{{ product.translation('name') }}</title>
+    <description>{{ product.translation('description') }}</description>
     <displayGroup>{{ product.displayGroup }}</displayGroup>
     <parentId>{{ product.parentId }}</parentId>
 
@@ -23,6 +24,7 @@
     <price>{{ price.unitPrice }}</price>
     <oldPrice>{% if listPrice %}{{ listPrice.price }}{% endif %}</oldPrice>
     <displayFrom>{{ product.calculatedPrices.count > 1 }}</displayFrom>
+    <hasPriceRange>{% if product.calculatedPrices.count > 1 %}true{% else %}false{% endif %}</hasPriceRange>
     {# Price end #}
 
     <brand>{% if product.manufacturer %}{{ product.manufacturer.translated.name }}{% endif %}</brand>
@@ -38,27 +40,27 @@
         {% endif %}
     </hierarchies>
 
-    {% if product.extensions.properties %}
-        <properties>
-            {% for key, value in product.extensions.properties.all() %}
-                <property>
-                    <name>{{ key }}</name>
-                    <options>
-                        {%- for option in value -%}
-                            <option>{{ option.name }}</option>
-                        {%- endfor -%}
-                    </options>
-                </property>
-            {% endfor %}
-        </properties>
+
+    {# Filtering #}
+    <manufacturerId>{{ product.manufacturerId }}</manufacturerId>
+
+    {# Transformed into: extraDataList.propertyIds #}
+    {% if product.propertyIds %}
+        {% for propertyId in product.propertyIds %}
+            <propertyIds>{{ propertyId }}</propertyIds>
+        {% endfor %}
     {% endif %}
+
+    {# Transformed into: extraDataList.optionIds #}
+    {% if product.optionIds %}
+        {% for propertyId in product.propertyIds %}
+            <optionIds>{{ propertyId }}</optionIds>
+        {% endfor %}
+    {% endif %}
+    {# Filtering end #}
 
     <keywords>{% if product.searchKeywords %}{% for keyword in product.searchKeywords.elements %}{{ keyword.keyword }},{% endfor %}{% endif %}</keywords>
 
-    {% set color = product.properties.elements|filter(property => property.group.name == 'Color')|first %}
-    <color>{% if color %}{{ color.name }}{% endif %}</color>
-
-    {% set gender = product.properties.elements|filter(property => property.group.name == 'Gender')|first %}
-    <gender>{% if gender %}{{ gender.name }}{% endif %}</gender>
     <instock>{% if product.availableStock > 0 %}true{% else %}false{% endif %}</instock>
+    <createdDate>{{ product.createdAt|date('Y:m:d H:i:s') }}</createdDate>
 </product>

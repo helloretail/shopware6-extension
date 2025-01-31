@@ -1,3 +1,16 @@
+# 4.4.1
+* Added Search option
+* Feeds:
+  * Product feed
+    * Newly added:
+        * `displayGroup`
+        * `parentId`
+        * `propertyIds`
+        * `optionIds`
+        * `manufacturerId`
+    * Changed:
+      * Translatable to use `translation('key')`
+
 # 4.4.0
 * Added the option to replace Shopware product listing with hello retail pages using page key
 

@@ -74,17 +74,26 @@ class HelloRetailRecommendationService
 
     public function getRecommendations(string $key, SalesChannelContext $context)
     {
-        $productData = $this->fetchRecommendations($key);
+        $productData = $this->fetchRecommendations($key, $context->getSalesChannelId());
         return $this->getProducts($productData, $context);
     }
 
-    private function fetchRecommendations(string $key, array $hierarchies = [], $urls = []): array
-    {
+    private function fetchRecommendations(
+        string $key,
+        string $salesChannelId,
+        array $hierarchies = [],
+        $urls = []
+    ): array {
         if ($key) {
             $productData = [];
             $context = new RecommendationContext($hierarchies, "", $urls);
             $request = new Models\Recommendation($key, [self::EXTRA_DATA], $context);
-            $callback = $this->client->callApi(self::ENDPOINT, $request, 'recommendations');
+            $callback = $this->client->callApi(
+                self::ENDPOINT,
+                $request,
+                'recommendations',
+                salesChannelId: $salesChannelId
+            );
 
             foreach ($callback['responses'] ?? [] as $response) {
                 if (!$response['success']) {

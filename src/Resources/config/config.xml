@@ -326,34 +326,20 @@
                 Oversigt -> Konfiguration"</helpText>
         </input-field>
 
-        <input-field type="int">
-            <name>productRequestCount</name>
-            <label>Request Count (LIVE SEARCH)</label>
-            <label lang="de-DE">Menge</label>
-            <label lang="da-DK">Antal</label>
-            <helpText>The amount of product results requested</helpText>
-            <helpText lang="de-DE">Die Menge der angeforderten Produktergebnisse</helpText>
-            <helpText lang="da-DK">Mængden af produktresultater, der anmodes om</helpText>
-            <defaultValue>10</defaultValue>
+        <input-field type="bool">
+            <name>searchPage</name>
+            <label>Replace search page results</label>
+            <label lang="de-DE">Suchergebnisse ersetzen</label>
+            <label lang="da-DK">Erstat resultater på søgesiden</label>
+            <defaultValue>true</defaultValue>
         </input-field>
 
         <input-field type="bool">
-            <name>categorySearchEnabled</name>
-            <label>Enable category in response</label>
-            <label lang="de-DE">Kategorie in Antwort aktivieren</label>
-            <label lang="da-DK">Aktiver kategorier i respons</label>
-            <defaultValue>false</defaultValue>
-        </input-field>
-
-        <input-field type="int">
-            <name>categoryRequestCount</name>
-            <label>Request Count (LIVE SEARCH - CATEGORY)</label>
-            <label lang="de-DE">Menge</label>
-            <label lang="da-DK">Antal</label>
-            <helpText>The amount of categories requested</helpText>
-            <helpText lang="de-DE">Die Anzahl der angeforderten Kategorien</helpText>
-            <helpText lang="da-DK">Antallet af anmodede kategorier</helpText>
-            <defaultValue>10</defaultValue>
+            <name>suggest</name>
+            <label>Replace suggest results</label>
+            <label lang="de-DE">Ersetzen Sie die vorgeschlagenen Ergebnisse</label>
+            <label lang="da-DK">Erstat forslået resultater</label>
+            <defaultValue>true</defaultValue>
         </input-field>
     </card>
 </config>
