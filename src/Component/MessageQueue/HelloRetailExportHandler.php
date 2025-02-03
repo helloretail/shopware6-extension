@@ -41,7 +41,7 @@ use Symfony\Component\Messenger\Stamp\DelayStamp;
 class HelloRetailExportHandler
 {
     private const RETRIES = 20;
-    private const SLEEP_BETWEEN_RETRIES = 20000; // Milliseconds
+    private const SLEEP_BETWEEN_RETRIES = 20000; // Milliseconds == 20s
     protected Filesystem $filesystem;
 
     public function __construct(
@@ -264,7 +264,7 @@ class HelloRetailExportHandler
         $successes = array_intersect($allIds, $files);
         $failures = 0;
         // TODO: Threshold should be a setting
-        $successThreshold = floor((count($allIds) * 0.99));
+        $successThreshold = floor((count($allIds) * 0.90));
 
         if (count($successes) >= $successThreshold) {
             $feedContent = "";
