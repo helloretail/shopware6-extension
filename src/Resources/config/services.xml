@@ -191,8 +191,22 @@
         </service>
 
         <service
+            id="Helret\HelloRetail\Content\Product\SalesChannel\Search\DecoratedProductSearchRoute"
+            decorates="Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchRoute"
+            decoration-priority="100"
+            public="true"
+        >
+            <argument type="service" id=".inner" />
+            <argument type="service" id="Helret\HelloRetail\Service\HelloRetailSearchService"/>
+            <argument type="service" id="sales_channel.product.repository" />
+            <argument type="service" id="service_container" />
+        </service>
+
+        <service
             id="Helret\HelloRetail\Content\Product\SalesChannel\Suggest\DecoratedProductSuggestRoute"
             decorates="Shopware\Core\Content\Product\SalesChannel\Suggest\ProductSuggestRoute"
+            decoration-priority="100"
+            public="true"
         >
             <argument type="service" id=".inner"/>
             <argument type="service" id="Helret\HelloRetail\Service\HelloRetailSearchService"/>

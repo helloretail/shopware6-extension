@@ -21,7 +21,7 @@ class HelloRetailClientService
         $this->logger->pushHandler(new StreamHandler($logDir . '/hello-retail.log', \Monolog\Level::Error));
     }
 
-    private function getClient(): Client
+    public function getClient(): Client
     {
         if ($this->client === null) {
             $this->client = new Client();
@@ -36,38 +36,51 @@ class HelloRetailClientService
         return $_COOKIE['hello_retail_id'] ?? null;
     }
 
+    public function createRequest(
+        string $endpoint,
+        array $request = [],
+        string $type = 'page',
+        ?string $salesChannelId = null
+    ): Request {
+        if ($type != 'page') {
+            $request = $this->formatRequestBody($request, $type, $salesChannelId);
+        }
+
+        $body = json_encode($request);
+        return new Request(
+            'POST',
+            self::URL . $endpoint,
+            ['Content-Type' => 'application/json'],
+            $body
+        );
+    }
+
     public function callApi(
         string $endpoint,
-        Mixed $request = [],
+        array $request = [],
         string $type = 'page',
         ?string $salesChannelId = null
     ): array {
         $client = $this->getClient();
 
-        if ($type != 'page') {
-            $request = $this->formatRequestBody($request, $type, $salesChannelId);
-        }
-
-        // Ensure that we can access product.id
+        // Ensure that we always can access product.id
         if (isset($request['products']['fields']) && !isset($request['products']['fields']['extraData.id'])) {
             $request['products']['fields'][] = 'extraData.id';
         }
 
-        $body = json_encode($request);
-
         try {
             $response = $client->send(
-                new Request(
-                    'POST',
-                    self::URL . $endpoint,
-                    ['Content-Type' => 'application/json'],
-                    $body
+                $this->createRequest(
+                    $endpoint,
+                    $request,
+                    $type,
+                    $salesChannelId
                 )
             );
         } catch (GuzzleException $e) {
             $this->logger->error('Request failed', [
                 'endpoint' => $endpoint,
-                'body' => $body,
+                'body' => $request,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);

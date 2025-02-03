@@ -2,10 +2,17 @@
 
 namespace Helret\HelloRetail\Models;
 
+use Generator;
+
 class ProductModel
 {
+    protected ?FilterModel $filters = null;
+
     public function __construct(protected array $data)
     {
+        if (isset($this->data['filters']) && is_array($this->data['filters'])) {
+            $this->filters = new FilterModel($this->data['filters']);
+        }
     }
 
     public function getStart(): int
@@ -37,17 +44,35 @@ class ProductModel
         yield from $this->data['results'];
     }
 
-    public function getFilters(): iterable
-    {
-        if (!isset($this->data['filters'])) {
-            return;
-        }
-
-        yield from $this->data['filters'];
-    }
-
     public function getData(): array
     {
         return $this->data;
+    }
+
+    /**
+     * @return Generator<string, Filter>
+     */
+    public function getFilters(): Generator
+    {
+        if (!$this->filters) {
+            return;
+        }
+
+        foreach ($this->filters->getFormattedFilters() as $filter) {
+            yield $filter->getName() => $filter;
+        }
+    }
+
+    public function hasData(): bool
+    {
+        if ($this->getIds()) {
+            return true;
+        }
+
+        if ($this->filters?->getFormattedFilters()->current()) {
+            return true;
+        }
+
+        return false;
     }
 }

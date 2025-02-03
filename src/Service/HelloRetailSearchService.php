@@ -8,7 +8,6 @@ use Helret\HelloRetail\Event\HelretBeforeSearchEvent;
 use Helret\HelloRetail\Models\CriteriaModel;
 use Helret\HelloRetail\Models\SearchResponse;
 use Helret\HelloRetail\Subscriber\SearchSubscriber;
-use http\Exception\InvalidArgumentException;
 use RuntimeException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
@@ -37,13 +36,19 @@ class HelloRetailSearchService
     public function searchByRequest(
         Request $request,
         Criteria $criteria,
-        SalesChannelContext $context
+        SalesChannelContext $context,
+        bool $isFilterRequest = false
     ): SearchResponse {
         if (!$context->hasState(SearchSubscriber::SEARCH_AWARE)) {
             throw new RuntimeException('Context has to have a search state');
         }
 
-        $response = $this->search(request: $request, context: $context, criteria: $criteria);
+        $response = $this->search(
+            request: $request,
+            context: $context,
+            criteria: $criteria,
+            isFilterRequest: $isFilterRequest
+        );
 
         $productIds = $response->getProducts()?->getIds();
         if ($productIds) {
@@ -56,6 +61,7 @@ class HelloRetailSearchService
             $criteria->setIds($productIds);
             $criteria->resetSorting();
 
+            // Bail on caching.
             if ($request->attributes->get(PlatformRequest::ATTRIBUTE_HTTP_CACHE)) {
                 $request->attributes->set(PlatformRequest::ATTRIBUTE_HTTP_CACHE, false);
             }
@@ -67,7 +73,8 @@ class HelloRetailSearchService
     protected function search(
         Request $request,
         SalesChannelContext $context,
-        Criteria $criteria
+        Criteria $criteria,
+        bool $isFilterRequest = false
     ): SearchResponse {
         $query = trim((string)$request->get('search'));
         if (!$query) {
@@ -88,15 +95,25 @@ class HelloRetailSearchService
         $postData['products']['start'] = $offset ?: 0;
         $postData['products']['count'] = $limit;
 
-        /**
-         * TODO; Initial search doesn't work as expected.
-         *  /search?limit=9&min-price=5000&order=price-asc&p=1&search=test
-         *  Result is first found at page 3.
-         *
-         * Once the page/filter has been applied "no-worries" but initial load skips that part.
-         * TLDR; Ensure filtered content also work on initial load with aggregations
-         */
-        if (!$request->get('only-aggregations') && !$criteria->getAggregations()) {
+        // Setup aggregated data.
+        if ($isFilterRequest) {
+            /** @var SearchResponse|null $previousResponse */
+            $previousResponse = $criteria->getExtensionOfType(SearchResponse::NAME, SearchResponse::class);
+
+            $postData['products']['start'] = 0;
+            $postData['products']['count'] = 0;
+            $postData['products']['returnFilters'] = true; // Allows use of filtering via HR (Partial support)
+            // Limit response data when searching for filter ids.
+            $postData['products']['fields'] = ['extraData.id'];
+
+            if (!$previousResponse->getProducts()->getFilters()->current()) {
+                $postData['products']['returnFilters'] = false;
+                $postData['products']['count'] = $previousResponse->getProducts()?->getTotalCount() ?: 5000;
+            }
+        }
+
+        // Add filters
+        if (!$isFilterRequest || $request->request->get('only-aggregations')) {
             $postData['products']['filters'] = [];
             foreach ($this->mapFilters($criteria->getPostFilters()) as $field => $map) {
                 if ($field === 'product.manufacturerId') {
@@ -121,6 +138,7 @@ class HelloRetailSearchService
             }
         }
 
+        // TODO: Sorting, once a key doesn't exist in HelloRetail NO products are found
         if ($request->get('order') && $request->get('order') !== 'score' &&
             $criteria->getSorting()
         ) {
@@ -128,6 +146,7 @@ class HelloRetailSearchService
                 'product.name' => 'title',
                 'product.cheapestPrice' => 'price',
                 'id' => 'extraData.id',
+                'product.releaseDate' => 'extraData.createdDate',
             ];
 
             $postData['products']['sorting'] = [];
@@ -138,8 +157,15 @@ class HelloRetailSearchService
             }
         }
 
+        // Allow tampering
         $postData = $this->eventDispatcher->dispatch(
-            new HelretBeforeSearchEvent($postData, $context),
+            new HelretBeforeSearchEvent(
+                request: $request,
+                context: $context,
+                criteria: $criteria,
+                postData: $postData,
+                isFilterRequest: $isFilterRequest,
+            ),
             'helret_before_search'
         )->getPostdata();
 
@@ -147,8 +173,10 @@ class HelloRetailSearchService
         return new SearchResponse($response);
     }
 
-    public function getDefaultPostData(string $query, SalesChannelContext $context): array
-    {
+    protected function getDefaultPostData(
+        string $query,
+        SalesChannelContext $context
+    ): array {
         return [
             'query' => $query,
             'key' => $this->configService->getString(
@@ -159,9 +187,7 @@ class HelloRetailSearchService
                 'returnFilters' => false,
                 'start' => 0,
                 'fields' => [
-                    'title',
                     'extraData.id',
-                    'extraData.productId',
                 ],
             ],
             'format' => 'json',
@@ -176,7 +202,12 @@ class HelloRetailSearchService
     {
         foreach ($filters as $filter) {
             if ($filter instanceof EqualsAnyFilter) {
-                $map[$filter->getField()] = $filter->getValue();
+                $map[$filter->getField()] = array_merge(
+                    isset($map[$filter->getField()]) && is_array($map[$filter->getField()]) ?
+                        $map[$filter->getField()] :
+                        [],
+                    $filter->getValue()
+                );
             } elseif ($filter instanceof EqualsFilter) {
                 $map[$filter->getField()] = $filter->getValue();
             } elseif ($filter instanceof RangeFilter) {
