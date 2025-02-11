@@ -1,6 +1,8 @@
 <category>
     <title>{% if category.name %}{{ category.name }}{% else %}{{ category.translated.name }}{% endif %}</title>
     <url>{{ seoUrl('frontend.navigation.page', {'navigationId': category.id}) }}</url>
+    <id>{{ category.id }}</id>
+    <parent_id>{{ category.parentId }}</parent_id>
     <description>{% if category.description %}{{ category.description }}{% else %}{{ category.translated.description }}{% endif %}</description>
     <keywords>{% if category.translated.keywords %}{% for keyword in category.translated.keywords %}{{ keyword.keyword }},{% endfor %}{% endif %}</keywords>
 

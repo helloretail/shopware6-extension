@@ -6,12 +6,16 @@ use Generator;
 
 class ProductModel
 {
-    protected ?FilterModel $filters = null;
+    public ?FilteringModel $filters = null;
+    public ?SortingsModel $sortings = null;
 
     public function __construct(protected array $data)
     {
         if (isset($this->data['filters']) && is_array($this->data['filters'])) {
-            $this->filters = new FilterModel($this->data['filters']);
+            $this->filters = new FilteringModel($this->data['filters']);
+        }
+        if (isset($this->data['sorting']) && is_array($this->data['sorting'])) {
+            $this->sortings = new SortingsModel($this->data['sorting']);
         }
     }
 
@@ -58,7 +62,7 @@ class ProductModel
             return;
         }
 
-        foreach ($this->filters->getFormattedFilters() as $filter) {
+        foreach ($this->filters->iterator as $filter) {
             yield $filter->getName() => $filter;
         }
     }
@@ -69,7 +73,8 @@ class ProductModel
             return true;
         }
 
-        if ($this->filters?->getFormattedFilters()->current()) {
+        // Current?
+        if ($this->filters?->iterator->valid()) {
             return true;
         }
 

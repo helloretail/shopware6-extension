@@ -5,9 +5,10 @@ namespace Helret\HelloRetail\Service;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Request;
-use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Helret\HelloRetail\Service\Models\Requests\AbstractRequest;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class HelloRetailClientService
 {
@@ -33,17 +34,33 @@ class HelloRetailClientService
     private function getCookieUserId(): ?string
     {
         //returns cookie, unless user has opted out
-        return $_COOKIE['hello_retail_id'] ?? null;
+        return $_COOKIE['hello_retail_id'] ?? 'a';
     }
 
-    public function createRequest(
+    protected function createRequest(
         string $endpoint,
-        array $request = [],
+        array|AbstractRequest $request = [],
         string $type = 'page',
         ?string $salesChannelId = null
     ): Request {
         if ($type != 'page') {
             $request = $this->formatRequestBody($request, $type, $salesChannelId);
+        }
+
+        if (is_array($request)) {
+            // Ensure that we always can access product.id
+            if (isset($request['products']['fields']) &&
+                !in_array('extraData.id', $request['products']['fields'], true)
+            ) {
+                $request['products']['fields'][] = 'extraData.id';
+            }
+
+            // Ensure that we always can access categories.id
+            if (isset($request['categories']['fields']) &&
+                !in_array('extraData.id', $request['categories']['fields'], true)
+            ) {
+                $request['categories']['fields'][] = 'extraData.id';
+            }
         }
 
         $body = json_encode($request);
@@ -57,16 +74,11 @@ class HelloRetailClientService
 
     public function callApi(
         string $endpoint,
-        array $request = [],
+        array|AbstractRequest $request = [],
         string $type = 'page',
         ?string $salesChannelId = null
     ): array {
         $client = $this->getClient();
-
-        // Ensure that we always can access product.id
-        if (isset($request['products']['fields']) && !isset($request['products']['fields']['extraData.id'])) {
-            $request['products']['fields'][] = 'extraData.id';
-        }
 
         try {
             $response = $client->send(
@@ -94,8 +106,11 @@ class HelloRetailClientService
         return json_decode($response->getBody()->getContents(), true);
     }
 
-    private function formatRequestBody(mixed $request, string $type, ?string $salesChannelId = null): array
-    {
+    private function formatRequestBody(
+        array|AbstractRequest $request,
+        string $type,
+        ?string $salesChannelId = null
+    ): array {
         $baseBody = [
             "websiteUuid" => $this->systemConfigService->get('HelretHelloRetail.config.partnerId', $salesChannelId),
             "trackingUserId" => $this->getCookieUserId()
@@ -104,7 +119,8 @@ class HelloRetailClientService
         if ($type === 'recommendations') {
             $baseBody['requests'] = is_array($request) ? $request : [$request];
         } else {
-            $baseBody[] = $request;
+            // TODO, UNdersøg om denne er korrekt.
+            $baseBody = array_merge($baseBody, $request);
         }
 
         return $baseBody;

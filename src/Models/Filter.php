@@ -49,7 +49,9 @@ class Filter
         } elseif ($this->type === FilterType::LIST) {
             $field = match ($this->name) {
                 'extraDataList.optionIds',
-                'extraDataList.propertyIds' => [
+                'extraDataList.propertyIds',
+                'extraData.optionIds',
+                'extraData.propertyIds' => [
                     'entity' => PropertyGroupOptionDefinition::ENTITY_NAME,
                     'name' => $this->name === 'extraDataList.optionIds' ?
                         'options' :

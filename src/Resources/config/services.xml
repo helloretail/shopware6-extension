@@ -188,6 +188,7 @@
                  decorates="Shopware\Core\Content\Product\SearchKeyword\ProductSearchBuilderInterface">
             <argument type="service" id=".inner"/>
             <argument type="service" id="Helret\HelloRetail\Service\HelloRetailSearchService"/>
+            <argument type="service" id="event_dispatcher"/>
         </service>
 
         <service
@@ -196,10 +197,12 @@
             decoration-priority="100"
             public="true"
         >
-            <argument type="service" id=".inner" />
+            <argument type="service" id=".inner"/>
             <argument type="service" id="Helret\HelloRetail\Service\HelloRetailSearchService"/>
-            <argument type="service" id="sales_channel.product.repository" />
-            <argument type="service" id="service_container" />
+            <argument type="service" id="sales_channel.product.repository"/>
+            <argument type="service" id="sales_channel.category.repository"/>
+            <argument type="service" id="service_container"/>
+            <argument type="service" id="event_dispatcher"/>
         </service>
 
         <service
@@ -210,6 +213,8 @@
         >
             <argument type="service" id=".inner"/>
             <argument type="service" id="Helret\HelloRetail\Service\HelloRetailSearchService"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="sales_channel.category.repository"/>
         </service>
 
         <!-- Required to set correct total and aggregations. -->
@@ -226,6 +231,12 @@
         <service id="Helret\HelloRetail\Content\Product\SalesChannel\Listing\Processor\HelloRetailListingProcessor">
             <!-- Priority has to be greater than -1000 to run before BehaviorListingProcessor -->
             <tag name="shopware.listing.processor" priority="-900"/>
+        </service>
+        <service
+            id="Helret\HelloRetail\Content\Product\SalesChannel\Listing\Processor\DecoratedSortingListingProcessor"
+            decorates="Shopware\Core\Content\Product\SalesChannel\Listing\Processor\SortingListingProcessor"
+        >
+            <argument type="service" id=".inner"/>
         </service>
     </services>
 </container>

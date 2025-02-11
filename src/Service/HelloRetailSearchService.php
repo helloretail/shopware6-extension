@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Helret\HelloRetail\Service;
 
-use Helret\HelloRetail\Event\HelretBeforeSearchEvent;
+use Helret\HelloRetail\Event\Search\HelretBeforeSearchEvent;
+use Helret\HelloRetail\Event\Search\HelretSearchResponseEvent;
+use Helret\HelloRetail\Event\Search\HelretSearchSortingEvent;
 use Helret\HelloRetail\Models\CriteriaModel;
 use Helret\HelloRetail\Models\SearchResponse;
 use Helret\HelloRetail\Subscriber\SearchSubscriber;
@@ -25,7 +27,7 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 class HelloRetailSearchService
 {
     public function __construct(
-        protected readonly HelloRetailClientService $client,
+        public readonly HelloRetailClientService $client,
         protected readonly SystemConfigService $configService,
         protected readonly EventDispatcherInterface $eventDispatcher,
         protected readonly HelloRetailApiService $helloRetailApiService,
@@ -37,7 +39,8 @@ class HelloRetailSearchService
         Request $request,
         Criteria $criteria,
         SalesChannelContext $context,
-        bool $isFilterRequest = false
+        bool $isFilterRequest = false,
+        ?SearchResponse $originalResponse = null
     ): SearchResponse {
         if (!$context->hasState(SearchSubscriber::SEARCH_AWARE)) {
             throw new RuntimeException('Context has to have a search state');
@@ -47,19 +50,30 @@ class HelloRetailSearchService
             request: $request,
             context: $context,
             criteria: $criteria,
-            isFilterRequest: $isFilterRequest
+            isFilterRequest: $isFilterRequest,
+            originalResponse: $originalResponse
         );
 
-        $productIds = $response->getProducts()?->getIds();
-        if ($productIds) {
+        if ($response->getProducts()) {
             $criteria->addExtension($response::NAME, $response);
 
             // Ensure that we actually find products as we might paginate
             $criteria->setOffset(0);
 
-            // Set ids from HelloRetail and reset sorting to allow "IdSorting"
-            $criteria->setIds($productIds);
-            $criteria->resetSorting();
+            $productIds = $response->getProducts()->getIds();
+            if ($productIds) {
+                // Set ids from HelloRetail and reset sorting to allow "IdSorting"
+                $criteria->setIds($productIds);
+                $criteria->resetSorting();
+
+                /**
+                 * As filters aren't group by AndFilter, we need to reset PostFilters -
+                 *  to ensure correct content between Shopware & HelloRetail when filtering by properties etc.
+                 *
+                 * If filters aren't reset the search page can give empty result while the response contains X products
+                 */
+                $criteria->resetPostFilters();
+            }
 
             // Bail on caching.
             if ($request->attributes->get(PlatformRequest::ATTRIBUTE_HTTP_CACHE)) {
@@ -74,7 +88,8 @@ class HelloRetailSearchService
         Request $request,
         SalesChannelContext $context,
         Criteria $criteria,
-        bool $isFilterRequest = false
+        bool $isFilterRequest = false,
+        ?SearchResponse $originalResponse = null
     ): SearchResponse {
         $query = trim((string)$request->get('search'));
         if (!$query) {
@@ -97,20 +112,18 @@ class HelloRetailSearchService
 
         // Setup aggregated data.
         if ($isFilterRequest) {
-            /** @var SearchResponse|null $previousResponse */
-            $previousResponse = $criteria->getExtensionOfType(SearchResponse::NAME, SearchResponse::class);
-
             $postData['products']['start'] = 0;
             $postData['products']['count'] = 0;
             $postData['products']['returnFilters'] = true; // Allows use of filtering via HR (Partial support)
             // Limit response data when searching for filter ids.
             $postData['products']['fields'] = ['extraData.id'];
 
-            if (!$previousResponse->getProducts()->getFilters()->current()) {
+            if ($originalResponse && !$originalResponse->getProducts()->filters?->getFormattedFilters()) {
                 $postData['products']['returnFilters'] = false;
-                $postData['products']['count'] = $previousResponse->getProducts()?->getTotalCount() ?: 5000;
+                $postData['products']['count'] = $originalResponse->getProducts()?->getTotalCount() ?: 5000;
             }
         }
+
 
         // Add filters
         if (!$isFilterRequest || $request->request->get('only-aggregations')) {
@@ -138,39 +151,100 @@ class HelloRetailSearchService
             }
         }
 
-        // TODO: Sorting, once a key doesn't exist in HelloRetail NO products are found
-        if ($request->get('order') && $request->get('order') !== 'score' &&
-            $criteria->getSorting()
-        ) {
-            $fieldMap = [
-                'product.name' => 'title',
-                'product.cheapestPrice' => 'price',
-                'id' => 'extraData.id',
-                'product.releaseDate' => 'extraData.createdDate',
-            ];
-
-            $postData['products']['sorting'] = [];
-            foreach ($criteria->getSorting() as $sorting) {
-                $key = $fieldMap[$sorting->getField()] ?? $sorting->getField();
-                $sort = strtolower($sorting->getDirection());
-                $postData['products']['sorting'][] = "$key $sort";
-            }
+        $sorting = $this->eventDispatcher->dispatch(
+            new HelretSearchSortingEvent(
+                request: $request,
+                criteria: $criteria,
+                context: $context,
+                postData: $postData,
+                isFilterRequest: $isFilterRequest,
+                originalResponse: $originalResponse
+            )
+        )->getSortings();
+        if ($sorting) {
+            $postData['products']['sorting'] = $sorting;
         }
 
-        // Allow tampering
-        $postData = $this->eventDispatcher->dispatch(
+        $type = $request->request->get('hello-retail-type', 'search');
+
+        $contentLimit = $this->configService->getInt(
+            "HelretHelloRetail.config.{$type}CategoryLimit",
+            $context->getSalesChannelId()
+        );
+
+        if ($contentLimit > 0) {
+            $postData['categories'] = [
+                'start' => 0,
+                'limit' => $contentLimit,
+//                'fields' => [
+//                    'extraData.id',
+//                ]
+            ];
+        }
+
+
+        // Allow request post data tampering
+        $event = $this->eventDispatcher->dispatch(
             new HelretBeforeSearchEvent(
                 request: $request,
                 context: $context,
                 criteria: $criteria,
                 postData: $postData,
                 isFilterRequest: $isFilterRequest,
-            ),
-            'helret_before_search'
-        )->getPostdata();
+                originalResponse: $originalResponse,
+                forceReturnFilters: ($isFilterRequest &&
+                    ($postData['products']['returnFilters'] ?? false) !== true &&
+                    $originalResponse &&
+                    !$originalResponse->getProducts()->sortings) ||
+                $context->hasState('hello-retail-force-return-filters')
+            )
+        );
 
-        $response = $this->client->callApi('search', $postData, salesChannelId: $context->getSalesChannelId());
-        return new SearchResponse($response);
+        $postData = $event->getPostData();
+        if ($event->shouldForceReturnFilters()) {
+            $postData['products']['returnFilters'] = true;
+        }
+
+        $response = $this->client->callApi(
+            endpoint: 'search',
+            request: $postData,
+            type: $type,
+            salesChannelId: $context->getSalesChannelId()
+        );
+
+        $searchResponse = new SearchResponse($response);
+        $this->eventDispatcher->dispatch(
+            new HelretSearchResponseEvent(
+                response: $searchResponse,
+                request: $request,
+                context: $context,
+                criteria: $criteria,
+                postData: $postData,
+                isFilterRequest: $isFilterRequest,
+                originalResponse: $originalResponse
+            )
+        );
+
+        // Post tampering, set sorting
+        if ($isFilterRequest && $originalResponse) {
+            if ($searchResponse->getProducts()?->sortings && !$originalResponse->getProducts()->sortings) {
+                $originalResponse->getProducts()->sortings = $searchResponse->getProducts()->sortings;
+            }
+
+            if ($originalResponse->getProducts()?->sortings && !$searchResponse->getProducts()?->sortings) {
+                $searchResponse->getProducts()->sortings = $originalResponse->getProducts()->sortings;
+            }
+
+            if ($searchResponse->getProducts()?->filters && !$originalResponse->getProducts()->filters) {
+                $originalResponse->getProducts()->filters = $searchResponse->getProducts()->filters;
+            }
+
+            if ($originalResponse->getProducts()?->filters && !$searchResponse->getProducts()?->filters) {
+                $searchResponse->getProducts()->filters = $originalResponse->getProducts()->filters;
+            }
+        }
+
+        return $searchResponse;
     }
 
     protected function getDefaultPostData(

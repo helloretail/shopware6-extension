@@ -333,13 +333,43 @@
             <label lang="da-DK">Erstat resultater på søgesiden</label>
             <defaultValue>true</defaultValue>
         </input-field>
+        <input-field type="int">
+            <name>searchCategoryLimit</name>
+            <label>Amount of search (Category/Content)</label>
+            <label lang="de-DE">Suchmenge (Kategorie/Inhalt) geätzt</label>
+            <label lang="da-DK">Antal (Kategori/Content) resultater</label>
+            <helpText>If blank no categories/content will be fetched</helpText>
+            <helpText lang="de-DE">Wenn leer, werden keine Kategorien/Inhalte abgerufen</helpText>
+            <helpText lang="da-DK">Hvis tom vil ingen kategorier/indhold blive hentet</helpText>
+        </input-field>
 
+        <!-- Suggest -->
         <input-field type="bool">
             <name>suggest</name>
             <label>Replace suggest results</label>
             <label lang="de-DE">Ersetzen Sie die vorgeschlagenen Ergebnisse</label>
             <label lang="da-DK">Erstat forslået resultater</label>
             <defaultValue>true</defaultValue>
+        </input-field>
+
+        <input-field type="int">
+            <name>suggestProductLimit</name>
+            <label>Amount of suggestions (Product)</label>
+            <label lang="de-DE">Anzahl der Vorschläge (Produkt)</label>
+            <label lang="da-DK">Antal forslået resultater (Produkt)</label>
+            <helpText>If blank fallback to Shopware default</helpText>
+            <helpText lang="de-DE">Wenn leer, wird auf die Shopware-Standardeinstellung zurückgegriffen</helpText>
+            <helpText lang="da-DK">Hvis tom benyt til Shopware-standard</helpText>
+        </input-field>
+
+        <input-field type="int">
+            <name>suggestCategoryLimit</name>
+            <label>Amount of suggestions (Category/Content)</label>
+            <label lang="de-DE">Anzahl der Vorschläge (Kategorie/Inhalt)</label>
+            <label lang="da-DK">Antal forslået resultater (Kategori/Content)</label>
+            <helpText>If blank no categories/content will be fetched</helpText>
+            <helpText lang="de-DE">Wenn leer, werden keine Kategorien/Inhalte abgerufen</helpText>
+            <helpText lang="da-DK">Hvis tom vil ingen kategorier/indhold blive hentet</helpText>
         </input-field>
     </card>
 </config>

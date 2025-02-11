@@ -2,29 +2,35 @@
 
 namespace Helret\HelloRetail\Content\Product\SalesChannel\Search;
 
+use Helret\HelloRetail\Event\Search\HelretAggregationLoadedEvent;
+use Helret\HelloRetail\Models\SearchResponse;
 use Helret\HelloRetail\Service\HelloRetailSearchService;
 use Helret\HelloRetail\Subscriber\SearchSubscriber;
+use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductCollection;
 use Shopware\Core\Content\Product\SalesChannel\Search\AbstractProductSearchRoute;
 use Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchRouteResponse;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Profiling\Profiler;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class DecoratedProductSearchRoute extends AbstractProductSearchRoute
 {
     /**
      * @param SalesChannelRepository<SalesChannelProductCollection> $productRepository
+     * @param SalesChannelRepository<CategoryCollection> $categoryRepository
      */
     public function __construct(
         protected AbstractProductSearchRoute $decorated,
         protected HelloRetailSearchService $searchService,
         protected SalesChannelRepository $productRepository,
-        protected Container $container
+        protected SalesChannelRepository $categoryRepository,
+        protected Container $container,
+        protected EventDispatcherInterface $eventDispatcher
     ) {
     }
 
@@ -65,6 +71,7 @@ class DecoratedProductSearchRoute extends AbstractProductSearchRoute
             );
         }
 
+        $request->request->set('hello-retail-type', 'search');
         $response = $this->decorated->load(
             request: $request,
             context: $context,
@@ -82,6 +89,19 @@ class DecoratedProductSearchRoute extends AbstractProductSearchRoute
             category: 'hello-retail'
         );
 
+        /** @var SearchResponse|null $searchResponse */
+        $searchResponse = $criteria->getExtensionOfType(SearchResponse::NAME, SearchResponse::class);
+        $categoryIds = $searchResponse?->getCategories()?->getIds();
+        if ($categoryIds) {
+            $response->getListingResult()->addExtension(
+                'hello-retail-content',
+                $this->categoryRepository->search(
+                    (new Criteria($categoryIds)),
+                    $context
+                )->getEntities()
+            );
+        }
+
         return $response;
     }
 
@@ -96,29 +116,39 @@ class DecoratedProductSearchRoute extends AbstractProductSearchRoute
             return;
         }
 
+        /** @var SearchResponse|null $originalResponse */
+        $originalResponse = $criteria->getExtensionOfType(SearchResponse::NAME, SearchResponse::class);
+
         $origin = clone $criteria;
         $origin->setLimit(0);
-        $searchResponse = $this->searchService->searchByRequest(
-            request: $request,
-            criteria: $origin,
-            context: $context,
-            isFilterRequest: true
-        );
 
-        $aggregations = null;
-        if ($searchResponse->getProducts()->getFilters()->current()) {
-            $aggregations = new AggregationResultCollection();
-            $searchResponse->getProducts()->getFilters()->rewind();
-            foreach ($searchResponse->getProducts()->getFilters() as $filter) {
-                $aggregation = $filter->getAsAggregationResult(
+        $searchResponse = $originalResponse->getProducts()->filters?->getCollection() ?
+            $originalResponse :
+            $this->searchService->searchByRequest(
+                request: $request,
+                criteria: $origin,
+                context: $context,
+                isFilterRequest: true,
+                originalResponse: $originalResponse
+            );
+
+        $event = $this->eventDispatcher->dispatch(
+            new HelretAggregationLoadedEvent(
+                response: $searchResponse,
+                originalResponse: $originalResponse,
+                aggregations: $searchResponse->getProducts()?->filters?->parseCollection(
                     $this->container,
                     $context->getContext()
-                );
-                if ($aggregation) {
-                    $aggregations->add($aggregation);
-                }
-            }
-        } else {
+                )->getCollection(),
+                request: $request,
+                criteria: $origin,
+                context: $context
+            )
+        );
+
+        $aggregations = $event->getAggregations();
+        if (!$aggregations && $event->isFallbackAllowed()) {
+            // Fallback.
             $origin->setLimit($searchResponse->getProducts()?->getTotalCount() ?: $criteria->getLimit());
 
             $searchResponse = $this->searchService->searchByRequest(
@@ -128,10 +158,19 @@ class DecoratedProductSearchRoute extends AbstractProductSearchRoute
                 isFilterRequest: true
             );
             if ($searchResponse->getProducts()) {
-                $aggregations = $this->productRepository->aggregate(
-                    criteria: $origin,
-                    salesChannelContext: $context
-                );
+                $aggregations = $this->eventDispatcher->dispatch(
+                    new HelretAggregationLoadedEvent(
+                        response: $searchResponse,
+                        originalResponse: $originalResponse,
+                        aggregations: $this->productRepository->aggregate(
+                            criteria: $origin,
+                            salesChannelContext: $context
+                        ),
+                        request: $request,
+                        criteria: $origin,
+                        context: $context
+                    )
+                )->getAggregations();
             }
         }
 

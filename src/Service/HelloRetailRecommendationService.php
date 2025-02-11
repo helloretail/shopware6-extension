@@ -3,6 +3,7 @@
 namespace Helret\HelloRetail\Service;
 
 use Helret\HelloRetail\Service\Models\RecommendationContext;
+use Helret\HelloRetail\Service\Models\Requests\RecommendationRequest;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Cms\DataResolver\CriteriaCollection;
 use Shopware\Core\Content\Product\ProductDefinition;
@@ -33,7 +34,7 @@ class HelloRetailRecommendationService
         string $key,
         string $searchKey,
         Entity $entity,
-        SalesChannelContext $salesChannelContext = null
+        SalesChannelContext $salesChannelContext
     ): ?CriteriaCollection {
         $collection = new CriteriaCollection();
         $hierarchies = [];
@@ -49,13 +50,17 @@ class HelloRetailRecommendationService
             $hierarchies = $category->getBreadcrumb();
         }
 
-        if ($salesChannelContext) {
-            /** @var SalesChannelDomainEntity $domain */
-            foreach ($salesChannelContext->getSalesChannel()->getDomains() as $domain) {
-                $urls[] = $domain->getUrl();
-            }
+        /** @var SalesChannelDomainEntity $domain */
+        foreach ($salesChannelContext->getSalesChannel()->getDomains() as $domain) {
+            $urls[] = $domain->getUrl();
         }
-        $productData = $this->fetchRecommendations($key, [$hierarchies], $urls);
+
+        $productData = $this->fetchRecommendations(
+            $key,
+            $salesChannelContext->getSalesChannelId(),
+            [$hierarchies],
+            $urls
+        );
 
         $ids = $this->getIds($productData);
         if (!$ids) {
@@ -89,9 +94,9 @@ class HelloRetailRecommendationService
             $context = new RecommendationContext($hierarchies, "", $urls);
             $request = new Models\Recommendation($key, [self::EXTRA_DATA], $context);
             $callback = $this->client->callApi(
-                self::ENDPOINT,
-                $request,
-                'recommendations',
+                endpoint: self::ENDPOINT,
+                request: $request,
+                type: 'recommendations',
                 salesChannelId: $salesChannelId
             );
 
