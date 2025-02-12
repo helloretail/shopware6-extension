@@ -3,19 +3,15 @@
     <url>{{ seoUrl('frontend.detail.page', {'productId': product.id}) }}</url>
     <title>{{ product.translation('name') }}</title>
     <description>{{ product.translation('description') }}</description>
-    <displayGroup>{{ product.displayGroup }}</displayGroup>
-    <parentId>{{ product.parentId }}</parentId>
 
     <ean>{{ product.ean }}</ean>
-    <id>{{ product.id }}</id>
-    <sku>{{ product.productNumber }}</sku>
-    <productnumber>{{ product.productNumber }}</productnumber>
+    <productNumber>{{ product.productNumber }}</productNumber>
 
     {% if product.cover %}
         {% set thumbnail = product.cover.media.thumbnails.elements|filter(img => img.width == 400)|first %}
-        <imgurl>{% if thumbnail %}{{ thumbnail.url }}{% else %}{{ product.cover.media.url }}{% endif %}</imgurl>
+        <imgUrl>{% if thumbnail %}{{ thumbnail.url }}{% else %}{{ product.cover.media.url }}{% endif %}</imgUrl>
     {% else %}
-        <imgurl/>
+        <imgUrl/>
     {% endif %}
 
     {# Price #}
@@ -23,8 +19,6 @@
     {% set listPrice = price.listPrice %}
     <price>{{ price.unitPrice }}</price>
     <oldPrice>{% if listPrice %}{{ listPrice.price }}{% endif %}</oldPrice>
-    <displayFrom>{{ product.calculatedPrices.count > 1 }}</displayFrom>
-    <hasPriceRange>{% if product.calculatedPrices.count > 1 %}true{% else %}false{% endif %}</hasPriceRange>
     {# Price end #}
 
     <brand>{% if product.manufacturer %}{{ product.manufacturer.translated.name }}{% endif %}</brand>
@@ -40,27 +34,66 @@
         {% endif %}
     </hierarchies>
 
+    <extraData>
+        <id>{{ product.id }}</id>
+        <sku>{{ product.productNumber }}</sku>
+        <parentId>{{ product.parentId }}</parentId>
+        <displayGroup>{{ product.displayGroup }}</displayGroup>
 
-    {# Filtering #}
-    <manufacturerId>{{ product.manufacturerId }}</manufacturerId>
 
-    {# Transformed into: extraDataList.propertyIds #}
-    {% if product.propertyIds %}
-        {% for propertyId in product.propertyIds %}
-            <propertyIds>{{ propertyId }}</propertyIds>
-        {% endfor %}
-    {% endif %}
+        {# Pricing #}
+        <displayFrom>{{ product.calculatedPrices.count > 1 }}</displayFrom>
+        <hasPriceRange>{% if product.calculatedPrices.count > 1 %}true{% else %}false{% endif %}</hasPriceRange>
 
-    {# Transformed into: extraDataList.optionIds #}
-    {% if product.optionIds %}
-        {% for propertyId in product.propertyIds %}
-            <optionIds>{{ propertyId }}</optionIds>
-        {% endfor %}
-    {% endif %}
+        {# Filtering for REST-API #}
+        <manufacturerId>{{ product.manufacturerId }}</manufacturerId>
+    </extraData>
+
+    {# Filtering for REST-API #}
+    <extraDataList>
+        {# Transformed into: extraDataList.propertyIds #}
+        {% if product.propertyIds %}
+            {% for propertyId in product.propertyIds %}
+                <propertyIds>{{ propertyId }}</propertyIds>
+            {% endfor %}
+        {% endif %}
+
+        {# Transformed into: extraDataList.optionIds #}
+        {% if product.optionIds %}
+            {% for propertyId in product.propertyIds %}
+                <optionIds>{{ propertyId }}</optionIds>
+            {% endfor %}
+        {% endif %}
+
+        {# Transformed into: extraDataList.propertyGroup_{groupId} #}
+        {# @var propertyGroup \Shopware\Core\Content\Property\PropertyGroupEntity #}
+        {# @var property \Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionEntity #}
+        {% if product.sortedProperties %}
+            {% for propertyGroup in product.sortedProperties %}
+                {% if propertyGroup.options %}
+                    {% for property in propertyGroup.options %}
+                        <propertyGroup_{{ propertyGroup.id }}>
+                            {{- property.id -}}
+                        </propertyGroup_{{ propertyGroup.id }}>
+                    {% endfor %}
+                {% endif %}
+                {# Left blank to ensure list format as this is a collection. #}
+                <propertyGroup_{{ propertyGroup.id }}/>
+            {% endfor %}
+        {% endif %}
+
+        {# @var propertyOption \Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionEntity #}
+        {% if product.options %}
+            {% for propertyOption in product.options %}
+                <propertyGroup_{{ propertyOption.groupId }}>
+                    {{- propertyOption.id -}}
+                </propertyGroup_{{ propertyOption.groupId }}>
+            {% endfor %}
+        {% endif %}
+    </extraDataList>
     {# Filtering end #}
 
     <keywords>{% if product.searchKeywords %}{% for keyword in product.searchKeywords.elements %}{{ keyword.keyword }},{% endfor %}{% endif %}</keywords>
 
-    <instock>{% if product.availableStock > 0 %}true{% else %}false{% endif %}</instock>
-    <createdDate>{{ product.createdAt|date('Y:m:d H:i:s') }}</createdDate>
+    <inStock>{% if product.availableStock > 0 %}true{% else %}false{% endif %}</inStock>
 </product>

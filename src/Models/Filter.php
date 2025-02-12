@@ -3,18 +3,18 @@
 namespace Helret\HelloRetail\Models;
 
 use Helret\HelloRetail\Enum\FilterType;
+use Helret\HelloRetail\Event\Search\HelretUnmappedAggregationData;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Content\Product\Aggregate\ProductManufacturer\ProductManufacturerDefinition;
 use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionDefinition;
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResult;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Bucket\Bucket;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Bucket\TermsResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\EntityResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\StatsResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Shopware\Core\Framework\Struct\ArrayStruct;
+use Shopware\Core\Framework\Uuid\Uuid;
 
 class Filter
 {
@@ -36,9 +36,79 @@ class Filter
         return $this->name;
     }
 
-    public function getAsAggregationResult(ContainerInterface $container, Context $context): ?AggregationResult
-    {
-        if ($this->name === 'price') {
+    public function getAsAggregationResult(
+        CriteriaCollection $collection,
+        ?EventDispatcherInterface $dispatcher = null
+    ): ?AggregationResult {
+        if (str_starts_with($this->name, 'extraDataList.propertyGroup_')) {
+            $groupId = substr($this->name, strlen('extraDataList.propertyGroup_'));
+            if (!Uuid::isValid($groupId)) {
+                return null;
+            }
+
+            /** @var Criteria|null $criteria */
+            $criteria = $collection->get(PropertyGroupOptionDefinition::ENTITY_NAME);
+            if ($criteria) {
+                $struct = $criteria->getExtensionOfType('hello-retail-data', ArrayStruct::class);
+
+                $criteria->setIds(
+                    array_merge(
+                        $criteria->getIds(),
+                        $this->getValueSet()
+                    )
+                );
+
+                foreach ($this->value as $item) {
+                    $id = str_replace("$this->name:", '', $item['query']);
+                    if (!$struct->has($id)) {
+                        $struct->set($id, $item['count'] ?? 0);
+                    }
+                }
+            } else {
+                $criteria = (new Criteria($this->getValueSet()))
+                    ->setTotalCountMode(Criteria::TOTAL_COUNT_MODE_NONE)
+                    ->addFields(['id']);
+
+                $buckets = [
+                    'aggregation' => TermsResult::class,
+                    'aggregationName' => 'properties',
+                ];
+                foreach ($this->value as $item) {
+                    $id = str_replace("$this->name:", '', $item['query']);
+                    $buckets[$id] = $item['count'] ?? 0;
+                }
+                $criteria->addArrayExtension('hello-retail-data', $buckets);
+
+                $collection->set(PropertyGroupOptionDefinition::ENTITY_NAME, $criteria);
+            }
+
+            return null;
+        } elseif ($this->name === 'extraData.manufacturerId') {
+            /** @var Criteria|null $criteria */
+            $criteria = $collection->get(ProductManufacturerDefinition::ENTITY_NAME);
+            if ($criteria) {
+                $criteria->setIds(
+                    array_merge(
+                        $criteria->getIds(),
+                        $this->getValueSet()
+                    )
+                );
+            } else {
+                $criteria = (new Criteria($this->getValueSet()))
+                    ->setTotalCountMode(Criteria::TOTAL_COUNT_MODE_NONE);
+                $criteria->addArrayExtension('hello-retail-data', [
+                    'aggregation' => EntityResult::class,
+                    'aggregationName' => 'manufacturer',
+                ]);
+
+                $collection->set(
+                    ProductManufacturerDefinition::ENTITY_NAME,
+                    $criteria
+                );
+            }
+
+            return null;
+        } elseif ($this->name === 'price') {
             return new StatsResult(
                 name: 'price',
                 min: $this->value[RangeFilter::GTE],
@@ -46,61 +116,14 @@ class Filter
                 avg: null,
                 sum: null
             );
-        } elseif ($this->type === FilterType::LIST) {
-            $field = match ($this->name) {
-                'extraDataList.optionIds',
-                'extraDataList.propertyIds',
-                'extraData.optionIds',
-                'extraData.propertyIds' => [
-                    'entity' => PropertyGroupOptionDefinition::ENTITY_NAME,
-                    'name' => $this->name === 'extraDataList.optionIds' ?
-                        'options' :
-                        'properties',
-                ],
-                'extraData.manufacturerId' => [
-                    'entity' => ProductManufacturerDefinition::ENTITY_NAME,
-                    'name' => 'manufacturer',
-                ],
-                default => null
-            };
-            if (!$field) {
-                return null;
-            }
-
-            /** @var EntityRepository $repository */
-            $repository = $container->get(("{$field['entity']}.repository"));
-            $criteria = new Criteria();
-            $criteria->setIds($this->getValueSet());
-            $criteria->setTotalCountMode(Criteria::TOTAL_COUNT_MODE_NONE);
-
-            if ($field['entity'] === PropertyGroupOptionDefinition::ENTITY_NAME) {
-                $criteria->addFields(['id']);
-                $idResult = $repository->searchIds($criteria, $context);
-
-                $buckets = [];
-                foreach ($this->value as $item) {
-                    $query = str_replace("$this->name:", '', $item['query']);
-                    if ($idResult->has($query)) {
-                        $buckets[] = new Bucket(
-                            key: $query,
-                            count: $item['count'] ?? 0,
-                            result: null
-                        );
-                    }
-                }
-
-                return new TermsResult(name: $field['name'], buckets: $buckets);
-            }
-
-
-            $entities = $repository->search($criteria, $context)->getEntities();
-            return new EntityResult(
-                name: $field['name'],
-                entities: $entities
-            );
         }
 
-        return null;
+        return $dispatcher?->dispatch(
+            new HelretUnmappedAggregationData(
+                filter: $this,
+                collection: $collection,
+            )
+        )->getResult();
     }
 
     public function getValue(): mixed

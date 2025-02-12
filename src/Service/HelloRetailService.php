@@ -339,7 +339,6 @@ class HelloRetailService
                 HelretHelloRetail::EXPORT_ERROR,
                 [
                     'template' => $template,
-                    'data' => $data,
                     'error' => $e->getMessage(),
                     'errorTrace' => $e->getTraceAsString(),
                     'errorType' => get_class($e)

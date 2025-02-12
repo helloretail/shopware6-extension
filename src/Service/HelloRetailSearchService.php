@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Helret\HelloRetail\Service;
 
+use Doctrine\DBAL\ArrayParameterType;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 use Helret\HelloRetail\Event\Search\HelretBeforeSearchEvent;
 use Helret\HelloRetail\Event\Search\HelretSearchResponseEvent;
 use Helret\HelloRetail\Event\Search\HelretSearchSortingEvent;
@@ -11,6 +14,7 @@ use Helret\HelloRetail\Models\CriteriaModel;
 use Helret\HelloRetail\Models\SearchResponse;
 use Helret\HelloRetail\Subscriber\SearchSubscriber;
 use RuntimeException;
+use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -18,6 +22,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\Filter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 use Shopware\Core\Framework\Routing\RoutingException;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\Saleschannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -30,8 +35,7 @@ class HelloRetailSearchService
         public readonly HelloRetailClientService $client,
         protected readonly SystemConfigService $configService,
         protected readonly EventDispatcherInterface $eventDispatcher,
-        protected readonly HelloRetailApiService $helloRetailApiService,
-        protected readonly HelloRetailRecommendationService $helloRetailRecommendationService
+        protected readonly Connection $connection
     ) {
     }
 
@@ -65,14 +69,6 @@ class HelloRetailSearchService
                 // Set ids from HelloRetail and reset sorting to allow "IdSorting"
                 $criteria->setIds($productIds);
                 $criteria->resetSorting();
-
-                /**
-                 * As filters aren't group by AndFilter, we need to reset PostFilters -
-                 *  to ensure correct content between Shopware & HelloRetail when filtering by properties etc.
-                 *
-                 * If filters aren't reset the search page can give empty result while the response contains X products
-                 */
-                $criteria->resetPostFilters();
             }
 
             // Bail on caching.
@@ -137,18 +133,41 @@ class HelloRetailSearchService
                             $map
                         )
                     );
-                } elseif ($field === 'product.propertyIds') {
-                    $postData['products']['filters'] = array_merge(
-                        $postData['products']['filters'],
-                        array_map(
-                            fn(string $id) => "extraDataList.propertyIds:$id",
-                            $map
-                        )
-                    );
+                } elseif (in_array($field, ['product.propertyIds', 'product.optionIds'], true)) {
+                    /** @var array<int, array{groupId: string, optionIds: string}> $propertyFilters */
+                    try {
+                        $propertyFilters = $this->connection->createQueryBuilder()
+                            ->from(PropertyGroupOptionDefinition::ENTITY_NAME)
+                            ->select(
+                                'LOWER(HEX(property_group_id)) groupId',
+                                'GROUP_CONCAT(LOWER(HEX(id))) as optionIds'
+                            )
+                            ->where('id IN(:ids)')
+                            ->groupBy('property_group_id')
+                            ->setParameter('ids', Uuid::fromHexToBytesList($map), ArrayParameterType::STRING)
+                            ->fetchAllAssociative();
+                    } catch (Exception) {
+                        $propertyFilters = [];
+                    }
+
+                    foreach ($propertyFilters as $propertyFilter) {
+                        $groupId = $propertyFilter['groupId'];
+                        $optionIds = explode(',', $propertyFilter['optionIds']);
+
+                        $postData['products']['filters'] = array_merge(
+                            $postData['products']['filters'],
+                            array_map(
+                                fn(string $id) => "extraDataList.propertyGroup_$groupId:$id",
+                                $optionIds
+                            )
+                        );
+                    }
                 } elseif ($field === 'product.cheapestPrice') {
                     $postData['products']['filters'][] = "price:$map";
                 }
             }
+
+            $postData['products']['filters'] = array_unique($postData['products']['filters']);
         }
 
         $sorting = $this->eventDispatcher->dispatch(

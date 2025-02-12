@@ -34,9 +34,7 @@
             <argument type="service" id="Helret\HelloRetail\Service\HelloRetailClientService"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="event_dispatcher"/>
-            <argument type="service" id="Helret\HelloRetail\Service\HelloRetailApiService"/>
-            <argument type="service"
-                      id="Helret\HelloRetail\Service\HelloRetailRecommendationService"/>
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
         </service>
 
         <service id="Helret\HelloRetail\Service\HelloRetailService" public="true">

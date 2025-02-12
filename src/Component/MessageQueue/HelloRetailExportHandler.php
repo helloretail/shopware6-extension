@@ -40,7 +40,7 @@ use Symfony\Component\Messenger\Stamp\DelayStamp;
 #[AsMessageHandler]
 class HelloRetailExportHandler
 {
-    private const RETRIES = 20;
+    private const RETRIES = 2;
     private const SLEEP_BETWEEN_RETRIES = 20000; // Milliseconds == 20s
     protected Filesystem $filesystem;
 
@@ -93,7 +93,7 @@ class HelloRetailExportHandler
              * .... Occasionally the Hello Retail "footer"/ending message is rendered before all categories are rendered
              * The "sleep", seems to be enough when generating/ending feed
              */
-            sleep(10);
+            #sleep(10);
 
             $this->collectFiles($message, $context);
             return;
@@ -212,7 +212,7 @@ class HelloRetailExportHandler
             if (!$output) {
                 $this->translator->resetInjection();
                 $this->helloRetailService->exportLogger(
-                    HelretHelloRetail::EXPORT_ERROR,
+                    HelretHelloRetail::EXPORT_ERROR . '.empty.template-body-rendering',
                     [
                         'entityId' => $entity->getId(),
                         'feed' => $feed,
@@ -227,7 +227,7 @@ class HelloRetailExportHandler
             $this->filesystem->write($message->getDirectory() . DIRECTORY_SEPARATOR . $message->getId(), $output);
         } catch (\Error|\TypeError|\Exception $e) {
             $this->helloRetailService->exportLogger(
-                HelretHelloRetail::EXPORT_ERROR,
+                HelretHelloRetail::EXPORT_ERROR . '.template-body-rendering',
                 [
                     'entityId' => $entity->getId(),
                     'feed' => $feed,
@@ -273,7 +273,7 @@ class HelloRetailExportHandler
                 $feedContent .= $this->filesystem->read($header);
             } catch (\Error|\TypeError|FilesystemException|\Exception $e) {
                 $this->helloRetailService->exportLogger(
-                    HelretHelloRetail::EXPORT_ERROR,
+                    HelretHelloRetail::EXPORT_ERROR . '.collect-files',
                     [
                         'header' => $header ?? null,
                         'feed' => $message->getFeedEntity()->getFeed(),
@@ -361,7 +361,7 @@ class HelloRetailExportHandler
             ]));
         } else {
             $this->helloRetailService->exportLogger(
-                HelretHelloRetail::EXPORT_ERROR,
+                HelretHelloRetail::EXPORT_ERROR . '.handle-retry',
                 [
                     'retryCount' => $retryCount,
                     'failures' => $failures,

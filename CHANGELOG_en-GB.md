@@ -3,13 +3,17 @@
 * Feeds:
   * Product feed
     * Newly added:
-        * `displayGroup`
-        * `parentId`
-        * `propertyIds`
-        * `optionIds`
-        * `manufacturerId`
+        * `extraDataList`.`*`
+        * `extraData`.`parentId`
+        * `extraData`.`displayGroup`
+        * `extraData`.`manufacturerId`
     * Changed:
       * Translatable to use `translation('key')`
+      * Moved auto mapped to `extraData`
+    * Corrected:
+      * `productnumber` => `productNumber`
+      * `instock` => `inStock`
+      * `imgurl` => `imgUrl`
 
 # 4.4.0
 * Added the option to replace Shopware product listing with hello retail pages using page key
