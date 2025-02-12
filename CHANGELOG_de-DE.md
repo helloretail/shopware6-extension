@@ -1,3 +1,25 @@
+# 4.4.2
+* Suchoption hinzugefügt
+* Feeds:
+    * Produkt-Feed
+        * Neu hinzugefügt:
+            * `extraDataList`.`*`
+            * `extraData`.`parentId`
+            * `extraData`.`displayGroup`
+            * `extraData`.`manufacturerId`
+        * Geändert:
+            * Translatable to use `translation('key')`
+            * Moved auto mapped to `extraData`
+        * Korrigiert:
+            * `productnumber` => `productNumber`
+            * `instock` => `inStock`
+            * `imgurl` => `imgUrl`
+    * Kategorie-Feed
+        * Neu hinzugefügt:
+            * `extraData`.`*`
+        * Geändert:
+            * Translatable to use `translation('key')`
+
 # 4.4.1
 * API-Anforderungsschutz und bessere Handhabung hinzugefügt
 * Benutzerdefinierter Protokollhandler für die API-Anforderungen hinzugefügt
