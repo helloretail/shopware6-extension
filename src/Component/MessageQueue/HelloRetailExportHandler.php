@@ -40,7 +40,7 @@ use Symfony\Component\Messenger\Stamp\DelayStamp;
 #[AsMessageHandler]
 class HelloRetailExportHandler
 {
-    private const RETRIES = 2;
+    private const RETRIES = 20;
     private const SLEEP_BETWEEN_RETRIES = 20000; // Milliseconds == 20s
     protected Filesystem $filesystem;
 
@@ -93,7 +93,7 @@ class HelloRetailExportHandler
              * .... Occasionally the Hello Retail "footer"/ending message is rendered before all categories are rendered
              * The "sleep", seems to be enough when generating/ending feed
              */
-            #sleep(10);
+            sleep(10);
 
             $this->collectFiles($message, $context);
             return;
