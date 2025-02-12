@@ -69,6 +69,14 @@ class HelloRetailSearchService
                 // Set ids from HelloRetail and reset sorting to allow "IdSorting"
                 $criteria->setIds($productIds);
                 $criteria->resetSorting();
+
+                /**
+                 * If filters aren't group by AndFilter, we need to reset PostFilters -
+                 *  to ensure correct content between Shopware & HelloRetail when filtering by properties etc.
+                 *
+                 * If filters aren't reset the search page can give empty result while the response contains X products
+                 */
+                $criteria->resetPostFilters();
             }
 
             // Bail on caching.
