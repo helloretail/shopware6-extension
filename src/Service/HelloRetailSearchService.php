@@ -194,10 +194,8 @@ class HelloRetailSearchService
         if ($contentLimit > 0) {
             $postData['categories'] = [
                 'start' => 0,
-                'limit' => $contentLimit,
-//                'fields' => [
-//                    'extraData.id',
-//                ]
+                'count' => $contentLimit,
+                'fields' => ['extraData.id'],
             ];
         }
 
