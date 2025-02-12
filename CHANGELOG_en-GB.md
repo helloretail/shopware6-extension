@@ -14,6 +14,11 @@
       * `productnumber` => `productNumber`
       * `instock` => `inStock`
       * `imgurl` => `imgUrl`
+  * Category feed
+    * Newly added:
+      * `extraData`.`*`
+    * Changed:
+        * Translatable to use `translation('key')`
 
 # 4.4.0
 * Added the option to replace Shopware product listing with hello retail pages using page key
