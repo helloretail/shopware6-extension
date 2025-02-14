@@ -76,7 +76,9 @@ class HelloRetailSearchService
                  *
                  * If filters aren't reset the search page can give empty result while the response contains X products
                  */
-                $criteria->resetPostFilters();
+                if (!$request->request->get('only-aggregations')) {
+                    $criteria->resetPostFilters();
+                }
             }
 
             // Bail on caching.
