@@ -7,9 +7,10 @@
         * `extraData`.`parentId`
         * `extraData`.`displayGroup`
         * `extraData`.`manufacturerId`
+        * `extraData`.`isCloseoutAvailable`
     * Changed:
       * Translatable to use `translation('key')`
-      * Moved auto mapped to `extraData`
+      * Moved auto mapped to `extraData` & `extraDataList`
     * Corrected:
       * `productnumber` => `productNumber`
       * `instock` => `inStock`

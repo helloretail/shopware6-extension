@@ -21,7 +21,7 @@
     <oldPrice>{% if listPrice %}{{ listPrice.price }}{% endif %}</oldPrice>
     {# Price end #}
 
-    <brand>{% if product.manufacturer %}{{ product.manufacturer.translated.name }}{% endif %}</brand>
+    <brand>{% if product.manufacturer %}{{ product.manufacturer.translation('name') }}{% endif %}</brand>
     <hierarchies>
         {% if product.categories %}
             {% for category in product.categories.elements %}
@@ -45,12 +45,16 @@
         <displayFrom>{{ product.calculatedPrices.count > 1 }}</displayFrom>
         <hasPriceRange>{% if product.calculatedPrices.count > 1 %}true{% else %}false{% endif %}</hasPriceRange>
 
+        <available>{{ product.available|intval }}</available>
+        <isCloseout>{{ product.isCloseout|intval }}</isCloseout>
+
         {# Filtering for REST-API #}
+        <isCloseoutAvailable>{{ (not (product.isCloseout and not product.available))|intval }}</isCloseoutAvailable>
         <manufacturerId>{{ product.manufacturerId }}</manufacturerId>
     </extraData>
 
-    {# Filtering for REST-API #}
     <extraDataList>
+        {# Filtering for REST-API #}
         {# Transformed into: extraDataList.propertyIds #}
         {% if product.propertyIds %}
             {% for propertyId in product.propertyIds %}

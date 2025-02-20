@@ -232,6 +232,15 @@ class HelloRetailSearchService
             $postData['products']['returnFilters'] = true;
         }
 
+        $isCloseoutAware = $this->configService->getBool(
+            'core.listing.hideCloseoutProductsWhenOutOfStock',
+            $context->getSalesChannelId()
+        );
+        if ($isCloseoutAware) {
+            // To ensure correct filtering/product count add this as post event, to ensure it's not removed by accident
+            $postData['products']['filters'][] = 'extraData.isCloseoutAvailable:1';
+        }
+
         $response = $this->client->callApi(
             endpoint: 'search',
             request: $postData,

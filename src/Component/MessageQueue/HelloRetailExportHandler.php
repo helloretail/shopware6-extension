@@ -159,7 +159,10 @@ class HelloRetailExportHandler
             return;
         }
 
-        $data = [$feed => $entity];
+        $data = [
+            $feed => $entity,
+            'context' => $salesChannelContext,
+        ];
         if ($feed === 'product') {
             // Backwards compatability
             if ($message->getConfigValue("advancedPricing")) {

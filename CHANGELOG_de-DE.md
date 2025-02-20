@@ -7,6 +7,7 @@
             * `extraData`.`parentId`
             * `extraData`.`displayGroup`
             * `extraData`.`manufacturerId`
+            * `extraData`.`isCloseoutAvailable`
         * Geändert:
             * Translatable to use `translation('key')`
             * Moved auto mapped to `extraData`
