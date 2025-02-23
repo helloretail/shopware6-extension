@@ -1,12 +1,29 @@
-{% block layout_offcanvas_cart_recommendations %}
-    {% if products and products|length > 0 %}
-        {% for product in products %}
-            <div class="cms-listing-col">
-                {% sw_include '@Shopware/storefront/component/product/card/box-standard.html.twig' with {
-                    'displayMode': 'grid',
-                    'product': product,
-                } %}
-            </div>
-        {% endfor %}
-    {% endif %}
+{% block helret_recommendations %}
+    {% block helret_recommendations_sidebar %}
+        {% if products and products|length > 0 %}
+            {% for product in products %}
+                <div class="cms-listing-col">
+                    {% sw_include '@Shopware/storefront/component/product/card/box-standard.html.twig' with {
+                        'displayMode': 'grid',
+                        'product': product,
+                    } %}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endblock  %}
+
+    {% block helret_recommendations_embedded %}
+        {% if config('HelretHelloRetail.config.cartRecommendationPosition') === 'embedded' %}
+            {% if page.extensions.helloRetailRecommendations and page.extensions.helloRetailRecommendations|length > 0 %}
+                {% for product in page.extensions.helloRetailRecommendations %}
+                    <div class="cms-listing-col">
+                        {% sw_include '@Storefront/storefront/component/product/card/box-standard.html.twig' with {
+                            'displayMode': 'grid',
+                            'product': product
+                        } %}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+    {% endblock %}
 {% endblock %}

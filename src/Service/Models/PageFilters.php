@@ -4,11 +4,11 @@ namespace Helret\HelloRetail\Service\Models;
 
 class PageFilters
 {
-    public array $hierarchies = [];
+    public array $filters = [];
 
     public function __construct(array $hierarchies)
     {
-        $this->hierarchies = $hierarchies;
+        $this->filters = $hierarchies;
     }
 
     public function getHierarchies(): array
