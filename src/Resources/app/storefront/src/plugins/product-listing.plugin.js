@@ -17,12 +17,9 @@ export default class ProductListingPlugin extends Plugin {
                 if (data.params.filters) {
                     existingFilters = JSON.parse(data.params.filters);
                 }
-                // check if productFilters is an object with categoryIds or if it's an array for hierarchies
                 if (productFilters["extraDataList.categoryIds"]) {
-                    // It's categoryId, so set the extraDataList.categoryIds filter
                     existingFilters["extraDataList.categoryIds"] = productFilters["extraDataList.categoryIds"];
                 } else {
-                    // It's hierarchies (an array), so set the hierarchies filter
                     existingFilters = productFilters;
                 }
 

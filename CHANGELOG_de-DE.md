@@ -1,5 +1,5 @@
 # 4.4.2
-* Verwendung veralteter CSRF-Token entfernen
+* Veraltetes CSRF-Token entfernen
 * Konfigurationsoption hinzugefügt, um eine Hallo-Einzelhandelsseite mit Kategorie-ID statt Kategoriename anzufordern
 * Option hinzugefügt, damit Warenkorbempfehlungen im Warenkorb statt an der Seite angezeigt werden
 

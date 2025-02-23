@@ -1,5 +1,5 @@
 # 4.4.2
-* Remove usage of outdated CSRF token
+* Remove deprecated csrf token
 * Added config option to request a hello retail page using category id instead of category name
 * Added an option for cart recommendation to appear inside the cart instead of to the side
 
