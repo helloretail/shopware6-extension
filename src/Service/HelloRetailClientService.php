@@ -34,7 +34,7 @@ class HelloRetailClientService
     private function getCookieUserId(): ?string
     {
         //returns cookie, unless user has opted out
-        return $_COOKIE['hello_retail_id'] ?? 'a';
+        return $_COOKIE['hello_retail_id'] ?? null;
     }
 
     protected function createRequest(
