@@ -62,7 +62,7 @@ class HelloRetailClientService
                 self::url . $endpoint,
                 ['Content-Type' => 'application/json'],
                 $body
-            ));
+            ), ['timeout' => 5]);
         } catch (GuzzleException $e) {
             $this->logger->error('Request failed. Check logs.', [
                 'endpoint' => $endpoint,
