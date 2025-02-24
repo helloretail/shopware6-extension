@@ -119,7 +119,6 @@ class HelloRetailClientService
         if ($type === 'recommendations') {
             $baseBody['requests'] = is_array($request) ? $request : [$request];
         } else {
-            // TODO, UNdersøg om denne er korrekt.
             $baseBody = array_merge($baseBody, $request);
         }
 
