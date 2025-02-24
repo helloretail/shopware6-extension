@@ -15,6 +15,20 @@
     </card>
 
     <card>
+        <title>Page Request Type</title>
+        <title lang="de-DE">Seitenanforderungstyp</title>
+        <title lang="da-DK">Sideanmodningstype</title>
+
+        <input-field type="bool">
+            <name>useCategoryId</name>
+            <label>Use Category Id</label>
+            <label lang="de-DE">Kategorie-IDs verwenden</label>
+            <label lang="da-DK">Brug kategori-id'er</label>
+            <defaultValue>false</defaultValue>
+        </input-field>
+    </card>
+
+    <card>
         <title>Cart Recommendations</title>
         <title lang="de-DE">Warenkorb-Empfehlungen</title>
         <title lang="da-DK">Indkøbskurv anbefalinger</title>
@@ -35,6 +49,26 @@
             <helpText>Can be found in Hello Retail Dashboard</helpText>
             <helpText lang="de-DE">Zu finden im Hello Retail Dashboard</helpText>
             <helpText lang="da-DK">Kan findes i Hello Retail Dashboard</helpText>
+        </input-field>
+
+        <input-field type="single-select">
+            <name>cartRecommendationPosition</name>
+            <label lang="da-DK">Recommendation boxes position</label>
+            <label lang="de-DE">Recommendation boxes position</label>
+            <options>
+                <option>
+                    <id>sidebar</id>
+                    <name>Sidebar</name>
+                </option>
+                <option>
+                    <id>embedded</id>
+                    <name>Embedded</name>
+                </option>
+            </options>
+            <defaultValue>sidebar</defaultValue>
+            <helpText>If you select embedded you must place the Hello Retail recommendations twig template in your theme</helpText>
+            <helpText lang="de-DE">Wenn Sie eingebettet auswählen, müssen Sie die Twig-Vorlage für Hello Retail-Empfehlungen in Ihr Design einfügen.</helpText>
+            <helpText lang="da-DK">Hvis du vælger indlejret, skal du placere en kvistskabelon for Hello Retail-anbefalinger i dit tema</helpText>
         </input-field>
     </card>
 

@@ -1,3 +1,8 @@
+# 4.4.2
+* Veraltetes CSRF-Token entfernen
+* Konfigurationsoption hinzugefügt, um eine Hallo-Einzelhandelsseite mit Kategorie-ID statt Kategoriename anzufordern
+* Option hinzugefügt, damit Warenkorbempfehlungen im Warenkorb statt an der Seite angezeigt werden
+
 # 4.4.1
 * API-Anforderungsschutz und bessere Handhabung hinzugefügt
 * Benutzerdefinierter Protokollhandler für die API-Anforderungen hinzugefügt

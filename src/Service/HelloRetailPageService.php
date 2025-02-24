@@ -22,11 +22,8 @@ class HelloRetailPageService extends HelloRetailApiService
     private function fetchPage(string $key, array $hierarchies = [], $urls = []): array
     {
         $pageFilters = new PageFilters($hierarchies);
-        $pageParams = new PageParams($pageFilters);
-        // this is not doing anything but it is required by HR
-        $productOffset = ['start' => 0, 'count' => 100];
+        $request = new PageRequest($pageFilters, $urls[0]);
 
-        $request = new PageRequest($pageParams, $urls[0], $productOffset);
         $callback = $this->client->callApi($this->buildEndpoint($key), $request);
         if ($callback && (!$callback['success'] || empty($callback['products']))) {
             return [];

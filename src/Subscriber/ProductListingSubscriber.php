@@ -36,7 +36,7 @@ class ProductListingSubscriber implements EventSubscriberInterface
 
         $pageProductsResult = $this->pageService->getPage($pageKey, $hierarchies, $event->getSalesChannelContext());
 
-        if ($pageProductsResult) {
+        if ($pageProductsResult && $pageProductsResult['products']['total'] > 0) {
             $pageKey = [$pageKey];
 
             $event->getResult()->addExtension('helloRetailPageData', new ArrayEntity($pageProductsResult));

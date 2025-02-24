@@ -2,15 +2,15 @@
 
 namespace Helret\HelloRetail\Service\Models\Requests;
 
-use Helret\HelloRetail\Service\Models\PageParams;
+use Helret\HelloRetail\Service\Models\PageFilters;
 use Helret\HelloRetail\Service\Models\PageProducts;
 
 class PageRequest extends Request
 {
     public function __construct(
-        public PageParams $params,
+        public ?PageFilters $params,
         public string $url,
-        public array $products = [],
+        public array $products = ['start' => 0, 'count' => 100],
         public bool $firstLoad = true,
         public bool $layout = false,
         public ?string $websiteUuid = null,
@@ -19,12 +19,12 @@ class PageRequest extends Request
         parent::__construct($websiteUuid, $trackingUserId);
     }
 
-    public function getParams(): PageParams
+    public function getParams(): PageFilters
     {
         return $this->params;
     }
 
-    public function setParams(PageParams $params): void
+    public function setParams(PageFilters $params): void
     {
         $this->params = $params;
     }
