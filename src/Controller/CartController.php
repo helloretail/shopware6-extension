@@ -52,8 +52,9 @@ class CartController extends StorefrontController
     public function offcanvas(Request $request, SalesChannelContext $context): Response
     {
         $data = $this->getRecommendationsData($context);
-
         $page = $this->offcanvasCartPageLoader->load($request, $context);
+        $cartRecomsActive = $this->systemConfigService->getString('HelretHelloRetail.config.cartRecomsToggle');
+        $errorMessage = '';
 
         if ($data && !empty($data['recommendations'])) {
             $page->addExtension('helloRetailRecommendations', $data['recommendations']);
@@ -61,9 +62,14 @@ class CartController extends StorefrontController
             $this->hook(new CheckoutOffcanvasWidgetLoadedHook($page, $context));
         }
 
+        if ($cartRecomsActive && empty($data['boxKey'])) {
+            $errorMessage = "Cart recommendations key is required";
+        }
+
         return $this->renderStorefront(
             '@Storefront/storefront/component/checkout/offcanvas-cart.html.twig', [
                 'page' => $page,
+                'errorMessage' => $errorMessage
             ]
         );
     }
@@ -71,7 +77,11 @@ class CartController extends StorefrontController
     private function getRecommendationsData(SalesChannelContext $context): array
     {
         $boxKey = $this->systemConfigService->getString('HelretHelloRetail.config.offcanvasCartKey');
-        $recommendations = $this->helloRetailService->getRecommendations($boxKey, $context);
+        $recommendations = [];
+
+        if ($boxKey) {
+            $recommendations = $this->helloRetailService->getRecommendations($boxKey, $context);
+        }
 
         return [
             'boxKey' => $boxKey,
