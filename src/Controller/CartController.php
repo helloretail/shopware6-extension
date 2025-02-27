@@ -2,9 +2,6 @@
 
 namespace Helret\HelloRetail\Controller;
 
-use Shopware\Core\Checkout\Cart\Error\ErrorCollection;
-use Shopware\Storefront\Checkout\Cart\Error\PaymentMethodChangedError;
-use Shopware\Storefront\Checkout\Cart\Error\ShippingMethodChangedError;
 use Shopware\Storefront\Page\Checkout\Offcanvas\CheckoutOffcanvasWidgetLoadedHook;
 use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPageLoader;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,7 +11,6 @@ use Shopware\Storefront\Controller\StorefrontController;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Helret\HelloRetail\Service\HelloRetailRecommendationService;
 use Symfony\Component\Routing\Annotation\Route;
-use Shopware\Storefront\Controller\CheckoutController;
 
 #[Route(defaults: ['_routeScope' => ['storefront']])]
 class CartController extends StorefrontController
@@ -57,13 +53,23 @@ class CartController extends StorefrontController
     {
         $data = $this->getRecommendationsData($context);
         $page = $this->offcanvasCartPageLoader->load($request, $context);
-        $page->addExtension('helloRetailRecommendations', $data['recommendations']);
+        $cartRecomsActive = $this->systemConfigService->getString('HelretHelloRetail.config.cartRecomsToggle');
+        $errorMessage = '';
 
-        $this->hook(new CheckoutOffcanvasWidgetLoadedHook($page, $context));
+        if ($data && !empty($data['recommendations'])) {
+            $page->addExtension('helloRetailRecommendations', $data['recommendations']);
+
+            $this->hook(new CheckoutOffcanvasWidgetLoadedHook($page, $context));
+        }
+
+        if ($cartRecomsActive && empty($data['boxKey'])) {
+            $errorMessage = "Cart recommendations key is required";
+        }
 
         return $this->renderStorefront(
             '@Storefront/storefront/component/checkout/offcanvas-cart.html.twig', [
                 'page' => $page,
+                'errorMessage' => $errorMessage
             ]
         );
     }
@@ -71,7 +77,11 @@ class CartController extends StorefrontController
     private function getRecommendationsData(SalesChannelContext $context): array
     {
         $boxKey = $this->systemConfigService->getString('HelretHelloRetail.config.offcanvasCartKey');
-        $recommendations = $this->helloRetailService->getRecommendations($boxKey, $context);
+        $recommendations = [];
+
+        if ($boxKey) {
+            $recommendations = $this->helloRetailService->getRecommendations($boxKey, $context);
+        }
 
         return [
             'boxKey' => $boxKey,
@@ -79,4 +89,3 @@ class CartController extends StorefrontController
         ];
     }
 }
-

@@ -1,3 +1,7 @@
+# 5.3.1
+* Bessere Fehlerbehandlung bei Warenkorb-Empfehlungen
+* Option zum Anfordern von Seiten nach Kategorie-ID hinzugefügt
+
 # 5.3.0
 * Option zur Auswahl der Platzierung von Empfehlungsfeldern hinzugefügt: Seitenleiste (Standard) oder eingebettet in den Offcanvas.
 
