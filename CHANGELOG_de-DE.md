@@ -1,3 +1,26 @@
+# 5.3.2
+* Suchoption hinzugefügt
+* Feeds:
+    * Produkt-Feed
+        * Neu hinzugefügt:
+            * `extraDataList`.`*`
+            * `extraData`.`parentId`
+            * `extraData`.`displayGroup`
+            * `extraData`.`manufacturerId`
+            * `extraData`.`isCloseoutAvailable`
+        * Geändert:
+            * Translatable to use `translation('key')`
+            * Moved auto mapped to `extraData`
+        * Korrigiert:
+            * `productnumber` => `productNumber`
+            * `instock` => `inStock`
+            * `imgurl` => `imgUrl`
+    * Kategorie-Feed
+        * Neu hinzugefügt:
+            * `extraData`.`*`
+        * Geändert:
+            * Translatable to use `translation('key')`
+
 # 5.3.1
 * Bessere Fehlerbehandlung bei Warenkorb-Empfehlungen
 * Option zum Anfordern von Seiten nach Kategorie-ID hinzugefügt
