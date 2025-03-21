@@ -20,6 +20,7 @@
             <argument type="service"
                       id="Helret\HelloRetail\Service\HelloRetailRecommendationService"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPageLoader"/>
             <argument type="service" id="service_container"/>
             <tag name="controller.service_arguments"/>
             <call method="setContainer">
@@ -162,6 +163,7 @@
         <service id="Helret\HelloRetail\Service\HelloRetailApiService">
             <argument type="service" id="Helret\HelloRetail\Service\HelloRetailClientService"/>
             <argument type="service" id="product.repository"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
         </service>
 
         <service id="Helret\HelloRetail\Service\HelloRetailPageService"

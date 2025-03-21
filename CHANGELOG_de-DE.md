@@ -1,4 +1,4 @@
-# 4.4.2
+# 4.4.3
 * Suchoption hinzugefügt
 * Feeds:
     * Produkt-Feed
@@ -20,6 +20,11 @@
             * `extraData`.`*`
         * Geändert:
             * Translatable to use `translation('key')`
+
+# 4.4.2
+* Veraltetes CSRF-Token entfernen
+* Konfigurationsoption hinzugefügt, um eine Hallo-Einzelhandelsseite mit Kategorie-ID statt Kategoriename anzufordern
+* Option hinzugefügt, damit Warenkorbempfehlungen im Warenkorb statt an der Seite angezeigt werden
 
 # 4.4.1
 * API-Anforderungsschutz und bessere Handhabung hinzugefügt

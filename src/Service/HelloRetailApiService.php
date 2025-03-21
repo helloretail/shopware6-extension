@@ -12,18 +12,21 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class HelloRetailApiService
 {
     public function __construct(
         protected HelloRetailClientService $client,
-        protected EntityRepository $productRepository
+        protected EntityRepository $productRepository,
+        protected SystemConfigService $systemConfigService
     ) {
     }
 
     public function renderHierarchies(Entity $entity): array
     {
         $category = null;
+        $categoryData = [];
         if ($entity::class == CategoryEntity::class) {
             $category = $entity;
         } else {
@@ -36,7 +39,15 @@ class HelloRetailApiService
             return [];
         }
 
-        return $category->getBreadcrumb();
+        $useCategoryId = $this->systemConfigService->get('HelretHelloRetail.config.useCategoryId');
+
+        if($useCategoryId){
+            $categoryData['extraDataList.categoryIds'] = $category->getId();
+        } else {
+            $categoryData['hierarchies'] = $category->getBreadcrumb();
+        }
+
+        return $categoryData;
     }
 
     protected function renderUrls(SalesChannelContext $salesChannelContext = null): array

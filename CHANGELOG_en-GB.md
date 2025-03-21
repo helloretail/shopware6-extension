@@ -1,4 +1,4 @@
-# 4.4.2
+# 4.4.3
 * Added Search option
 * Feeds:
   * Product feed
@@ -20,6 +20,11 @@
       * `extraData`.`*`
     * Changed:
         * Translatable to use `translation('key')`
+
+# 4.4.2
+* Remove deprecated csrf token
+* Added config option to request a hello retail page using category id instead of category name
+* Added an option for cart recommendation to appear inside the cart instead of to the side
 
 # 4.4.1
 * Added API request safeguard and better handling
