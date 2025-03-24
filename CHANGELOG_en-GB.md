@@ -1,3 +1,26 @@
+# 4.4.3
+* Added Search option
+* Feeds:
+  * Product feed
+    * Newly added:
+        * `extraDataList`.`*`
+        * `extraData`.`parentId`
+        * `extraData`.`displayGroup`
+        * `extraData`.`manufacturerId`
+        * `extraData`.`isCloseoutAvailable`
+    * Changed:
+      * Translatable to use `translation('key')`
+      * Moved auto mapped to `extraData` & `extraDataList`
+    * Corrected:
+      * `productnumber` => `productNumber`
+      * `instock` => `inStock`
+      * `imgurl` => `imgUrl`
+  * Category feed
+    * Newly added:
+      * `extraData`.`*`
+    * Changed:
+        * Translatable to use `translation('key')`
+
 # 4.4.2
 * Remove deprecated csrf token
 * Added config option to request a hello retail page using category id instead of category name
