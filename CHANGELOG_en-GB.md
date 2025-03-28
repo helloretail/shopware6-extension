@@ -1,3 +1,6 @@
+# 4.4.3
+* Recompiled administration to ensure "Authorization token" is shown
+
 # 4.4.2
 * Remove deprecated csrf token
 * Added config option to request a hello retail page using category id instead of category name
