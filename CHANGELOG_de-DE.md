@@ -1,3 +1,6 @@
+# 4.4.3
+* Die Administration wurde neu kompiliert, um sicherzustellen, dass „Autorisierungstoken“ angezeigt wird
+
 # 4.4.2
 * Veraltetes CSRF-Token entfernen
 * Konfigurationsoption hinzugefügt, um eine Hallo-Einzelhandelsseite mit Kategorie-ID statt Kategoriename anzufordern
