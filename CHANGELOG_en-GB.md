@@ -1,3 +1,6 @@
+# 5.3.2
+* Update and add snippets in administration.
+
 # 5.3.1
 * Better error handling in cart recommendations
 * Added option to request pages by category id

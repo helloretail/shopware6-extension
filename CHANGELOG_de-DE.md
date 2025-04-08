@@ -1,3 +1,6 @@
+# 5.3.2
+* Aktualisieren und fügen Sie Snippets in der Verwaltung hinzu.
+
 # 5.3.1
 * Bessere Fehlerbehandlung bei Warenkorb-Empfehlungen
 * Option zum Anfordern von Seiten nach Kategorie-ID hinzugefügt
