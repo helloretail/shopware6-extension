@@ -21,10 +21,10 @@
             "productListing": {
                 "config": {
                     "label": {
-                        "pageKey": "Page Key"
+                        "pageKey": "Hello Retail Page Key"
                     },
                     "placeholder": {
-                        "pageKey": "Page Key"
+                        "pageKey": "Hello Retail Page Key"
                     }
                 }
             }
@@ -35,10 +35,10 @@
             "productSlider": {
                 "config": {
                     "label": {
-                        "key": "Key"
+                        "key": "Hello Retail Recommendation Key"
                     },
                     "placeholder": {
-                        "key": "Key"
+                        "key": "Hello Retail Recommendation Key"
                     }
                 }
             }

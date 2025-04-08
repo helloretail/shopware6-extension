@@ -21,10 +21,10 @@
             "productListing": {
                 "config": {
                     "label": {
-                        "pageKey": "Seitenschlüssel"
+                        "pageKey": "Hello Retail Seitenschlüssel"
                     },
                     "placeholder": {
-                        "pageKey": "Seitenschlüssel"
+                        "pageKey": "Hello Retail Seitenschlüssel"
                     }
                 }
             }
@@ -35,10 +35,10 @@
             "productSlider": {
                 "config": {
                     "label": {
-                        "key": "Schlüssel"
+                        "key": "Hello Retail Empfehlungsschlüssel"
                     },
                     "placeholder": {
-                        "key": "Schlüssel"
+                        "key": "Hello Retail Empfehlungsschlüssel"
                     }
                 }
             }

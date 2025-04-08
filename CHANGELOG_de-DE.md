@@ -1,3 +1,6 @@
+# 4.4.4
+* Aktualisieren und fügen Sie Snippets in der Verwaltung hinzu.
+
 # 4.4.3
 * Die Administration wurde neu kompiliert, um sicherzustellen, dass „Autorisierungstoken“ angezeigt wird
 

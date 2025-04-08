@@ -1,3 +1,6 @@
+# 4.4.4
+* Update and add snippets in administration.
+
 # 4.4.3
 * Recompiled administration to ensure "Authorization token" is shown
 
