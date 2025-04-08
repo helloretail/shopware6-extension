@@ -4,13 +4,17 @@
 
 <!-- remove parent products -->
 {% block sw_cms_element_product_slider_config_content_products %}
-    <sw-text-field
-            {% if VUE3 %}
-                v-model:value="element.config.key.value"
-            {% else %}
-                v-model="element.config.key.value"
-            {% endif %}
-    />
+  <sw-text-field
+    {% if VUE3 %}
+      v-model:value="element.config.key.value"
+      :label="$tc('helret-cms.elements.productSlider.config.label.key')"
+      :placeholder="$tc('helret-cms.elements.productSlider.config.placeholder.key')"
+    {% else %}
+      v-model="element.config.key.value"
+      :label="$tc('helret-cms.elements.productSlider.config.label.key')"
+      :placeholder="$tc('helret-cms.elements.productSlider.config.placeholder.key')"
+    {% endif %}
+  />
 {% endblock %}
 
 <!-- remove parent product stream assignment -->
