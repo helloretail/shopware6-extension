@@ -3,6 +3,7 @@
 namespace Helret\HelloRetail\Models;
 
 use Generator;
+use Helret\HelloRetail\Struct\EntityStruct;
 
 class ProductModel
 {
@@ -37,6 +38,24 @@ class ProductModel
         }
 
         return $ids;
+    }
+
+    /**
+     * @return array<string, EntityStruct>
+     */
+    public function getStructs(): array
+    {
+        $map = [];
+        foreach ($this->getResults() as $result) {
+            $id = $result['extraData']['id'] ?? null;
+            if (!$id) {
+                continue;
+            }
+
+            $map[$id] = new EntityStruct($result);
+        }
+
+        return $map;
     }
 
     public function getResults(): iterable

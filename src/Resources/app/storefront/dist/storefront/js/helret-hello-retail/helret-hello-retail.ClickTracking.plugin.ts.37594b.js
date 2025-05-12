@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk=self.webpackChunk||[]).push([[23613],{613:(e,s,a)=>{a.r(s),a.d(s,{default:()=>t});class t extends window.PluginBaseClass{init(){this.el.dataset.awSource&&(this.awSource=this.el.dataset.awSource,this.el.closest(".card").querySelectorAll("a[href]").forEach(e=>{e.href="".concat(e.href,"#aw_source=").concat(this.awSource)}))}}}}]);

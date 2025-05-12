@@ -48,18 +48,27 @@ class HelloRetailClientService
         }
 
         if (is_array($request)) {
+            $keys = [
+                'extraData.id',
+                'trackingCode',
+            ];
+
             // Ensure that we always can access product.id
-            if (isset($request['products']['fields']) &&
-                !in_array('extraData.id', $request['products']['fields'], true)
-            ) {
-                $request['products']['fields'][] = 'extraData.id';
+            if (isset($request['products']['fields'])) {
+                foreach ($keys as $key) {
+                    if (!in_array($key, $request['products']['fields'], true)) {
+                        $request['products']['fields'][] = $key;
+                    }
+                }
             }
 
             // Ensure that we always can access categories.id
-            if (isset($request['categories']['fields']) &&
-                !in_array('extraData.id', $request['categories']['fields'], true)
-            ) {
-                $request['categories']['fields'][] = 'extraData.id';
+            if (isset($request['categories']['fields'])) {
+                foreach ($keys as $key) {
+                    if (!in_array($key, $request['categories']['fields'], true)) {
+                        $request['categories']['fields'][] = $key;
+                    }
+                }
             }
         }
 
@@ -87,7 +96,8 @@ class HelloRetailClientService
                     $request,
                     $type,
                     $salesChannelId
-                ), ['timeout' => 5]
+                ),
+                ['timeout' => 5]
             );
         } catch (GuzzleException $e) {
             $this->logger->error('Request failed', [
@@ -115,6 +125,10 @@ class HelloRetailClientService
             "websiteUuid" => $this->systemConfigService->get('HelretHelloRetail.config.partnerId', $salesChannelId),
             "trackingUserId" => $this->getCookieUserId()
         ];
+
+        if ($type === 'search' || $type === 'suggest') {
+            unset($baseBody['websiteUuid']);
+        }
 
         if ($type === 'recommendations') {
             $baseBody['requests'] = is_array($request) ? $request : [$request];

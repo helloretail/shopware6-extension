@@ -7,3 +7,9 @@ const PluginManager = window.PluginManager;
 PluginManager.register('HelretCartTracker', CartTrackerPlugin, '[data-helret-cart-tracker]');
 PluginManager.register('OffCanvasCartRecommendations', OffCanvasCartRecommendationsPlugin, '[data-offcanvas-cart-recommendations]');
 PluginManager.register('ProductListingPlugin', ProductListingPlugin, '[data-helret-listing]');
+
+window.PluginManager.register(
+  'aw-click-tracking',
+  () => import('./plugins/ClickTracking.plugin'),
+  '.card [data-aw-source]'
+);

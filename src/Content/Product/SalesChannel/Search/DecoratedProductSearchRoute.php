@@ -122,7 +122,7 @@ class DecoratedProductSearchRoute extends AbstractProductSearchRoute
         $origin = clone $criteria;
         $origin->setLimit(0);
 
-        $searchResponse = $originalResponse->getProducts()->filters?->getCollection() ?
+        $searchResponse = $originalResponse?->getProducts()->filters?->getCollection() ?
             $originalResponse :
             $this->searchService->searchByRequest(
                 request: $request,
@@ -178,6 +178,16 @@ class DecoratedProductSearchRoute extends AbstractProductSearchRoute
             $response->getListingResult()->assign([
                 'aggregations' => $aggregations,
             ]);
+        }
+
+        $response->getListingResult()->addState('is-hello-retail-search');
+
+        $entityStructs = $originalResponse?->getProducts()?->getStructs();
+        foreach ($entityStructs as $entityStruct) {
+            $response->getListingResult()->get($entityStruct->getId())?->addExtension(
+                'hello-retail',
+                $entityStruct
+            );
         }
     }
 }
