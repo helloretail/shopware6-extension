@@ -4,7 +4,11 @@
 
 <!-- remove parent products -->
 {% block sw_cms_element_product_slider_config_content_products %}
-    <sw-text-field v-model:value="element.config.key.value" />
+  <sw-text-field
+    v-model:value="element.config.key.value"
+    :label="$tc('helret-cms.elements.productSlider.config.label.key')"
+    :placeholder="$tc('helret-cms.elements.productSlider.config.placeholder.key')"
+  />
 {% endblock %}
 
 <!-- remove parent product stream assignment -->
