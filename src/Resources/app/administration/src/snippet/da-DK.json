@@ -21,10 +21,10 @@
             "productListing": {
                 "config": {
                     "label": {
-                        "pageKey": "Page nøgle"
+                        "pageKey": "Hello Retail Page nøgle"
                     },
                     "placeholder": {
-                        "pageKey": "Page Nøgle"
+                        "pageKey": "Hello Retail Page Nøgle"
                     }
                 }
             }
@@ -35,10 +35,10 @@
             "productSlider": {
                 "config": {
                     "label": {
-                        "key": "Nøgle"
+                        "key": "Hello Retail Anbefalingsnøgle"
                     },
                     "placeholder": {
-                        "key": "Nøgle"
+                        "key": "Hello Retail Anbefalingsnøgle"
                     }
                 }
             }

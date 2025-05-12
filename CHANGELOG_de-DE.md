@@ -1,4 +1,4 @@
-# 5.3.2
+# 5.3.3
 * Suchoption hinzugefügt
 * Feeds:
     * Produkt-Feed
@@ -20,6 +20,9 @@
             * `extraData`.`*`
         * Geändert:
             * Translatable to use `translation('key')`
+
+# 5.3.2
+* Aktualisieren und fügen Sie Snippets in der Verwaltung hinzu.
 
 # 5.3.1
 * Bessere Fehlerbehandlung bei Warenkorb-Empfehlungen

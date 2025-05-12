@@ -1,4 +1,4 @@
-# 5.3.2
+# 5.3.3
 * Added Search option
 * Feeds:
     * Product feed
@@ -20,6 +20,9 @@
             * `extraData`.`*`
         * Changed:
             * Translatable to use `translation('key')`
+
+# 5.3.2
+* Update and add snippets in administration.
 
 # 5.3.1
 * Better error handling in cart recommendations
