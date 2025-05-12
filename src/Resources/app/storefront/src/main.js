@@ -13,3 +13,8 @@ window.PluginManager.register(
   () => import('./plugins/ClickTracking.plugin'),
   '.card [data-aw-source]'
 );
+window.PluginManager.register(
+  'aw-search-widget',
+  () => import('./plugins/DecoratedSearchWidgetPlugin.plugin'),
+  '[data-search-widget]'
+);
