@@ -48,10 +48,10 @@ class HelloRetailApiService
         return $categoryData;
     }
 
-    protected function renderUrls(SalesChannelContext $salesChannelContext = null): array
+    protected function renderUrls(SalesChannelContext $salesChannelContext): array
     {
         $urls = [];
-        if ($salesChannelContext) {
+        if ($salesChannelContext->getSalesChannel()->getDomains()) {
             /** @var SalesChannelDomainEntity $domain */
             foreach ($salesChannelContext->getSalesChannel()->getDomains() as $domain) {
                 $urls[] = $domain->getUrl();
