@@ -69,29 +69,33 @@
             {% endfor %}
         {% endif %}
 
-        {# Transformed into: extraDataList.propertyGroup_{groupId} #}
+        {# Transformed into: extraDataList.propertyGroup_{name}_{groupId} #}
+        {# Note, the twig filters: |trim|title|slug|replace({'-':''}) - Is a requirement to ensure a valid tag #}
         {# @var propertyGroup \Shopware\Core\Content\Property\PropertyGroupEntity #}
         {# @var property \Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionEntity #}
         {% if product.sortedProperties %}
             {% for propertyGroup in product.sortedProperties %}
+                {% set name = propertyGroup.name|trim|title|slug|replace({'-':''}) %}
+
                 {% if propertyGroup.options %}
                     {% for property in propertyGroup.options %}
-                        <propertyGroup_{{ propertyGroup.id }}>
+                        <propertyGroup_{{ name }}_{{ propertyGroup.id }}>
                             {{- property.id -}}
-                        </propertyGroup_{{ propertyGroup.id }}>
+                        </propertyGroup_{{ name }}_{{ propertyGroup.id }}>
                     {% endfor %}
                 {% endif %}
                 {# Left blank to ensure list format as this is a collection. #}
-                <propertyGroup_{{ propertyGroup.id }}/>
+                <propertyGroup_{{ name }}_{{ propertyGroup.id }}/>
             {% endfor %}
         {% endif %}
 
         {# @var propertyOption \Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionEntity #}
         {% if product.options %}
             {% for propertyOption in product.options %}
-                <propertyGroup_{{ propertyOption.groupId }}>
+                {% set name = propertyOption.group.name|trim|title|slug|replace({'-':''}) %}
+                <propertyGroup_{{ name }}_{{ propertyOption.groupId }}>
                     {{- propertyOption.id -}}
-                </propertyGroup_{{ propertyOption.groupId }}>
+                </propertyGroup_{{ name }}_{{ propertyOption.groupId }}>
             {% endfor %}
         {% endif %}
     </extraDataList>

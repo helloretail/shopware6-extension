@@ -15,6 +15,8 @@ use Helret\HelloRetail\Models\SearchResponse;
 use Helret\HelloRetail\Subscriber\SearchSubscriber;
 use RuntimeException;
 use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionDefinition;
+use Shopware\Core\Content\Property\Aggregate\PropertyGroupTranslation\PropertyGroupTranslationDefinition;
+use Shopware\Core\Defaults;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -27,6 +29,7 @@ use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\Saleschannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class HelloRetailSearchService
@@ -148,27 +151,45 @@ class HelloRetailSearchService
                     /** @var array<int, array{groupId: string, optionIds: string}> $propertyFilters */
                     try {
                         $propertyFilters = $this->connection->createQueryBuilder()
-                            ->from(PropertyGroupOptionDefinition::ENTITY_NAME)
-                            ->select(
-                                'LOWER(HEX(property_group_id)) groupId',
-                                'GROUP_CONCAT(LOWER(HEX(id))) as optionIds'
+                            ->from(PropertyGroupOptionDefinition::ENTITY_NAME, 'pgo')
+                            ->innerJoin(
+                                'pgo',
+                                PropertyGroupTranslationDefinition::ENTITY_NAME,
+                                'pgt',
+                                'pgt.property_group_id = pgo.property_group_id AND pgt.language_id = :languageId'
                             )
-                            ->where('id IN(:ids)')
-                            ->groupBy('property_group_id')
+                            ->select(
+                                'LOWER(HEX(pgo.property_group_id)) groupId',
+                                'GROUP_CONCAT(LOWER(HEX(pgo.id))) as optionIds',
+                                'pgt.name'
+                            )
+                            ->where('pgo.id IN(:ids)')
+                            ->groupBy('pgo.property_group_id')
                             ->setParameter('ids', Uuid::fromHexToBytesList($map), ArrayParameterType::STRING)
+                            ->setParameter('languageId', Uuid::fromHexToBytes(Defaults::LANGUAGE_SYSTEM))
                             ->fetchAllAssociative();
                     } catch (Exception) {
                         $propertyFilters = [];
                     }
 
+                    $slugger = new AsciiSlugger();
                     foreach ($propertyFilters as $propertyFilter) {
                         $groupId = $propertyFilter['groupId'];
                         $optionIds = explode(',', $propertyFilter['optionIds']);
+                        // Audit: Name MUST match value/slug from feed.
+                        $name = $slugger->slug(
+                            mb_convert_case(
+                                trim($propertyFilter['name']),
+                                \MB_CASE_TITLE,
+                                'UTF-8'
+                            ),
+                            ''
+                        )->__toString();
 
                         $postData['products']['filters'] = array_merge(
                             $postData['products']['filters'],
                             array_map(
-                                fn(string $id) => "extraDataList.propertyGroup_$groupId:$id",
+                                fn(string $id) => "extraDataList.propertyGroup_{$name}_$groupId:$id",
                                 $optionIds
                             )
                         );

@@ -41,7 +41,7 @@ class Filter
         ?EventDispatcherInterface $dispatcher = null
     ): ?AggregationResult {
         if (str_starts_with($this->name, 'extraDataList.propertyGroup_')) {
-            $groupId = substr($this->name, strlen('extraDataList.propertyGroup_'));
+            $groupId = substr($this->name, -32);
             if (!Uuid::isValid($groupId)) {
                 return null;
             }
