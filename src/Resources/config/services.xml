@@ -132,7 +132,7 @@
             <tag name="helret.hello-retail.export-entity" key="order"/>
         </service>
 
-        <service id="Helret\HelloRetail\Service\ExportService">
+        <service id="Helret\HelloRetail\Service\ExportService" public="true">
             <argument type="tagged" tag="helret.hello-retail.export-entity" index-by="key"/>
         </service>
         <service id="Helret\HelloRetail\Service\HelloRetailClientService">
