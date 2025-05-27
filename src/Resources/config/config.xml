@@ -335,14 +335,6 @@
         <title lang="de-DE">Suchen</title>
         <title lang="da-DK">Søge</title>
 
-        <input-field type="bool">
-            <name>searchEnabled</name>
-            <label>Enabled</label>
-            <label lang="de-DE">Ermöglicht</label>
-            <label lang="da-DK">Aktiveret</label>
-            <defaultValue>false</defaultValue>
-        </input-field>
-
         <input-field type="text">
             <name>searchConfigKey</name>
             <label>Search Config Key</label>
