@@ -1,0 +1,11 @@
+{% sw_extends '@Storefront/storefront/layout/header/search-suggest.html.twig' %}
+
+{# shopware-block: a482c214575bd2f66ff7601ed16be743d3980be9e2b6478dcf8fd9065cfd480e@v6.6.10.2 #}
+{% block layout_search_suggest_result_link %}
+  {{ parent() }}
+
+  {% set helloRetail = product.getExtension('hello-retail') %}
+  {% if helloRetail and helloRetail.trackingCode %}
+    <span class="d-none" data-aw-source="{{ helloRetail.trackingCode }}"/>
+  {% endif %}
+{% endblock %}

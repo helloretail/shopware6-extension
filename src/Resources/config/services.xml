@@ -1,9 +1,10 @@
 <?xml version="1.0" ?>
 
-<container xmlns="http://symfony.com/schema/dic/services"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
-
+<container
+    xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd"
+>
     <services>
         <service id="Helret\HelloRetail\Controller\ApiController">
             <argument type="service" id="Helret\HelloRetail\Export\Profiles\ProfileExporter"/>
@@ -27,6 +28,13 @@
             <call method="setTwig">
                 <argument type="service" id="twig"/>
             </call>
+        </service>
+
+        <service id="Helret\HelloRetail\Service\HelloRetailSearchService">
+            <argument type="service" id="Helret\HelloRetail\Service\HelloRetailClientService"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="event_dispatcher"/>
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
         </service>
 
         <service id="Helret\HelloRetail\Service\HelloRetailService" public="true">
@@ -98,6 +106,8 @@
 
         <service id="Helret\HelloRetail\Subscriber\ProductListingSubscriber" public="true">
             <argument type="service" id="Helret\HelloRetail\Service\HelloRetailPageService" />
+            <argument type="service" id="product.repository" />
+            <argument type="service" id="cache.app" />
             <tag name="kernel.event_subscriber"/>
         </service>
 
@@ -122,7 +132,7 @@
             <tag name="helret.hello-retail.export-entity" key="order"/>
         </service>
 
-        <service id="Helret\HelloRetail\Service\ExportService">
+        <service id="Helret\HelloRetail\Service\ExportService" public="true">
             <argument type="tagged" tag="helret.hello-retail.export-entity" index-by="key"/>
         </service>
         <service id="Helret\HelloRetail\Service\HelloRetailClientService">
@@ -151,7 +161,7 @@
         </service>
 
         <service id="Helret\HelloRetail\Service\HelloRetailPageService"
-                 parent="Helret\HelloRetail\Service\HelloRetailApiService"/>
+                parent="Helret\HelloRetail\Service\HelloRetailApiService"/>
 
         <service id="Helret\HelloRetail\DataResolver\HelloRetailRecommendationsResolver">
             <argument type="service" id="Helret\HelloRetail\Service\HelloRetailRecommendationService"/>
@@ -161,11 +171,71 @@
 
         <service id="Helret\HelloRetail\DataResolver\ProductListingCmsElementResolverDecorator"
                  decorates="Shopware\Core\Content\Product\Cms\ProductListingCmsElementResolver"
-                 parent="Shopware\Core\Content\Product\Cms\ProductListingCmsElementResolver"
         >
+            <argument type="service" id=".inner"/>
             <argument type="service" id="Helret\HelloRetail\Service\HelloRetailPageService" />
             <tag name="shopware.cms.data_resolver"/>
         </service>
 
+        <!-- Search / Suggest -->
+        <service id="Helret\HelloRetail\Subscriber\SearchSubscriber">
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Helret\HelloRetail\Content\Product\SearchKeyword\DecoratedProductSearchBuilder"
+                 decorates="Shopware\Core\Content\Product\SearchKeyword\ProductSearchBuilderInterface">
+            <argument type="service" id=".inner"/>
+            <argument type="service" id="Helret\HelloRetail\Service\HelloRetailSearchService"/>
+            <argument type="service" id="event_dispatcher"/>
+        </service>
+
+        <service
+            id="Helret\HelloRetail\Content\Product\SalesChannel\Search\DecoratedProductSearchRoute"
+            decorates="Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchRoute"
+            decoration-priority="100"
+            public="true"
+        >
+            <argument type="service" id=".inner"/>
+            <argument type="service" id="Helret\HelloRetail\Service\HelloRetailSearchService"/>
+            <argument type="service" id="sales_channel.product.repository"/>
+            <argument type="service" id="sales_channel.category.repository"/>
+            <argument type="service" id="service_container"/>
+            <argument type="service" id="event_dispatcher"/>
+        </service>
+
+        <service
+            id="Helret\HelloRetail\Content\Product\SalesChannel\Suggest\DecoratedProductSuggestRoute"
+            decorates="Shopware\Core\Content\Product\SalesChannel\Suggest\ProductSuggestRoute"
+            decoration-priority="100"
+            public="true"
+        >
+            <argument type="service" id=".inner"/>
+            <argument type="service" id="Helret\HelloRetail\Service\HelloRetailSearchService"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="sales_channel.category.repository"/>
+        </service>
+
+        <!-- Required to set correct total and aggregations. -->
+        <service
+            id="Helret\HelloRetail\Content\Product\SalesChannel\Listing\DecoratedProductListingLoader"
+            parent="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader"
+            decorates="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader"
+        >
+            <call method="setDecorated">
+                <argument type="service" id=".inner"/>
+            </call>
+        </service>
+
+        <service id="Helret\HelloRetail\Content\Product\SalesChannel\Listing\Processor\HelloRetailListingProcessor">
+            <!-- Priority has to be greater than -1000 to run before BehaviorListingProcessor -->
+            <tag name="shopware.listing.processor" priority="-900"/>
+        </service>
+        <service
+            id="Helret\HelloRetail\Content\Product\SalesChannel\Listing\Processor\DecoratedSortingListingProcessor"
+            decorates="Shopware\Core\Content\Product\SalesChannel\Listing\Processor\SortingListingProcessor"
+        >
+            <argument type="service" id=".inner"/>
+        </service>
     </services>
 </container>

@@ -1,1 +1,11 @@
 {% sw_extends "@Storefront/storefront/component/product/card/box-standard.html.twig" %}
+
+{# shopware-block: 4b6c66a5f14e9057e309ce287f8384d7fe946396da741cc8d8a219218e63fc8c@v6.6.10.2 #}
+{% block component_product_box_info %}
+  {{ parent() }}
+
+  {% set helloRetail = product.getExtension('hello-retail') %}
+  {% if helloRetail and helloRetail.trackingCode %}
+    <span class="d-none" data-aw-source="{{ helloRetail.trackingCode }}"/>
+  {% endif %}
+{% endblock %}

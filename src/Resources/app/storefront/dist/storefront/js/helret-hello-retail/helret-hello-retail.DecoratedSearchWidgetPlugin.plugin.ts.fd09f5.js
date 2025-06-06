@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk=self.webpackChunk||[]).push([[6116],{116:(e,s,a)=>{a.r(s),a.d(s,{default:()=>i});class i extends window.PluginBaseClass{init(){this.el.addEventListener("afterSuggest",()=>{window.PluginManager.initializePlugin("aw-click-tracking",".search-suggest-product [data-aw-source]")})}}}}]);
