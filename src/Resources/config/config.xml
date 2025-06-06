@@ -353,7 +353,6 @@
             <label>Replace search page results</label>
             <label lang="de-DE">Suchergebnisse ersetzen</label>
             <label lang="da-DK">Erstat resultater på søgesiden</label>
-            <defaultValue>true</defaultValue>
         </input-field>
         <input-field type="int">
             <name>searchCategoryLimit</name>
@@ -371,7 +370,6 @@
             <label>Replace suggest results</label>
             <label lang="de-DE">Ersetzen Sie die vorgeschlagenen Ergebnisse</label>
             <label lang="da-DK">Erstat forslået resultater</label>
-            <defaultValue>true</defaultValue>
         </input-field>
 
         <input-field type="int">
