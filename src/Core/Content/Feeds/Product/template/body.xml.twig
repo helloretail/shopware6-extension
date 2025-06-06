@@ -104,4 +104,19 @@
     <keywords>{% if product.searchKeywords %}{% for keyword in product.searchKeywords.elements %}{{ keyword.keyword }},{% endfor %}{% endif %}</keywords>
 
     <inStock>{% if product.availableStock > 0 %}true{% else %}false{% endif %}</inStock>
+
+    {% if product.extensions.properties %}
+        <properties>
+            {% for key, value in product.extensions.properties.all() %}
+                <property>
+                    <name>{{ key }}</name>
+                    <options>
+                        {%- for option in value -%}
+                            <option>{{ option.name }}</option>
+                        {%- endfor -%}
+                    </options>
+                </property>
+            {% endfor %}
+        </properties>
+    {% endif %}
 </product>
