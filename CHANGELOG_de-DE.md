@@ -1,3 +1,8 @@
+# 5.3.4
+* Clientseitige Skriptinitialisierung wurde früher im Seitenladezyklus platziert.
+* Veraltete Warenkorb-Tracking-Logik entfernt.
+* Allgemeine Codequalität
+
 # 5.3.3
 * Suchoption hinzugefügt
 * Feeds:
