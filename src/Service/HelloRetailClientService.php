@@ -68,7 +68,7 @@ class HelloRetailClientService
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
-            throw new \RuntimeException("Hello Retail API call failed: {$e->getMessage()}");
+            return [];
         }
 
         return json_decode($response->getBody()->getContents(), true);
