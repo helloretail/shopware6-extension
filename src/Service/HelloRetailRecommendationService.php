@@ -5,6 +5,7 @@ namespace Helret\HelloRetail\Service;
 use Helret\HelloRetail\Service\Models\RecommendationContext;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Cms\DataResolver\CriteriaCollection;
+use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductCollection;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
@@ -98,7 +99,7 @@ class HelloRetailRecommendationService
         return [];
     }
 
-    private function getProducts(array $productData, SalesChannelContext $context): EntitySearchResult | null
+    private function getProducts(array $productData, SalesChannelContext $context): ?ProductCollection
     {
         $ids = $this->getIds($productData);
 
