@@ -12,8 +12,7 @@ use Monolog\Logger;
 class HelloRetailClientService
 {
     private Logger $logger;
-    private const url = "https://core.helloretail.com/serve/";
-    private const userEndpoint = "trackingUser";
+    private const BASE_URL = "https://core.helloretail.com/serve/";
     private ?string $apiKey = null;
     private ?Client $client = null;
 
@@ -58,22 +57,18 @@ class HelloRetailClientService
         try {
             $response = $client->send(new Request(
                 'POST',
-                self::url . $endpoint,
+                self::BASE_URL . $endpoint,
                 ['Content-Type' => 'application/json'],
                 $body
             ));
         } catch (GuzzleException $e) {
-            $this->logger->error('Request failed', [
+            $this->logger->error('HR API error:', [
                 'endpoint' => $endpoint,
                 'body' => $body,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
-            return [];
-        }
-
-        if ($response->getStatusCode() != "200") {
-            return [];
+            throw new \RuntimeException("Hello Retail API call failed: {$e->getMessage()}");
         }
 
         return json_decode($response->getBody()->getContents(), true);

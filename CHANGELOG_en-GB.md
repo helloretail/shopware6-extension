@@ -1,3 +1,8 @@
+# 4.4.5
+* Moved client-side script initialization earlier in the page load cycle
+* Removed legacy cart tracking logic
+* General code quality
+
 # 4.4.4
 * Update and add snippets in administration.
 

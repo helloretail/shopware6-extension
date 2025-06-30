@@ -3,7 +3,6 @@
 namespace Helret\HelloRetail\Service;
 
 use Helret\HelloRetail\Service\Models\PageFilters;
-use Helret\HelloRetail\Service\Models\PageParams;
 use Helret\HelloRetail\Service\Models\PageProducts;
 use Helret\HelloRetail\Service\Models\Requests\PageRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -18,7 +17,7 @@ class HelloRetailPageService extends HelloRetailApiService
 
         return $this->fetchPage($key, $hierarchies, $urls);
     }
-    
+
     private function fetchPage(string $key, array $hierarchies = [], $urls = []): array
     {
         $pageFilters = new PageFilters($hierarchies);
@@ -30,7 +29,7 @@ class HelloRetailPageService extends HelloRetailApiService
         }
         return $callback;
     }
-    
+
     private function buildEndpoint(string $key): string
     {
         return self::ENDPOINT . '/' . $key;
