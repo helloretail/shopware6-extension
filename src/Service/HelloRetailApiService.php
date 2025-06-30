@@ -4,10 +4,8 @@ namespace Helret\HelloRetail\Service;
 
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -16,10 +14,6 @@ class HelloRetailApiService
 {
     protected const extraData = "extraData";
 
-    /**
-     * @param HelloRetailClientService $client
-     * @param EntityRepository $productRepository
-     */
     public function __construct(
         protected HelloRetailClientService $client,
         protected EntityRepository $productRepository,
@@ -27,18 +21,7 @@ class HelloRetailApiService
     ) {
     }
 
-    protected function getProducts(array $productData): mixed
-    {
-        $ids = $this->getIds($productData);
-        if (!$ids) {
-            return null;
-        }
-
-        $criteria = new Criteria($ids);
-        return $this->productRepository->search($criteria, Context::createDefaultContext())->getEntities();
-    }
-
-    protected function getIds(array $productData, bool $group = true): array
+    protected function getIds(array $productData): array
     {
         $ids = [];
         $filteredGroups = [];
@@ -72,7 +55,7 @@ class HelloRetailApiService
 
         $useCategoryId = $this->systemConfigService->get('HelretHelloRetail.config.useCategoryId');
 
-        if($useCategoryId){
+        if ($useCategoryId){
             $categoryData['extraDataList.categoryIds'] = $category->getId();
         } else {
             $categoryData['hierarchies'] = $category->getBreadcrumb();
