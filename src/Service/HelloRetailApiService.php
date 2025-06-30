@@ -21,10 +21,6 @@ class HelloRetailApiService
     ) {
     }
 
-    /**
-     * @param array $productData
-     * @return array
-     */
     protected function getIds(array $productData): array
     {
         $ids = [];
@@ -43,10 +39,6 @@ class HelloRetailApiService
         return $ids;
     }
 
-    /**
-     * @param Entity $entity
-     * @return array
-     */
     public function renderHierarchies(Entity $entity): array
     {
         $category = null;
@@ -72,10 +64,6 @@ class HelloRetailApiService
         return $categoryData;
     }
 
-    /**
-     * @param SalesChannelContext|null $salesChannelContext
-     * @return array
-     */
     protected function renderUrls(SalesChannelContext $salesChannelContext = null): array
     {
         $urls = [];
