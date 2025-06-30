@@ -1,3 +1,8 @@
+# 4.4.5
+* Clientseitige Skriptinitialisierung wurde früher im Seitenladezyklus platziert.
+* Veraltete Warenkorb-Tracking-Logik entfernt.
+* Allgemeine Codequalität
+
 # 4.4.4
 * Aktualisieren und fügen Sie Snippets in der Verwaltung hinzu.
 

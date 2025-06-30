@@ -9,7 +9,9 @@ use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductCollection;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Struct\ArrayEntity;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
@@ -20,9 +22,6 @@ class HelloRetailRecommendationService
     private const EXTRA_DATA = "extraData";
     private const ENDPOINT = "recoms";
 
-    /**
-     * @param SalesChannelRepository<SalesChannelProductCollection> $salesChannelRepository
-     */
     public function __construct(
         protected readonly HelloRetailClientService $client,
         protected readonly SalesChannelRepository $salesChannelRepository
@@ -72,7 +71,7 @@ class HelloRetailRecommendationService
         return $collection;
     }
 
-    public function getRecommendations(string $key, SalesChannelContext $context)
+    public function getRecommendations(string $key, SalesChannelContext $context): ?EntityCollection
     {
         $productData = $this->fetchRecommendations($key);
         return $this->getProducts($productData, $context);
@@ -99,7 +98,7 @@ class HelloRetailRecommendationService
         return [];
     }
 
-    private function getProducts(array $productData, SalesChannelContext $context): mixed
+    private function getProducts(array $productData, SalesChannelContext $context): EntitySearchResult | null
     {
         $ids = $this->getIds($productData);
 
