@@ -71,6 +71,15 @@ class HelloRetailClientService
             return [];
         }
 
+        if ($response->getStatusCode() !== 200) {
+            $this->logger->warning('HR API non-200 response', [
+                'endpoint' => $endpoint,
+                'status' => $response->getStatusCode(),
+                'body' => $body,
+            ]);
+            return [];
+        }
+
         return json_decode($response->getBody()->getContents(), true);
     }
 
