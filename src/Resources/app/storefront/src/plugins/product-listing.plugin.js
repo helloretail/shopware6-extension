@@ -6,8 +6,6 @@ export default class ProductListingPlugin extends Plugin {
         let hrScript = window.hrListingData.helloRetailData.products.javascript
         let productFilters =  window.hrListingData.hierarchies
 
-        window.hrq = window.hrq || [];
-
         window.hrq.push(function () {
             (function (_, container, data, page) {
                 data.params = data.params || {};

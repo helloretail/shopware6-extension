@@ -3,7 +3,6 @@
 namespace Helret\HelloRetail\Service;
 
 use Helret\HelloRetail\Service\Models\PageFilters;
-use Helret\HelloRetail\Service\Models\PageParams;
 use Helret\HelloRetail\Service\Models\Requests\PageRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 

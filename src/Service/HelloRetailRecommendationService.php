@@ -3,7 +3,6 @@
 namespace Helret\HelloRetail\Service;
 
 use Helret\HelloRetail\Service\Models\RecommendationContext;
-use Helret\HelloRetail\Service\Models\Requests\RecommendationRequest;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Cms\DataResolver\CriteriaCollection;
 use Shopware\Core\Content\Product\ProductDefinition;
@@ -15,6 +14,8 @@ use Shopware\Core\Framework\Struct\ArrayEntity;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\Content\Product\ProductCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 
 class HelloRetailRecommendationService
 {
@@ -77,7 +78,7 @@ class HelloRetailRecommendationService
         return $collection;
     }
 
-    public function getRecommendations(string $key, SalesChannelContext $context)
+    public function getRecommendations(string $key, SalesChannelContext $context): ?EntityCollection
     {
         $productData = $this->fetchRecommendations($key, $context->getSalesChannelId());
         return $this->getProducts($productData, $context);
@@ -113,7 +114,7 @@ class HelloRetailRecommendationService
         return [];
     }
 
-    private function getProducts(array $productData, SalesChannelContext $context): mixed
+    private function getProducts(array $productData, SalesChannelContext $context): ?ProductCollection
     {
         $ids = $this->getIds($productData);
 
