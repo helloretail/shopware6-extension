@@ -1,3 +1,6 @@
+# 6.0.0
+* Shopware 6.7 compatibility
+
 # 5.3.4
 * Moved client-side script initialization earlier in the page load cycle
 * Removed legacy cart tracking logic
