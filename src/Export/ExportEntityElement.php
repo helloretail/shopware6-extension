@@ -6,7 +6,7 @@ use Shopware\Core\Framework\MessageQueue\AsyncMessageInterface;
 
 class ExportEntityElement implements AsyncMessageInterface
 {
-    protected ?array $allIds;
+    protected ?array $allIds = null;
     protected int $retryCount = 0;
     protected array $exportConfig = [];
 

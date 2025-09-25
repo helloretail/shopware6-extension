@@ -90,13 +90,13 @@
 
             <sw-button
                 v-if="feed"
-                variant="ghost"
                 size="small"
                 @click.prevent="generateFeed(feed)"
                 :isLoading="feedQueued"
                 :disabled="forceGenerateDisabled || !getFeedOptions().length || feedQueued"
-                v-tooltip="tooltipGenerate"
-            >{{ $tc('helret-hello-retail.comparison.generateFeed', 0, {feedName}) }}</sw-button>
+                v-tooltip="tooltipGenerate">
+                    {{ $tc('helret-hello-retail.comparison.generateFeed', 0, {feedName}) }}
+            </sw-button>
         </sw-card>
 
         <sw-card

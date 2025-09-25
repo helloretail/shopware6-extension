@@ -17,7 +17,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class RecommendationsTest extends Command
 {
     public function __construct(
-        private HelloRetailRecommendationService $recommendationService
+        private readonly HelloRetailRecommendationService $recommendationService
     ) {
         parent::__construct();
     }

@@ -47,6 +47,11 @@ class HelretBeforeSearchEvent extends AbstractSearchEvent
         return $this->isFilterRequest;
     }
 
+    public function setIsFilterRequest(bool $isFilterRequest): void
+    {
+        $this->isFilterRequest = $isFilterRequest;
+    }
+
     public function getOriginalResponse(): ?SearchResponse
     {
         return $this->originalResponse;
@@ -59,6 +64,6 @@ class HelretBeforeSearchEvent extends AbstractSearchEvent
 
     public function setForceReturnFilters(bool $forceReturnFilters): void
     {
-        $this->isFilterRequest = $forceReturnFilters;
+        $this->forceReturnFilters = $forceReturnFilters;
     }
 }

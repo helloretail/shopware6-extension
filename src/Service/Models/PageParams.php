@@ -4,11 +4,8 @@ namespace Helret\HelloRetail\Service\Models;
 
 class PageParams
 {
-    public PageFilters $filters;
-
-    public function __construct(PageFilters $pageFilters)
+    public function __construct(public PageFilters $filters)
     {
-        $this->filters = $pageFilters;
     }
 
     public function getFilters(): PageFilters

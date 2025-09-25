@@ -3,7 +3,7 @@ import './style.scss';
 
 const {Component, Mixin} = Shopware;
 
-Component.register('sw-sales-channel-detail-hello-retail-comparison', {
+export default {
     template,
 
     inject: [
@@ -18,7 +18,7 @@ Component.register('sw-sales-channel-detail-hello-retail-comparison', {
 
     props: {
         // // FIXME: add type for salesChannel property
-        // eslint-disable-next-line
+         
         salesChannel: {
             required: true,
         },
@@ -70,7 +70,7 @@ Component.register('sw-sales-channel-detail-hello-retail-comparison', {
 
         getConfiguration() {
             if (!this.salesChannel.configuration.feeds[this.feedType]) {
-                // eslint-disable-next-line
+                 
                 this.salesChannel.configuration.feeds[this.feedType] = {
                     name: this.feedType,
                     headerTemplate: null,
@@ -210,4 +210,4 @@ Component.register('sw-sales-channel-detail-hello-retail-comparison', {
                 });
         }
     },
-});
+}

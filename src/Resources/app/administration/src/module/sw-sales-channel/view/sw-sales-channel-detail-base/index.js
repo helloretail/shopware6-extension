@@ -4,7 +4,7 @@ import './style.scss';
 const {Component, Utils} = Shopware;
 const {Criteria} = Shopware.Data;
 
-Component.override('sw-sales-channel-detail-base', {
+export default {
     template,
 
     inject: ['helloRetailService'],
@@ -129,10 +129,8 @@ Component.override('sw-sales-channel-detail-base', {
                     }
 
                     if (!this.salesChannel.configuration.feeds) {
-                        this.$set(this.salesChannel, 'configuration', {
-                            ...this.salesChannel.configuration,
-                            feeds: feeds
-                        });
+                        this.salesChannel.configuration.feeds = feeds;
+
                     }
                 })
                 .finally(() => {
@@ -189,11 +187,11 @@ Component.override('sw-sales-channel-detail-base', {
             // ~Same as $super
 
             this.storefrontDomainUrl = salesChannel.domains.first().url;
-            this.$set(this.salesChannel.configuration, 'salesChannelDomainId', salesChannel.domains.first()?.id);
+            this.salesChannel.configuration.salesChannelDomainId = salesChannel.domains.first()?.id;
 
             if (!this.salesChannel.accessKey) {
                 this.onGenerateKeys();
             }
         },
     }
-});
+}

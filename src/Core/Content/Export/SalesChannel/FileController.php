@@ -100,7 +100,7 @@ class FileController extends AbstractController
         ]);
 
         foreach ($salesChannelsConfigurations as $config) {
-            $configuration = json_decode($config['configuration'], true);
+            $configuration = json_decode((string) $config['configuration'], true);
 
             if (json_last_error() === JSON_ERROR_NONE) {
                 if (isset($configuration['feedDirectory']) && $configuration['feedDirectory'] === $feedDirectory) {

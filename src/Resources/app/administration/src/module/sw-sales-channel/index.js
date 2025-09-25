@@ -1,9 +1,10 @@
-import './page/sw-sales-channel-detail';
 
-import './view/sw-sales-channel-create-base';
-import './view/sw-sales-channel-detail-base';
+Shopware.Component.override('sw-sales-channel-detail', () =>import ('./page/sw-sales-channel-detail'));
 
-import './view/hello-retail-comparison';
+// import './view/sw-sales-channel-create-base';
+Shopware.Component.override('sw-sales-channel-detail-base', () => import('./view/sw-sales-channel-detail-base'));
+Shopware.Component.register('sw-sales-channel-detail-hello-retail-comparison', () => import('./view/hello-retail-comparison'));
+
 
 Shopware.Module.register('hello-retail-tabs', {
     routeMiddleware(next, currentRoute) {

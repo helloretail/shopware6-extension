@@ -1,4 +1,15 @@
 {
+    "apps": {
+        "sw-cms": {
+            "detail": {
+                "label": {
+                    "blockCategory": {
+                        "hello-retail": "Hello Retail"
+                    }
+                }
+            }
+        }
+    },
     "sw-cms": {
         "blocks": {
             "commerce": {

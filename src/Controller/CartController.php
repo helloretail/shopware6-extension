@@ -10,7 +10,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Controller\StorefrontController;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Helret\HelloRetail\Service\HelloRetailRecommendationService;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(defaults: ['_routeScope' => ['storefront']])]
 class CartController extends StorefrontController
@@ -76,7 +76,10 @@ class CartController extends StorefrontController
 
     private function getRecommendationsData(SalesChannelContext $context): array
     {
-        $boxKey = $this->systemConfigService->getString('HelretHelloRetail.config.offcanvasCartKey');
+        $boxKey = $this->systemConfigService->getString(
+            'HelretHelloRetail.config.offcanvasCartKey',
+            $context->getSalesChannelId()
+        );
         $recommendations = [];
 
         if ($boxKey) {

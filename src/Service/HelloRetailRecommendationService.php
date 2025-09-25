@@ -2,6 +2,7 @@
 
 namespace Helret\HelloRetail\Service;
 
+use Helret\HelloRetail\Service\Models\Recommendation;
 use Helret\HelloRetail\Service\Models\RecommendationContext;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Cms\DataResolver\CriteriaCollection;
@@ -93,7 +94,7 @@ class HelloRetailRecommendationService
         if ($key) {
             $productData = [];
             $context = new RecommendationContext($hierarchies, "", $urls);
-            $request = new Models\Recommendation($key, [self::EXTRA_DATA], $context);
+            $request = new Recommendation($key, [self::EXTRA_DATA], $context);
             $callback = $this->client->callApi(
                 endpoint: self::ENDPOINT,
                 request: $request,

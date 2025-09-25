@@ -10,17 +10,12 @@ class EntityType
     public const CATEGORY = 'entity_type_category';
     public static function getMatchingEntityType($entityType): ?string
     {
-        switch (strtolower($entityType)) {
-            case 'customer':
-                return self::CUSTOMER;
-            case 'order':
-                return self::ORDER;
-            case 'product':
-                return self::PRODUCT;
-            case 'category':
-                return self::CATEGORY;
-            default:
-                return "entity__$entityType";
-        }
+        return match (strtolower((string) $entityType)) {
+            'customer' => self::CUSTOMER,
+            'order' => self::ORDER,
+            'product' => self::PRODUCT,
+            'category' => self::CATEGORY,
+            default => "entity__$entityType",
+        };
     }
 }

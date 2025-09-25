@@ -1,6 +1,6 @@
-import Plugin from 'src/plugin-system/plugin.class';
-import HttpClient from 'src/service/http-client.service';
-import DomAccess from 'src/helper/dom-access.helper';
+const Plugin = window.PluginBaseClass;
+
+
 
 export default class OffCanvasCartRecommendationsPlugin extends Plugin {
     static options = {
@@ -28,16 +28,16 @@ export default class OffCanvasCartRecommendationsPlugin extends Plugin {
     }
 
     fetch() {
-        this._client.get(this.options.recommendationsUrl, (response) => {
-            const offcanvasCart = DomAccess.querySelector(document, this.options.cartSelector);
+        fetch(this.options.recommendationsUrl)
+    .then(response => response.text())
+    .then((response) => {
+        const offcanvasCart = DomAccess.querySelector(document, this.options.cartSelector);
             const recommendationsContainer = offcanvasCart.querySelector(this.options.recommendationsSelector);
 
             if (recommendationsContainer) {
                 recommendationsContainer.innerHTML = response;
                 DomAccess.querySelector(document, this.options.hrRecom).classList.remove('d-none');
             }
-        }, (error) => {
-            console.error('Error fetching recommendations:', error);
-        });
+    });
     }
 }

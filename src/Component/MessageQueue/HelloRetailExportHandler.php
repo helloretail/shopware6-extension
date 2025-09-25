@@ -141,7 +141,7 @@ class HelloRetailExportHandler
                             "SELECT product_assignment_type FROM category WHERE id = :id",
                             [":id" => Uuid::fromHexToBytes($message->getId())]
                         );
-                    } catch (Exception $e) {
+                    } catch (Exception) {
                         $type = "product";
                     }
 
@@ -238,7 +238,7 @@ class HelloRetailExportHandler
                     'templateType' => $message->getTemplateType(),
                     'error' => $e->getMessage(),
                     'errorTrace' => $e->getTraceAsString(),
-                    'errorType' => get_class($e)
+                    'errorType' => $e::class
                 ]
             );
         }
@@ -284,7 +284,7 @@ class HelloRetailExportHandler
                         'templateType' => $message->getTemplateType(),
                         'error' => $e->getMessage(),
                         'errorTrace' => $e->getTraceAsString(),
-                        'errorType' => get_class($e)
+                        'errorType' => $e::class
                     ]
                 );
                 return;
@@ -292,7 +292,7 @@ class HelloRetailExportHandler
             foreach ($files as $file) {
                 try {
                     $feedContent .= $this->filesystem->read($dir . DIRECTORY_SEPARATOR . $file);
-                } catch (FilesystemException $e) {
+                } catch (FilesystemException) {
                     $failures++;
                     continue;
                 }
