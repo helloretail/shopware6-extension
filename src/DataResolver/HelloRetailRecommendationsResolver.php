@@ -2,6 +2,7 @@
 
 namespace Helret\HelloRetail\DataResolver;
 
+use Helret\HelloRetail\Models\ProductModel;
 use Helret\HelloRetail\Service\HelloRetailRecommendationService;
 use Shopware\Core\Content\Cms\Aggregate\CmsSlot\CmsSlotEntity;
 use Shopware\Core\Content\Cms\DataResolver\CriteriaCollection;
@@ -45,13 +46,13 @@ class HelloRetailRecommendationsResolver extends AbstractCmsElementResolver
 
         $salesChannelContext = $resolverContext->getSalesChannelContext();
 
+
         $collection = $this->recommendationService->getRecommendationsSearch(
             $key->getValue(),
             self::STATIC_SEARCH_KEY . '_' . $slot->getUniqueIdentifier(),
             $entity,
             $salesChannelContext
         );
-
         return $collection->all() ? $collection : null;
     }
 
@@ -78,11 +79,17 @@ class HelloRetailRecommendationsResolver extends AbstractCmsElementResolver
         if ($searchResult === null) {
             return;
         }
-
         /** @var ProductCollection|null $products */
         $products = $searchResult->getEntities();
         if ($products->first() === null) {
             return;
+        }
+
+        /** @var ProductModel|null $hrData */
+        $hrData = $searchResult->getCriteria()->getExtension('hrData');
+
+        foreach ($products as $product) {
+            $product->addExtension('hello-retail', $hrData->getStructs()[$product->getId()]);
         }
 
         $hideOutOfStock = $this->systemConfigService->get(

@@ -40,7 +40,6 @@ class ProductListingCmsElementResolverDecorator extends AbstractCmsElementResolv
         $hierarchies = [];
 
         $key = $config->get('helloRetailKey');
-
         if ($key) {
             if (method_exists($resolverContext, 'getEntity')) {
                 $entity = $resolverContext->getEntity();
