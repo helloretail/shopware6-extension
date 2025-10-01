@@ -1,34 +1,24 @@
 <category>
     <title>{% if category.name %}{{ category.name }}{% else %}{{ category.translated.name }}{% endif %}</title>
-    <url>
-        {{ seoUrl('frontend.navigation.page', {'navigationId': category.id}) }}
-    </url>
-    <description>
-        {% if category.description %}
-        {{ category.description }}
-        {% else %}
-        {{ category.translated.description }}
-        {% endif %}
-    </description>
+    <url>{{ seoUrl('frontend.navigation.page', {'navigationId': category.id}) }}</url>
+    <description>{% if category.description %}{{ category.description }}{% else %}{{ category.translated.description }}{% endif %}</description>
     <keywords>{% if category.translated.keywords %}{% for keyword in category.translated.keywords %}{{ keyword.keyword }},{% endfor %}{% endif %}</keywords>
     <hierarchy>
         {% for breadCrumb in category.getBreadCrumb %}
-        <category>{{ breadCrumb }}</category>
+            <category>{{ breadCrumb }}</category>
         {% endfor %}
     </hierarchy>
     {% if products is not empty %}
-    <categoryProducts>
-        {% for product in products %}
+        <categoryProducts>
+            {% for product in products %}
                 {% if product and product.productNumber is defined %}
-        <product>
-            <url>
-                {{ seoUrl('frontend.detail.page', {'productId': product.id}) }}
-            </url>
-            <productNumber>{{ product.productNumber }}</productNumber>
-            <title>{% if product.name %}{{ product.name }}{% else %}{{ product.translated.name }}{% endif %}</title>
-        </product>
-        {% endif %}
+                    <product>
+                        <url>{{ seoUrl('frontend.detail.page', {'productId': product.id}) }}</url>
+                        <productNumber>{{ product.productNumber }}</productNumber>
+                        <title>{% if product.name %}{{ product.name }}{% else %}{{ product.translated.name }}{% endif %}</title>
+                    </product>
+                {% endif %}
             {% endfor %}
-    </categoryProducts>
+        </categoryProducts>
     {% endif %}
 </category>

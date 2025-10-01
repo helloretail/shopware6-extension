@@ -4,7 +4,7 @@ namespace Helret\HelloRetail\Service\Models;
 
 class PageFilters
 {
-    public function __construct(public array $filters)
+    public function __construct(public array $filters = [])
     {
     }
 
