@@ -2,6 +2,7 @@
 
 namespace Helret\HelloRetail\Service;
 
+use Helret\HelloRetail\Models\ProductModel;
 use Helret\HelloRetail\Service\Models\Recommendation;
 use Helret\HelloRetail\Service\Models\RecommendationContext;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
@@ -71,8 +72,8 @@ class HelloRetailRecommendationService
             [$hierarchies],
             $urls
         );
-
         $ids = $this->getIds($productData);
+        $productModel = new ProductModel(['results' =>$productData]);
         if (!$ids) {
             return $collection;
         }
@@ -82,8 +83,8 @@ class HelloRetailRecommendationService
         $criteria->addAssociation('options.group');
         $criteria->addAssociation('manufacturer');
         $criteria->addExtension('ids', new ArrayEntity([$ids]));
+        $criteria->addExtension('hrData', $productModel);
         $collection->add($searchKey, ProductDefinition::class, $criteria);
-
         return $collection;
     }
 
