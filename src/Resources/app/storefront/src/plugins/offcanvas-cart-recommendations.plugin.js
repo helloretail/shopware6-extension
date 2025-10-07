@@ -1,7 +1,5 @@
 const Plugin = window.PluginBaseClass;
 
-
-
 export default class OffCanvasCartRecommendationsPlugin extends Plugin {
     static options = {
         recommendationsUrl: '/hello-retail/cart/recommendations',
@@ -11,7 +9,6 @@ export default class OffCanvasCartRecommendationsPlugin extends Plugin {
     }
 
     init() {
-        this._client = new HttpClient();
         this._registerEvents();
     }
 

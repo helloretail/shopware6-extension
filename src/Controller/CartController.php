@@ -2,6 +2,8 @@
 
 namespace Helret\HelloRetail\Controller;
 
+use Shopware\Core\Checkout\Cart\Cart;
+use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Storefront\Page\Checkout\Offcanvas\CheckoutOffcanvasWidgetLoadedHook;
 use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPageLoader;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,7 +33,7 @@ class CartController extends StorefrontController
         ],
         methods: ['GET']
     )]
-    public function sidebarRecommendations(SalesChannelContext $context): Response
+    public function sidebarRecommendations(SalesChannelContext $context, Cart $caret): Response
     {
         $data = $this->getRecommendationsData($context);
 
@@ -56,6 +58,7 @@ class CartController extends StorefrontController
         $cartRecomsActive = $this->systemConfigService->getString('HelretHelloRetail.config.cartRecomsToggle');
         $errorMessage = '';
 
+            $page->addExtension('helloRetailRecommendations', new ArrayStruct([]));
         if ($data && !empty($data['recommendations'])) {
             $page->addExtension('helloRetailRecommendations', $data['recommendations']);
 

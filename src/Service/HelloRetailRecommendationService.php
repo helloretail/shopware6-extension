@@ -116,12 +116,6 @@ class HelloRetailRecommendationService
             $fullUrls[] = $url . $requestUri;
         }
 
-        if ($route == 'frontend.checkout.cart.page' || $route == 'frontend.cart.offcanvas') {
-            foreach ($salesChannelContext->getSalesChannel()->getDomains() as $domain) {
-                $urls[] = $domain->getUrl();
-            }
-        }
-
         if ($key) {
             $productData = [];
             $context = new RecommendationContext();
@@ -135,13 +129,16 @@ class HelloRetailRecommendationService
                 case 'frontend.detail.page': // Product page
                     $context->setUrls($fullUrls);
                     break;
+                case 'hello-retail.cart.recommendations': // Cart offcanvas
                 case 'frontend.cart.offcanvas': // Cart offcanvas
-                    $cartUrls = $this->getCartUrls($salesChannelContext, $urls);
-                    $context->setUrls($cartUrls);
-                    break;
                 case 'frontend.checkout.cart.page': // Cart page
-                    $cartUrls = $this->getCartUrls($salesChannelContext, $urls);
+                foreach ($salesChannelContext->getSalesChannel()->getDomains() as $domain) {
+                    $urls[] = $domain->getUrl();
+                }
+                $cartUrls = $this->getCartUrls($salesChannelContext, $urls);
+                if($cartUrls){
                     $context->setUrls($cartUrls);
+                }
                     break;
                 default:
                     break;
@@ -220,6 +217,9 @@ class HelloRetailRecommendationService
     {
         $productSeo = [];
 
+        if (empty($productIds)) {
+            return $productSeo;
+        }
         $criteria = new Criteria($productIds);
         $criteria->addAssociation('seoUrls');
 
