@@ -219,6 +219,10 @@ class HelloRetailRecommendationService
     {
         $productSeo = [];
 
+        if (empty($productIds)) {
+            return $productSeo;
+        }
+
         $criteria = new Criteria($productIds);
         $criteria->addAssociation('seoUrls');
 
