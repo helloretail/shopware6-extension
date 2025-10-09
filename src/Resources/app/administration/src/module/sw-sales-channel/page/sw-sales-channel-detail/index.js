@@ -1,13 +1,11 @@
 import template from './template.html.twig';
 
-const {Component} = Shopware;
 
-Component.override('sw-sales-channel-detail', {
+export default {
     template,
 
     inject: [
         'helloRetailService',
-        'salesChannelService',
     ],
 
     data() {
@@ -97,4 +95,4 @@ Component.override('sw-sales-channel-detail', {
                 });
         }
     }
-});
+}

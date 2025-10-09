@@ -1,6 +1,6 @@
-import './component';
-import './preview';
-import './config';
+Shopware.Component.extend('sw-cms-el-hello-retail-recommendations', 'sw-cms-el-product-slider', () => import('./component'));
+Shopware.Component.register('sw-cms-preview-hello-retail-recommendations', () => import('./preview'));
+Shopware.Component.extend('sw-cms-el-config-hello-retail-recommendations', 'sw-cms-el-config-product-slider', () => import('./config'));
 const config = Shopware.Service('cmsService').getCmsElementConfigByName('product-slider').defaultConfig;
 
 Shopware.Service('cmsService').registerCmsElement({

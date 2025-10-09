@@ -52,12 +52,10 @@ class HelretHelloRetail extends Plugin
 
         if ($ids) {
             $salesChannelRepository->update(
-                array_map(function (string $salesChannelId) {
-                    return [
-                        'id' => $salesChannelId,
-                        'active' => false
-                    ];
-                }, $ids),
+                array_map(fn(string $salesChannelId) => [
+                    'id' => $salesChannelId,
+                    'active' => false
+                ], $ids),
                 $deactivateContext->getContext()
             );
         }
@@ -88,9 +86,7 @@ class HelretHelloRetail extends Plugin
 
         if ($ids) {
             $salesChannelRepository->delete(
-                array_map(function ($id) {
-                    return ['id' => $id];
-                }, $ids),
+                array_map(fn($id) => ['id' => $id], $ids),
                 $uninstallContext->getContext()
             );
         }
@@ -464,7 +460,7 @@ class HelretHelloRetail extends Plugin
                         }
 
                         $entity = preg_replace('/\s+/', '', trim($template[$templateKey]));
-                        $config = preg_replace('/\s+/', '', trim($configuration['feeds'][$key][$templateKey]));
+                        $config = preg_replace('/\s+/', '', trim((string) $configuration['feeds'][$key][$templateKey]));
 
                         if ($entity === $config) {
                             $configuration['feeds'][$key][$templateKey] = null;

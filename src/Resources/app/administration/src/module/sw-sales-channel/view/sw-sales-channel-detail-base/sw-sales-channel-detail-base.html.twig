@@ -40,7 +40,8 @@
                         valueProperty="id"
                         entity="sales_channel"
                         required
-                        @update:value="onStorefrontSelectionChange"></sw-entity-single-select>
+                        @update:value="onStorefrontSelectionChange">
+                    </sw-entity-single-select>
                 {% endblock %}
 
                 {% block sw_sales_channel_detail_base_general_storefront_domain %}
@@ -49,8 +50,8 @@
                     :label="$tc('helret-hello-retail.sales-channel-types.base.storefrontDomain')"
                     :disabled="true"
                     :options="[]"
-                    :value="null"
-                  />
+                    :value="null">
+                  </sw-single-select>
                   <sw-entity-single-select
                     v-else
                     v-model:value="salesChannel.configuration.salesChannelDomainId"
@@ -60,8 +61,8 @@
                     labelProperty="url"
                     valueProperty="id"
                     entity="sales_channel_domain"
-                    :disabled="!salesChannel.configuration.storefrontSalesChannelId"
-                  />
+                    :disabled="!salesChannel.configuration.storefrontSalesChannelId">
+                  </sw-entity-single-select>
                 {% endblock %}
             </sw-container>
 

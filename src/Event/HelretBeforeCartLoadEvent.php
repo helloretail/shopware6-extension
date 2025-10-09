@@ -9,12 +9,10 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class HelretBeforeCartLoadEvent extends NestedEvent implements ShopwareSalesChannelEvent
 {
-    protected array $ignored = [];
     protected bool $shouldSkipCartLoad = false;
 
-    public function __construct(array $ignored, protected SalesChannelContext $context)
+    public function __construct(protected array $ignored, protected SalesChannelContext $context)
     {
-        $this->ignored = $ignored;
     }
 
     public function getIgnored(): array

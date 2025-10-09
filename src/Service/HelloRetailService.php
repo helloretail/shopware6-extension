@@ -127,7 +127,7 @@ class HelloRetailService
                         'feed' => $feed,
                         'error' => $e->getMessage(),
                         'errorTrace' => $e->getTraceAsString(),
-                        'errorType' => get_class($e)
+                        'errorType' => $e::class
                     ]
                 );
 
@@ -351,7 +351,7 @@ class HelloRetailService
                     'template' => $template,
                     'error' => $e->getMessage(),
                     'errorTrace' => $e->getTraceAsString(),
-                    'errorType' => get_class($e)
+                    'errorType' => $e::class
                 ]
             );
         }
@@ -362,7 +362,7 @@ class HelloRetailService
     {
         try {
             $variables = $this->twigVariableParser->parse($template);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return [];
             // Should we throw, or just rely on the associations from the conf file?
             // throw new RenderProductException($e->getMessage());

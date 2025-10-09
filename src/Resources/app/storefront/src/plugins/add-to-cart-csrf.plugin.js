@@ -1,5 +1,5 @@
-import Plugin from 'src/plugin-system/plugin.class';
-import HttpClient from 'src/service/http-client.service';
+const Plugin = window.PluginBaseClass;
+
 
 export default class AddToCartCSRFPlugin extends Plugin {
     init() {

@@ -2,6 +2,7 @@
 
 namespace Helret\HelloRetail\ScheduledTask;
 
+use Psr\Log\LoggerInterface;
 use Helret\HelloRetail\Export\Profiles\ProfileExporterInterface;
 use Helret\HelloRetail\HelretHelloRetail;
 use Helret\HelloRetail\Service\ExportService;
@@ -18,9 +19,10 @@ class HelloRetailHandler extends ScheduledTaskHandler
         protected ProfileExporterInterface $profileExporter,
         protected EntityRepository $salesChannelRepository,
         protected HelloRetailService $helloRetailService,
-        protected SystemConfigService $configService
+        protected SystemConfigService $configService,
+        LoggerInterface $exceptionLogger
     ) {
-        parent::__construct($scheduledTaskRepository);
+        parent::__construct($scheduledTaskRepository, $exceptionLogger);
     }
 
     public static function getHandledMessages(): iterable
@@ -48,7 +50,7 @@ class HelloRetailHandler extends ScheduledTaskHandler
                     [
                         'error' => $e->getMessage(),
                         'errorTrace' => $e->getTraceAsString(),
-                        'errorType' => get_class($e),
+                        'errorType' => $e::class,
                         'salesChannelId' => $salesChannelId
                     ]
                 );
@@ -78,7 +80,7 @@ class HelloRetailHandler extends ScheduledTaskHandler
                 [
                     'error' => $e->getMessage(),
                     'errorTrace' => $e->getTraceAsString(),
-                    'errorType' => get_class($e)
+                    'errorType' => $e::class
                 ]
             );
         }

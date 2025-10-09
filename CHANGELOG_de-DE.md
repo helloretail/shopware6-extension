@@ -1,3 +1,6 @@
+# 6.0.0
+* Shopware 6.7 Kompatibilität
+
 # 5.3.4
 * Clientseitige Skriptinitialisierung wurde früher im Seitenladezyklus platziert.
 * Veraltete Warenkorb-Tracking-Logik entfernt.

@@ -1,8 +1,7 @@
 import template from './sw-cms-preview-hello-retail-recommendations.html.twig';
 
-const { Component } = Shopware;
 
-Component.register('sw-cms-preview-hello-retail-recommendations', {
+export default {
     template,
 
     computed: {
@@ -10,4 +9,4 @@ Component.register('sw-cms-preview-hello-retail-recommendations', {
             return Shopware.Filter.getByName('asset');
         },
     }
-});
+}

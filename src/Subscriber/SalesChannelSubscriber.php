@@ -57,7 +57,7 @@ class SalesChannelSubscriber implements EventSubscriberInterface
         }
 
         foreach ($beforeLoad->getIgnored() as $name) {
-            if (strpos($route, $name) === 0) {
+            if (str_starts_with((string) $route, (string) $name)) {
                 return;
             }
         }
@@ -81,7 +81,7 @@ class SalesChannelSubscriber implements EventSubscriberInterface
                 ->search($criteria, $event->getContext())
                 ->getEntities()
                 ->first();
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             $salesChannel = null;
         }
 

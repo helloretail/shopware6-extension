@@ -51,7 +51,7 @@ class ProfileExporter implements ProfileExporterInterface
 
             try {
                 $exported = $this->helloRetailService->export($exportEntity, $key);
-            } catch (FilesystemException $e) {
+            } catch (FilesystemException) {
                 $exported = false;
             }
 

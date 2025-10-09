@@ -175,11 +175,11 @@ class HelloRetailSearchService
                     $slugger = new AsciiSlugger();
                     foreach ($propertyFilters as $propertyFilter) {
                         $groupId = $propertyFilter['groupId'];
-                        $optionIds = explode(',', $propertyFilter['optionIds']);
+                        $optionIds = explode(',', (string) $propertyFilter['optionIds']);
                         // Audit: Name MUST match value/slug from feed.
                         $name = $slugger->slug(
                             mb_convert_case(
-                                trim($propertyFilter['name']),
+                                trim((string) $propertyFilter['name']),
                                 \MB_CASE_TITLE,
                                 'UTF-8'
                             ),

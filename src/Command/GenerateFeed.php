@@ -20,16 +20,10 @@ use Helret\HelloRetail\HelretHelloRetail;
 )]
 class GenerateFeed extends Command
 {
-    protected ProfileExporterInterface $profileExporter;
-    protected EntityRepository $salesChannelRepository;
-
     public function __construct(
-        ProfileExporterInterface $profileExporter,
-        EntityRepository $salesChannelRepository
+        protected ProfileExporterInterface $profileExporter,
+        protected EntityRepository $salesChannelRepository
     ) {
-        $this->profileExporter = $profileExporter;
-        $this->salesChannelRepository = $salesChannelRepository;
-
         parent::__construct();
     }
 

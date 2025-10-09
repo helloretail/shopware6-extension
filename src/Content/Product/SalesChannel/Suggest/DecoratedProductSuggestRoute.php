@@ -78,7 +78,7 @@ class DecoratedProductSuggestRoute extends AbstractProductSuggestRoute
         $response->getListingResult()->addState('is-hello-retail-search');
 
         $entityStructs = $searchResponse?->getProducts()?->getStructs();
-        foreach ($entityStructs as $entityStruct) {
+        foreach ($entityStructs ?? [] as $entityStruct) {
             $response->getListingResult()->get($entityStruct->getId())?->addExtension(
                 'hello-retail',
                 $entityStruct

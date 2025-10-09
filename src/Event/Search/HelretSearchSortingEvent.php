@@ -49,7 +49,7 @@ class HelretSearchSortingEvent extends AbstractSearchEvent
         $sortings = [];
 
         if ($this->request->get('order')) {
-            $order = explode('+', $this->request->get('order'));
+            $order = explode('+', (string) $this->request->get('order'));
 
             $sorting = strtolower($order[1] ?? '');
             if ($sorting &&

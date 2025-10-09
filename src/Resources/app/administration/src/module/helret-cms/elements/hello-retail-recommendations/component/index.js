@@ -1,9 +1,8 @@
 import template from './sw-cms-el-hello-retail-recommendations.html.twig';
 import './sw-cms-el-hello-retail-recommendations.scss';
 
-const {Component} = Shopware;
 
-Component.extend('sw-cms-el-hello-retail-recommendations', 'sw-cms-el-product-slider', {
+export default {
     template,
     created() {
         this.createdComponent();
@@ -15,4 +14,4 @@ Component.extend('sw-cms-el-hello-retail-recommendations', 'sw-cms-el-product-sl
             this.initElementData('hello-retail-recommendations');
         }
     }
-});
+}

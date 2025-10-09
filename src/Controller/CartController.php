@@ -2,6 +2,8 @@
 
 namespace Helret\HelloRetail\Controller;
 
+use Shopware\Core\Checkout\Cart\Cart;
+use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Storefront\Page\Checkout\Offcanvas\CheckoutOffcanvasWidgetLoadedHook;
 use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPageLoader;
 use Symfony\Component\HttpFoundation\Request;
@@ -10,7 +12,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Controller\StorefrontController;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Helret\HelloRetail\Service\HelloRetailRecommendationService;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(defaults: ['_routeScope' => ['storefront']])]
 class CartController extends StorefrontController
@@ -31,7 +33,7 @@ class CartController extends StorefrontController
         ],
         methods: ['GET']
     )]
-    public function sidebarRecommendations(SalesChannelContext $context): Response
+    public function sidebarRecommendations(SalesChannelContext $context, Cart $caret): Response
     {
         $data = $this->getRecommendationsData($context);
 
@@ -56,6 +58,7 @@ class CartController extends StorefrontController
         $cartRecomsActive = $this->systemConfigService->getString('HelretHelloRetail.config.cartRecomsToggle');
         $errorMessage = '';
 
+            $page->addExtension('helloRetailRecommendations', new ArrayStruct([]));
         if ($data && !empty($data['recommendations'])) {
             $page->addExtension('helloRetailRecommendations', $data['recommendations']);
 
@@ -76,7 +79,10 @@ class CartController extends StorefrontController
 
     private function getRecommendationsData(SalesChannelContext $context): array
     {
-        $boxKey = $this->systemConfigService->getString('HelretHelloRetail.config.offcanvasCartKey');
+        $boxKey = $this->systemConfigService->getString(
+            'HelretHelloRetail.config.offcanvasCartKey',
+            $context->getSalesChannelId()
+        );
         $recommendations = [];
 
         if ($boxKey) {

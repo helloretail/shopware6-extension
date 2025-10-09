@@ -2,6 +2,7 @@
 
 namespace Helret\HelloRetail\Service;
 
+use Monolog\Level;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Request;
@@ -12,14 +13,14 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class HelloRetailClientService
 {
-    private Logger $logger;
+    private readonly Logger $logger;
     private const URL = "https://core.helloretail.com/serve/";
     private ?Client $client = null;
 
     public function __construct(protected SystemConfigService $systemConfigService, public string $logDir)
     {
         $this->logger = new Logger('hello-retail');
-        $this->logger->pushHandler(new StreamHandler($logDir . '/hello-retail.log', \Monolog\Level::Error));
+        $this->logger->pushHandler(new StreamHandler($logDir . '/hello-retail.log', Level::Error));
     }
 
     public function getClient(): Client

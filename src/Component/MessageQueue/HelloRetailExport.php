@@ -6,13 +6,8 @@ use Helret\HelloRetail\Export\ExportEntityInterface;
 
 class HelloRetailExport
 {
-    protected ExportEntityInterface $exportEntity;
-    protected string $feed;
-
-    public function __construct(ExportEntityInterface $exportEntity, string $feed)
+    public function __construct(protected ExportEntityInterface $exportEntity, protected string $feed)
     {
-        $this->exportEntity = $exportEntity;
-        $this->feed = $feed;
     }
 
     public function getExportEntity(): ExportEntityInterface
