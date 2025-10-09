@@ -1,3 +1,7 @@
+# 5.3.5
+* Added click tracking on recommendations
+* Changed context data to follow Hello Retail standards
+
 # 5.3.4
 * Moved client-side script initialization earlier in the page load cycle
 * Removed legacy cart tracking logic
