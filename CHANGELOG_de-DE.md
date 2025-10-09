@@ -1,3 +1,7 @@
+# 5.3.5
+* Klick-Tracking für Empfehlungen hinzugefügt
+* Kontextdaten an die Hello-Retail-Standards angepasst
+
 # 5.3.4
 * Clientseitige Skriptinitialisierung wurde früher im Seitenladezyklus platziert.
 * Veraltete Warenkorb-Tracking-Logik entfernt.
