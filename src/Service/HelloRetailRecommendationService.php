@@ -120,7 +120,6 @@ class HelloRetailRecommendationService
 
         if ($key) {
             $productData = [];
-            $request = new Models\Recommendation($key, [self::EXTRA_DATA, self::TRACKING_CODE], $context);
             $context = new RecommendationContext();
             switch ($route) {
                 case 'frontend.home.page': // Home page
@@ -203,7 +202,7 @@ class HelloRetailRecommendationService
         $productIds = [];
         $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
         foreach ($cart->getLineItems() as $lineItem) {
-            $productIds[] = $lineItem->getId();
+            $productIds[] = $lineItem->getReferencedId();
         }
 
         $productSeo =$this->getProductSEO($productIds, $salesChannelContext->getContext());

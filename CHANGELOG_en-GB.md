@@ -1,3 +1,7 @@
+# 5.3.6
+* Removed Request creation before context creation
+* Changed lineItem lookup to use reference id instead of id
+
 # 5.3.5
 * Added click tracking on recommendations
 * Changed context data to follow Hello Retail standards
