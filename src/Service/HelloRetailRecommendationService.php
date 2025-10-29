@@ -238,5 +238,3 @@ class HelloRetailRecommendationService
         return $productSeo;
     }
 }
-
-

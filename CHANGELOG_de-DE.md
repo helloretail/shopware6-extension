@@ -1,6 +1,7 @@
 # 5.3.6
 * Request-Erstellung vor Kontext-Erstellung entfernt
 * LineItem-Suche geändert, um Referenz-ID anstelle von ID zu verwenden
+* Filter für Warenkorb-LineItems hinzugefügt, um Rabatte herauszufiltern
 
 # 5.3.5
 * Klick-Tracking für Empfehlungen hinzugefügt
