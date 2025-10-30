@@ -1,3 +1,7 @@
+# 6.0.1
+* Changed lineItem lookup to use reference id instead of id
+* Added filter on cart lineItems to filter out discounts
+
 # 6.0.0
 * Shopware 6.7 compatibility
 

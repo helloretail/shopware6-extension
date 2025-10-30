@@ -5,6 +5,7 @@ namespace Helret\HelloRetail\Service;
 use Helret\HelloRetail\Models\ProductModel;
 use Helret\HelloRetail\Service\Models\Recommendation;
 use Helret\HelloRetail\Service\Models\RecommendationContext;
+use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\SalesChannel\SalesChannelCategoryEntity;
@@ -199,8 +200,9 @@ class HelloRetailRecommendationService
         $cartUrls = [];
         $productIds = [];
         $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
-        foreach ($cart->getLineItems() as $lineItem) {
-            $productIds[] = $lineItem->getId();
+        $lineItems = $cart->getLineItems()->filterType(LineItem::PRODUCT_LINE_ITEM_TYPE);
+        foreach ($lineItems as $lineItem) {
+            $productIds[] = $lineItem->getReferencedId();
         }
 
         $productSeo =$this->getProductSEO($productIds, $salesChannelContext->getContext());
