@@ -28,12 +28,12 @@ export default class OffCanvasCartRecommendationsPlugin extends Plugin {
         fetch(this.options.recommendationsUrl)
     .then(response => response.text())
     .then((response) => {
-        const offcanvasCart = DomAccess.querySelector(document, this.options.cartSelector);
+        const offcanvasCart = document.querySelector(this.options.cartSelector);
             const recommendationsContainer = offcanvasCart.querySelector(this.options.recommendationsSelector);
 
             if (recommendationsContainer) {
                 recommendationsContainer.innerHTML = response;
-                DomAccess.querySelector(document, this.options.hrRecom).classList.remove('d-none');
+                document.querySelector(this.options.hrRecom).classList.remove('d-none');
             }
     });
     }

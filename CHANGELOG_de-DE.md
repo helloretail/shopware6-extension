@@ -1,3 +1,7 @@
+# 6.0.1
+* LineItem-Suche geändert, um Referenz-ID anstelle von ID zu verwenden
+* Filter für Warenkorb-LineItems hinzugefügt, um Rabatte herauszufiltern
+
 # 6.0.0
 * Shopware 6.7 Kompatibilität
 
