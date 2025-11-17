@@ -142,6 +142,10 @@ class HelloRetailRecommendationService
                     if($cartUrls){
                         $context->setUrls($cartUrls);
                     }
+
+                    $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
+                    $cartPrice = $cart->getPrice()->getPositionPrice();
+                    $context->setPrice($cartPrice);
                     break;
                 default:
                     break;

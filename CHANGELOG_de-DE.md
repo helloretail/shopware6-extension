@@ -1,3 +1,6 @@
+# 5.3.7
+* Warenkorbpreis zu Warenkorbempfehlungen hinzugefüg.
+
 # 5.3.6
 * Request-Erstellung vor Kontext-Erstellung entfernt
 * LineItem-Suche geändert, um Referenz-ID anstelle von ID zu verwenden
