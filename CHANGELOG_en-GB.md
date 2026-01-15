@@ -1,3 +1,6 @@
+# 5.3.9
+* Ensured filters are included in the initial search response
+
 # 5.3.8
 * Added click tracking to cart recommendations
 * Made functions in RecommendationService protected instead of private
