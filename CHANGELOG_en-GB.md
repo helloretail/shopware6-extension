@@ -1,3 +1,6 @@
+# 4.4.6
+* Fix incorrect :id parameter in ExportHandler
+
 # 4.4.5
 * Moved client-side script initialization earlier in the page load cycle
 * Removed legacy cart tracking logic
