@@ -1,3 +1,6 @@
+# 6.0.4
+* Fix incorrect :id parameter in ExportHandler 
+
 # 6.0.3
 * Added click tracking to cart recommendations
 * Made functions in RecommendationService protected instead of private
