@@ -1,3 +1,6 @@
+# 4.4.6
+* Corrigeer de onjuiste parameter :id in ExportHandler.
+
 # 4.4.5
 * Clientseitige Skriptinitialisierung wurde früher im Seitenladezyklus platziert.
 * Veraltete Warenkorb-Tracking-Logik entfernt.
