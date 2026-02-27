@@ -1,3 +1,6 @@
+# 5.3.9
+* Filter in der initialen Suchantwort sichergestellt
+
 # 5.3.8
 * Klick-Tracking zu den Warenkorb-Empfehlungen hinzugefügt
 * Funktionen im RecommendationService statt privat nun geschützt gemacht
