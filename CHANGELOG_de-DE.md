@@ -1,3 +1,6 @@
+# 5.3.10
+* Plugin-Basisklasse (HelretHelloRetail.php) wiederhergestellt, die in 5.3.9 versehentlich entfernt wurde und die Installation sowie Updates des Plugins verhinderte
+
 # 5.3.9
 * Filter in der initialen Suchantwort sichergestellt
 
