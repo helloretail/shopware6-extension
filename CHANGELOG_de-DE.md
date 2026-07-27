@@ -1,3 +1,6 @@
+# 5.3.11
+* SalesChannelContextService anstelle von SalesChannelContextServiceInterface geändert.
+
 # 5.3.10
 * Plugin-Basisklasse (HelretHelloRetail.php) wiederhergestellt, die in 5.3.9 versehentlich entfernt wurde und die Installation sowie Updates des Plugins verhinderte
 
