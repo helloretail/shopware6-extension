@@ -1,11 +1,22 @@
 #! /bin/bash
-# Accept a bare hostname, but tolerate a pasted scheme or trailing slash. HR_CORE_HOST and HR_DASHBOARD_HOST
-# also reach docker-compose's extra_hosts, which rejects a scheme noisily; HR_CDN_HOST has no such guard, and
-# an unstripped one would silently produce cdn_host=https://https://... and fail every asset in the browser.
-hr_host() {
-    local value="${1#http://}"
-    value="${value#https://}"
-    printf '%s' "${value%/}"
+# Every HR_*_HOST is a BARE HOSTNAME, and nothing here normalises one. HR_CORE_HOST and HR_DASHBOARD_HOST
+# also reach docker-compose's extra_hosts, which interpolates the raw shell value into the container's
+# /etc/hosts before this script ever runs. Compose cannot strip anything, so any tolerance in here would
+# apply to the SDK hosts and NOT to /etc/hosts, and the two would disagree. A trailing slash is the case
+# that bites: the daemon accepts `example.test/:host-gateway`, the container comes up with a bogus hosts
+# entry, a normalising entrypoint writes the slash-free name into the template, and that name then resolves
+# nowhere -- a failure with nothing to report it. A scheme, by contrast, is already rejected loudly at
+# container-create. Refusing anything but a bare hostname is the only treatment that is identical on both
+# paths, and it is the only guard HR_CDN_HOST gets at all: it has no extra_hosts entry, and an unnoticed
+# scheme there produces cdn_host=https://https://... and 502s every asset in the browser.
+hr_require_hostname() {
+    local name="$1" value="$2"
+    if [[ ! $value =~ ^[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?)*$ ]]; then
+        echo "entrypoint: ERROR - $name must be a bare hostname, got \"$value\"." >&2
+        echo "entrypoint:   No scheme, no port, no path, no trailing slash. docker-compose writes this value" >&2
+        echo "entrypoint:   into the container /etc/hosts verbatim, so anything else cannot resolve." >&2
+        exit 1
+    fi
 }
 
 # The local Hello Retail app's hosts. Override them if you run the app somewhere else; the defaults are
@@ -14,8 +25,10 @@ hr_host() {
 # not: it stops and starts the container that already exists, and a container's environment is fixed when it
 # is created, so the new value never arrives and this script reports `already current` while the storefront
 # keeps serving the old host.
-HR_CORE_HOST="$(hr_host "${HR_CORE_HOST:-core.dev.helloretail.com}")"
-HR_DASHBOARD_HOST="$(hr_host "${HR_DASHBOARD_HOST:-my.dev.helloretail.com}")"
+HR_CORE_HOST="${HR_CORE_HOST:-core.dev.helloretail.com}"
+HR_DASHBOARD_HOST="${HR_DASHBOARD_HOST:-my.dev.helloretail.com}"
+hr_require_hostname HR_CORE_HOST "$HR_CORE_HOST"
+hr_require_hostname HR_DASHBOARD_HOST "$HR_DASHBOARD_HOST"
 # The SDK's asset CDN. Deliberately has NO default: leave it unset and the SDK keeps loading assets from
 # production, which works. The dev-env has no nginx server block for helloretailcdn.test (nor for the old
 # d1pna5l3xsntoj.cloudfront.test), so both fall through to the default 443 block, get proxied to
@@ -23,7 +36,11 @@ HR_DASHBOARD_HOST="$(hr_host "${HR_DASHBOARD_HOST:-my.dev.helloretail.com}")"
 # instance even when 8080 is up. cdn_host feeds slick/swiper, ppBusiness.js, feed-loader.gif and the partner
 # stylesheets, so defaulting it to a .test name turns working asset loads into 502s. Set it only when you
 # are actually serving the CDN locally.
-HR_CDN_HOST="$(hr_host "${HR_CDN_HOST:-}")"
+# Unset and empty both mean "leave the SDK on the production CDN", so only a non-empty value is validated.
+HR_CDN_HOST="${HR_CDN_HOST:-}"
+if [ -n "$HR_CDN_HOST" ]; then
+    hr_require_hostname HR_CDN_HOST "$HR_CDN_HOST"
+fi
 
 # Everything this script reports goes to stderr, progress included. Docker captures stdout and stderr as two
 # separate streams and `docker logs` merges them by arrival, so a mixed script prints out of order: the
@@ -205,10 +222,21 @@ $rewrite(
     }
 );
 
-if ($state["present"] === 0) {
-    // No Hello Retail templates at all, so there is no integration to misdirect. Worth saying, not failing.
+// The plugin directory, not the template count, is what says whether the integration is deployed. Reading
+// present === 0 as "not deployed" would fold two very different states into one: a volume with no plugin,
+// which is harmless, and a deployed plugin whose init template has been renamed or moved, which is the
+// storefront talking to the PRODUCTION hosts. Only the first may exit 0.
+if (!is_dir($dir)) {
+    // No Hello Retail plugin at all, so there is no integration to misdirect. Worth saying, not failing.
     fwrite(STDERR, "entrypoint: WARNING - the HelloRetail plugin is not deployed; nothing to point at\n");
     exit(0);
+}
+
+if ($state["present"] === 0) {
+    fwrite(STDERR, "entrypoint: ERROR - the HelloRetail plugin is deployed at " . $dir . " but none of the\n");
+    fwrite(STDERR, "entrypoint:   templates this script patches exist there; they have been renamed, moved or\n");
+    fwrite(STDERR, "entrypoint:   dropped. The storefront would use the PRODUCTION Hello Retail hosts.\n");
+    exit(1);
 }
 
 if ($state["patched"] === 0) {
@@ -230,8 +258,18 @@ if ($state["left_alone"] > 0) {
 # Twig compiles templates to PHP under var/cache/<env>_<hash>/twig, and the image ships a warm cache built
 # from the templates as they were when it was captured. Under APP_ENV=dev Twig auto-reloads on mtime, so this
 # is redundant there, but the image's own .env sets APP_ENV=prod, where it is required. It is cheap either way.
+#
+# The status matters. On a fresh volume neither directory is there, the glob stays unexpanded, and `rm -rf`
+# on a path that does not exist succeeds -- that must keep being a success. A genuine removal failure is the
+# opposite case: root-owned leftovers from an older image, or a read-only mount. Then the stale compiled
+# template and the cached page survive, the storefront keeps serving the hosts they were built with, and a
+# container that started anyway would reproduce exactly the misdirection the gate above just refused.
 echo "Clearing the compiled twig templates" >&2
-rm -rf /usr/app/src/var/cache/*/twig
+rm -rf /usr/app/src/var/cache/*/twig || {
+    echo "entrypoint: ERROR - could not clear the compiled twig templates; Twig would keep serving the" >&2
+    echo "entrypoint:   templates as they were, with their old Hello Retail hosts." >&2
+    exit 1
+}
 
 # The same .env sets SHOPWARE_HTTP_CACHE_ENABLED=1 with SHOPWARE_HTTP_DEFAULT_TTL=7200, and that flag is read
 # straight from the environment (shopware.http.cache.enabled), NOT gated on APP_ENV -- so whole anonymous page
@@ -245,6 +283,10 @@ rm -rf /usr/app/src/var/cache/*/twig
 # `bin/console cache:pool:clear cache.http` would be surgical, but it boots the kernel and needs the database,
 # and compose declares no depends_on for shopwaredb, so it cannot be relied on at start.
 echo "Clearing the cached HTTP responses" >&2
-rm -rf /usr/app/src/var/cache/*/pools/app
+rm -rf /usr/app/src/var/cache/*/pools/app || {
+    echo "entrypoint: ERROR - could not clear the cached HTTP responses; anonymous pages would keep being" >&2
+    echo "entrypoint:   served from cache, with their old Hello Retail hosts, for up to the 7200s TTL." >&2
+    exit 1
+}
 
 exec $@
