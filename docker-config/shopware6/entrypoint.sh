@@ -90,11 +90,12 @@ $dir = getenv("PLUGIN_DIR");
 // patched:    templates that now carry our hosts (freshly written, or already correct).
 // unmatched:  templates that exist but whose init call we did not recognise.
 // left_alone: templates holding an object we refuse to guess at.
+// rendering_unmatched: of the unmatched ones, those we know reach the browser (see below).
 // Counting these is the point: a rewrite that quietly matches nothing is precisely the failure this script
 // exists to end, so "no error" must never be mistaken for "the hosts were applied".
 //
 // Know what patched does NOT prove: it counts a file on disk carrying our hosts, never that the storefront
-// RENDERS that file. Reachability is not checked here, and could not be without rendering a page.
+// RENDERS that file. Full reachability is not checked here, and could not be without rendering a page.
 // On the current image the two candidates are not equal in that respect. The template that actually reaches
 // the browser is component/hello-retail-tracking.html.twig, and it gets there through the plugin copy of
 // storefront/base.html.twig, which sw_includes it inside the storefront block `base_script_csrf`. The
@@ -102,13 +103,22 @@ $dir = getenv("PLUGIN_DIR");
 // block the vendor meta.html.twig nests inside a feature(FEATURE_NEXT_15917) condition that is off -- so
 // that override is inert: it compiles, it is patched, and it never renders. Confirmed live with injected
 // markers: a marker in meta.html.twig does not appear in the page, one in base.html.twig does.
-// The trap that follows: a future plugin version that carries the init call ONLY in meta.html.twig, in a
-// block that likewise does not render, would be written, scored patched = 1, and exit 0 here while the
-// storefront still talks to the PRODUCTION Hello Retail hosts. This gate cannot catch that.
-$state = array("present" => 0, "patched" => 0, "unmatched" => 0, "left_alone" => 0);
+//
+// So a plain "patched > 0" gate is too weak: the inert meta override alone can satisfy it while the
+// component that does render is unmatched, which is a storefront on the PRODUCTION hosts with exit 0.
+// The obvious tightening -- demand that EVERY present candidate be resolved -- is wrong in the other
+// direction: on this very image meta.html.twig is present and carries no init call at all, so that rule
+// fails the normal, working case. What the two candidates differ in is not presence but render authority,
+// and that we do know: $renders below marks the candidate verified to reach the browser where it exists.
+// An unmatched call in THAT file is fatal even when a sibling patched, because the patched sibling cannot
+// stand in for it. The residual, and it stays a residual: a future plugin that carries the init call only
+// in meta.html.twig, in a block that likewise does not render, still scores patched = 1 and exits 0. That
+// one needs a rendered page to catch, and this gate does not render one.
+$state = array("present" => 0, "patched" => 0, "unmatched" => 0, "left_alone" => 0, "rendering_unmatched" => 0);
 
 // $build returns the replacement text, or null to mean "do not touch this one".
-$rewrite = function ($file, $pattern, $build) use (&$state) {
+// $renders says this candidate is known to reach the browser wherever it is deployed.
+$rewrite = function ($file, $pattern, $build, $renders) use (&$state) {
     $name = basename($file);
     if (!is_file($file)) {
         fwrite(STDERR, "entrypoint: " . $name . " is not deployed, skipping\n");
@@ -123,14 +133,16 @@ $rewrite = function ($file, $pattern, $build) use (&$state) {
     }
 
     $left_alone = false;
+    $recognised = 0;
     $after = preg_replace_callback(
         $pattern,
-        function ($m) use ($build, &$left_alone) {
+        function ($m) use ($build, &$left_alone, &$recognised) {
             $replacement = $build($m);
             if ($replacement === null) {
                 $left_alone = true;
                 return $m[0];
             }
+            $recognised++;
             return $replacement;
         },
         $before,
@@ -146,13 +158,23 @@ $rewrite = function ($file, $pattern, $build) use (&$state) {
         // Deployed, but the init call does not look the way we expect: a refactor, an added Twig filter, or
         // the call having moved into the compiled storefront bundle. Report it rather than passing silently.
         $state["unmatched"]++;
+        if ($renders) {
+            $state["rendering_unmatched"]++;
+        }
         fwrite(STDERR, "entrypoint: " . $name . " carries no init call we recognise\n");
         return;
     }
     if ($left_alone) {
-        // Deliberately NOT counted as patched: the hosts are whatever that object already says.
+        // Drives the warning only. A file can hold more than one init call -- a second one behind a Twig
+        // condition, say -- and refusing to guess at one of them must not throw away a sibling we did
+        // recognise. That rewrite still has to reach disk, or the call we understood perfectly well would
+        // keep its production hosts with nothing but a warning to show for it.
         $state["left_alone"]++;
         fwrite(STDERR, "entrypoint: left the hand-written init object in " . $name . " alone\n");
+    }
+    if ($recognised === 0) {
+        // Every call in this file is one we refuse to guess at, so there is nothing of ours to write and
+        // nothing to count as patched: the hosts are whatever those objects already say.
         return;
     }
     if ($after !== $before) {
@@ -190,7 +212,10 @@ $rewrite(
         }
         // Merge, so a websiteUuid / trackingOptOut the developer put there survives and only the hosts move.
         return "hrq.push([\x27init\x27, " . json_encode($apply($current), JSON_UNESCAPED_SLASHES) . "])";
-    }
+    },
+    // Not marked as rendering: on the current image this override sits in a block that never renders, and
+    // on a plugin where it does render there is no second candidate to mistake it for.
+    false
 );
 
 // A volume from before the plugin moved to helloretail.js still serves the legacy loader, whose hosts ride
@@ -219,7 +244,10 @@ $rewrite(
             $fragment .= "," . $k . "=" . $v;
         }
         return $m[1] . $fragment;
-    }
+    },
+    // Marked as rendering: wherever this component is deployed it is pulled into the page by the plugin
+    // base.html.twig, from a block that does render. Verified with injected markers.
+    true
 );
 
 // The plugin directory, not the template count, is what says whether the integration is deployed. Reading
@@ -246,6 +274,17 @@ if ($state["patched"] === 0) {
     fwrite(STDERR, "entrypoint: ERROR - the HelloRetail plugin is deployed but no template now carries the\n");
     fwrite(STDERR, "entrypoint:   local hosts (" . $state["unmatched"] . " unrecognised, "
         . $state["left_alone"] . " left alone). The storefront would use the PRODUCTION Hello Retail hosts.\n");
+    exit(1);
+}
+
+if ($state["rendering_unmatched"] > 0) {
+    // Something IS patched, but not the candidate we know reaches the browser, and a patched file that
+    // never renders proves nothing about the one that does. Treating the sibling as a stand-in is exactly
+    // how this gate would wave through a storefront on the production hosts.
+    fwrite(STDERR, "entrypoint: ERROR - " . $state["rendering_unmatched"] . " template(s) that the storefront\n");
+    fwrite(STDERR, "entrypoint:   actually renders carry no init call we recognise. Another template was\n");
+    fwrite(STDERR, "entrypoint:   patched, but it cannot stand in for them: the rendered page would use the\n");
+    fwrite(STDERR, "entrypoint:   PRODUCTION Hello Retail hosts.\n");
     exit(1);
 }
 
