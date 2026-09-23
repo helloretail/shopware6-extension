@@ -197,9 +197,25 @@ $rewrite = function ($file, $pattern, $build, $renders) use (&$state) {
     }
     if ($after !== $before) {
         // An unchecked write would print "updated" even on a read-only or wrong-owner file, which is the
-        // same silent-success trap as a non-matching pattern.
-        if (file_put_contents($file, $after) === false) {
-            fwrite(STDERR, "entrypoint: ERROR - cannot write " . $name . "\n");
+        // same silent-success trap as a non-matching pattern. A short write is a worse case than a rejected
+        // one: file_put_contents can return a byte count smaller than strlen($after) -- a filesystem filling
+        // mid-write, say -- instead of false, and this gate would then report the template as updated while
+        // a truncated file sits where the storefront reads it. That is worse than an unpatched template: an
+        // unpatched one still renders. Writing to a temp file in the same directory, checking its byte count
+        // there, and renaming over the original only once that count matches keeps a short write off the
+        // path the storefront actually serves; the original is untouched until the rename, and rename() on
+        // the same filesystem is atomic, so no reader ever observes a half-written file under the real name.
+        $tmp = $file . "." . getmypid() . ".tmp";
+        $written = file_put_contents($tmp, $after);
+        if ($written !== strlen($after)) {
+            @unlink($tmp);
+            fwrite(STDERR, "entrypoint: ERROR - short write to " . $name . " ("
+                . var_export($written, true) . " of " . strlen($after) . " bytes); left the original untouched\n");
+            exit(1);
+        }
+        if (!rename($tmp, $file)) {
+            @unlink($tmp);
+            fwrite(STDERR, "entrypoint: ERROR - cannot replace " . $name . "\n");
             exit(1);
         }
         fwrite(STDERR, "entrypoint: updated " . $name . "\n");
