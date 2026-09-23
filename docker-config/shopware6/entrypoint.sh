@@ -9,12 +9,30 @@
 # container-create. Refusing anything but a bare hostname is the only treatment that is identical on both
 # paths, and it is the only guard HR_CDN_HOST gets at all: it has no extra_hosts entry, and an unnoticed
 # scheme there produces cdn_host=https://https://... and 502s every asset in the browser.
+#
+# An IP address is the same silent class as the trailing slash, and the hostname regex below would otherwise
+# take one: digits and dots satisfy every label. Measured, not assumed. `extra_hosts: "192.168.1.50:host-
+# gateway"` comes up clean and puts `192.168.5.2  192.168.1.50` in the container /etc/hosts -- an entry whose
+# NAME is an address. Nothing ever reads it: getaddrinfo, php gethostbyname and curl all take the literal and
+# never consult the hosts file, so the entry does not redirect that address either. It is simply inert. What
+# is left is a value pasted into an https:// URL that no certificate here covers, so the browser rejects
+# every SDK call, and the extra_hosts mechanism the whole design rests on has quietly done nothing.
 hr_require_hostname() {
     local name="$1" value="$2"
     if [[ ! $value =~ ^[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?)*$ ]]; then
         echo "entrypoint: ERROR - $name must be a bare hostname, got \"$value\"." >&2
-        echo "entrypoint:   No scheme, no port, no path, no trailing slash. docker-compose writes this value" >&2
-        echo "entrypoint:   into the container /etc/hosts verbatim, so anything else cannot resolve." >&2
+        echo "entrypoint:   No scheme, no port, no path, no trailing slash. All three variables are pasted" >&2
+        echo "entrypoint:   straight into an https:// URL for the SDK; HR_CORE_HOST and HR_DASHBOARD_HOST also" >&2
+        echo "entrypoint:   go into the container /etc/hosts verbatim, where anything else cannot resolve." >&2
+        echo "entrypoint:   HR_CDN_HOST has no /etc/hosts entry at all, so this check is the only guard it gets." >&2
+        exit 1
+    fi
+    if [[ $value =~ ^[0-9]+(\.[0-9]+)*$ ]]; then
+        echo "entrypoint: ERROR - $name must be a hostname, not an IP address, got \"$value\"." >&2
+        echo "entrypoint:   The dev hosts are names: https://$value has no certificate the browser will accept," >&2
+        echo "entrypoint:   and for HR_CORE_HOST / HR_DASHBOARD_HOST the extra_hosts entry the daemon writes for" >&2
+        echo "entrypoint:   an address is never read -- a resolver does not look an address up -- so it points" >&2
+        echo "entrypoint:   nowhere." >&2
         exit 1
     fi
 }

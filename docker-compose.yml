@@ -27,8 +27,9 @@ services:
     # below in step with the HR_CORE_HOST / HR_DASHBOARD_HOST defaults there.
     # These take the raw variable: Compose interpolates and cannot normalise. A scheme fails here at `up`
     # time, loud and immediate; a TRAILING SLASH does not -- the daemon accepts it and writes a bogus
-    # /etc/hosts entry. So the variables are bare hostnames, full stop, and the entrypoint validates all
-    # three against that rule and refuses to start on anything else. Normalising in the entrypoint instead
+    # /etc/hosts entry. Nor does an IP ADDRESS: the daemon takes it as the NAME of the entry and writes one
+    # no resolver will ever read. So the variables are bare hostnames, full stop, and the entrypoint
+    # validates all three against that rule and refuses to start on anything else. Normalising there instead
     # would only fix the SDK hosts and leave this entry broken and silent.
     extra_hosts:
     - "${HR_CORE_HOST:-core.dev.helloretail.com}:host-gateway"
