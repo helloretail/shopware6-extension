@@ -1,3 +1,6 @@
+# 5.3.12
+* Corrigeer de onjuiste parameter :id in ExportHandler.
+
 # 5.3.11
 * SalesChannelContextService anstelle von SalesChannelContextServiceInterface geändert.
 
