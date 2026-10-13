@@ -1,3 +1,6 @@
+# 6.0.5
+* Fix incorrect :id parameter in ExportHandler 
+
 # 6.0.4
 * Changed SalesChannelContextServiceInterface instead of SalesChannelContextService on Product Export
 
