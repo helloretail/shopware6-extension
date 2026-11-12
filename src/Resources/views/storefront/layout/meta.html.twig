@@ -3,8 +3,11 @@
 {% block layout_head_javascript_tracking %}
     {{ parent() }}
     <script type="text/javascript" async src="https://helloretailcdn.com/helloretail.js"></script>
-    <script>
-        hrq = window.hrq || [];
-        hrq.push(['init'])
-    </script>
+    {# Override this block in your theme to pass options to init, e.g. { trackingOptOut: true } #}
+    {% block hello_retail_tracking_init %}
+        <script>
+            hrq = window.hrq || [];
+            hrq.push(['init'])
+        </script>
+    {% endblock %}
 {% endblock %}
