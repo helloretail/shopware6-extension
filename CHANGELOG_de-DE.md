@@ -1,3 +1,6 @@
+# 5.3.13
+* Twig-Block `hello_retail_tracking_init` um das Hello Retail Init-Skript hinzugefügt, damit ein Theme Optionen wie `trackingOptOut` an init übergeben kann
+
 # 5.3.12
 * Corrigeer de onjuiste parameter :id in ExportHandler.
 
