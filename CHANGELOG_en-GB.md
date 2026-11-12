@@ -1,3 +1,6 @@
+# 6.0.6
+* Added Twig block `hello_retail_tracking_init` around the Hello Retail init script, so a theme can pass options such as `trackingOptOut` to init
+
 # 6.0.5
 * Fix incorrect :id parameter in ExportHandler 
 
